@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: gmao-backend
+    runtime: node
+    plan: free
+    buildCommand: npm install && npx prisma generate
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        value: https://gmao-sakete.netlify.app
+
+  - type: postgresql
+    name: gmao-db
+    plan: free
+    diskSizeGB: 1
