@@ -13,6 +13,31 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+import { exec } from 'child_process';
+import util from 'util';
+const execPromise = util.promisify(exec);
+
+// Exécute les migrations PostgreSQL au démarrage (sur Render)
+async function runMigrations() {
+  // Ne migre que si on est en production (Render) ou si c'est forcé
+  if (process.env.NODE_ENV === 'production' || process.env.RUN_MIGRATIONS === 'true') {
+    console.log('📦 Vérification et application des migrations...');
+    try {
+      const { stdout, stderr } = await execPromise('npx prisma migrate deploy');
+      console.log('✅ Résultat des migrations:', stdout);
+      if (stderr) console.warn('⚠️', stderr);
+    } catch (error) {
+      console.error('❌ Échec des migrations:', error.message);
+      // Ne pas bloquer le démarrage du serveur, mais l'erreur sera loggée
+    }
+  } else {
+    console.log('⏩ Mode développement, migrations non exécutées automatiquement.');
+  }
+}
+
+// Attendre que les migrations soient faites avant de démarrer le serveur
+await runMigrations();
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
