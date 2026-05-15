@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     buildCommand: npm install && npx prisma generate
-    startCommand: npm start
+    startCommand: npx prisma migrate deploy && npm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -12,10 +12,14 @@ services:
         generateValue: true
       - key: FRONTEND_URL
         value: https://gmao-sakete.netlify.app
+      - key: DATABASE_URL
+        fromDatabase:
+          name: gmao-db
+          property: connectionString
 
   - type: postgresql
     name: gmao-db
     plan: free
-    databaseName: gmao_db_c4qe
-    databaseUser: gmao_db_c4qe_user
+    databaseName: gmao_db
+    databaseUser: gmao_user
     ipAllowList: []
