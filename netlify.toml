@@ -1,26 +1,23 @@
 [build]
-  # Dossier où se trouve votre build (changez selon votre framework)
-  publish = "dist"
-  # Commande de build (commentez si vous build manuellement)
-  command = "npm run build"
+  # Pas de commande de build car fichiers HTML statiques
+  command = ""
+  # Dossier contenant vos fichiers HTML
+  publish = "frontend"
 
-# Redirection des appels API vers votre backend Render
 [[redirects]]
   from = "/api/*"
-  to = "https://gmao-backend.onrender.com/api/:splat"
+  to = "https://gmao-sakete-ifangni-1.onrender.com/api/:splat"
   status = 200
   force = true
 
-# Redirection SPA (Single Page Application) - crucial pour React/Vue/Angular
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/login.html"
   status = 200
 
-# Headers pour la sécurité (optionnel mais recommandé)
 [[headers]]
   for = "/*"
   [headers.values]
+    X-Content-Type-Options = "nosniff"
     X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
-    X-Content-Type-Options = "nosniff"
