@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import prisma from '../config/database.js';
 import { generateMatricule, sendWelcomeEmail, sendValidationEmail } from '../config/email.js';
 
-// Inscription (auto-inscription soignant)
+// Inscription (auto-inscription soignant, sauf email spécial pour technicien)
 export const register = async (req, res) => {
     const { nom, prenom, email, telephone, service, password } = req.body;
 
@@ -20,7 +20,15 @@ export const register = async (req, res) => {
         // Hasher le mot de passe
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Créer l'utilisateur (statut EN_ATTENTE)
+        // 🔧 Déterminer rôle et statut selon l'email (création du premier technicien)
+        let role = 'SOIGNANT';
+        let statut = 'EN_ATTENTE';
+        if (email === 'tech.biomedical@hopital.bj') {
+            role = 'TECHNICIEN';
+            statut = 'ACTIF';
+        }
+
+        // Créer l'utilisateur
         const user = await prisma.user.create({
             data: {
                 nom,
@@ -30,12 +38,12 @@ export const register = async (req, res) => {
                 telephone: telephone || null,
                 service: service || null,
                 password: hashedPassword,
-                role: 'SOIGNANT',
-                statut: 'EN_ATTENTE',
+                role: role,
+                statut: statut,
             },
         });
 
-        // Envoyer email avec les identifiants (optionnel, désactivable si pas configuré)
+        // Envoyer email avec les identifiants (optionnel)
         try {
             await sendWelcomeEmail(user, password);
         } catch (emailError) {
@@ -49,6 +57,7 @@ export const register = async (req, res) => {
                 nom: user.nom,
                 email: user.email,
                 matricule: user.matricule,
+                role: user.role,
                 statut: user.statut,
             },
         });
@@ -63,7 +72,6 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        // Trouver l'utilisateur
         const user = await prisma.user.findUnique({ where: { email } });
 
         if (!user) {
@@ -132,7 +140,6 @@ export const validateUser = async (req, res) => {
             },
         });
 
-        // Envoyer email de validation (optionnel)
         try {
             await sendValidationEmail(user);
         } catch (emailError) {
