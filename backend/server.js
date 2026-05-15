@@ -19,19 +19,16 @@ const execPromise = util.promisify(exec);
 
 // Exécute les migrations PostgreSQL au démarrage (sur Render)
 async function runMigrations() {
-  // Ne migre que si on est en production (Render) ou si c'est forcé
   if (process.env.NODE_ENV === 'production' || process.env.RUN_MIGRATIONS === 'true') {
-    console.log('📦 Vérification et application des migrations...');
+    console.log('📦 Synchronisation du schéma avec la base de données...');
     try {
-      const { stdout, stderr } = await execPromise('npx prisma migrate deploy');
-      console.log('✅ Résultat des migrations:', stdout);
+      // Remplacer migrate deploy par db push
+      const { stdout, stderr } = await execPromise('npx prisma db push');
+      console.log('✅ Résultat:', stdout);
       if (stderr) console.warn('⚠️', stderr);
     } catch (error) {
-      console.error('❌ Échec des migrations:', error.message);
-      // Ne pas bloquer le démarrage du serveur, mais l'erreur sera loggée
+      console.error('❌ Échec de la synchronisation:', error.message);
     }
-  } else {
-    console.log('⏩ Mode développement, migrations non exécutées automatiquement.');
   }
 }
 
