@@ -127,6 +127,19 @@ app.post('/api/debug/activate/:email', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+// TEMPORAIRE : Mettre à jour le rôle sans token
+app.put('/api/debug/set-technician/:email', async (req, res) => {
+  const { email } = req.params;
+  try {
+    const user = await prisma.user.update({
+      where: { email },
+      data: { role: 'TECHNICIEN', statut: 'ACTIF' }
+    });
+    res.json({ success: true, user: { email: user.email, role: user.role, statut: user.statut } });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // ============ PAGE D'ACCUEIL API ============
 app.get('/', (req, res) => {
