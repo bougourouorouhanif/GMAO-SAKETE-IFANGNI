@@ -1,33 +1,37 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Configuration Nodemailer avec Gmail
+const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.EMAIL_PORT) || 587,
+    secure: false,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+});
 
 // Envoi d'email générique
 export async function sendEmail(to, subject, html) {
-    if (!process.env.RESEND_API_KEY) {
-        console.log('⚠️ Email non configuré (manque RESEND_API_KEY)');
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        console.log('⚠️ Email non configuré (manque EMAIL_USER ou EMAIL_PASS)');
         return false;
     }
     
     try {
-        const { data, error } = await resend.emails.send({
-            from: `GMAO Sakété <notifications@${process.env.EMAIL_DOMAIN || 'gmao-sakete.bj'}>`,
-            to: [to],
+        const info = await transporter.sendMail({
+            from: `"GMAO Sakété" <${process.env.EMAIL_USER}>`,
+            to: to,
             subject: subject,
             html: html,
         });
-        
-        if (error) {
-            console.error('Erreur Resend:', error);
-            return false;
-        }
         console.log('✅ Email envoyé à', to);
         return true;
     } catch (error) {
-        console.error('Erreur envoi email:', error);
+        console.error('❌ Erreur envoi email:', error.message);
         return false;
     }
 }
