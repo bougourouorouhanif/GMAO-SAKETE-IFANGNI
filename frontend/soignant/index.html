@@ -2,173 +2,549 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>GMAO Sakété - Espace Soignant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#1a2a4f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>GMAO Soignant - Hôpital Sakété</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fb;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            padding-bottom: 75px;
+        }
+
+        /* En-tête */
+        .header {
             background: linear-gradient(135deg, #1a2a4f 0%, #1e3a5f 100%);
-            min-height: 100vh;
-            padding: 20px;
+            padding: 25px 20px;
+            border-radius: 0 0 30px 30px;
+            color: white;
         }
-        .container { max-width: 500px; margin: 0 auto; }
-        .logo-section { text-align: center; margin-bottom: 30px; }
-        .logo {
-            background: rgba(255,255,255,0.15);
-            width: 80px; height: 80px;
-            border-radius: 50%;
+
+        .header-top {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            margin: 0 auto 15px;
-            font-size: 40px;
+            margin-bottom: 20px;
         }
-        h1 { color: white; font-size: 24px; }
-        .subtitle { color: rgba(255,255,255,0.8); font-size: 13px; }
-        
-        .user-card {
-            background: rgba(255,255,255,0.1);
+
+        .welcome {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .user-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .user-service {
+            font-size: 13px;
+            opacity: 0.7;
+            margin-top: 4px;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 30px;
+            color: white;
+            font-size: 13px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        .stats-cards {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: rgba(255,255,255,0.15);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
+            padding: 12px;
+            text-align: center;
         }
-        .user-avatar {
-            width: 55px; height: 55px;
-            background: #00d4ff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+
+        .stat-number {
             font-size: 28px;
+            font-weight: bold;
         }
-        .user-info { flex: 1; }
-        .user-name { color: white; font-weight: bold; font-size: 16px; }
-        .user-service { color: rgba(255,255,255,0.7); font-size: 12px; }
-        .logout-btn { background: rgba(239,68,68,0.8); border: none; color: white; padding: 8px 16px; border-radius: 30px; cursor: pointer; font-size: 12px; }
-        
+
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        /* Menu principal */
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-        .menu-item {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
+            gap: 16px;
             padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.3s;
-            text-decoration: none;
-            display: block;
         }
-        .menu-item:hover { background: rgba(255,255,255,0.2); transform: translateY(-3px); }
-        .menu-icon { font-size: 40px; margin-bottom: 10px; }
-        .menu-title { color: white; font-weight: 600; font-size: 14px; }
-        .menu-desc { color: rgba(255,255,255,0.7); font-size: 11px; margin-top: 5px; }
-        
-        .chatbot-float {
+
+        .menu-item {
+            background: white;
+            border-radius: 24px;
+            padding: 20px 12px;
+            text-align: center;
+            text-decoration: none;
+            color: #1e293b;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .menu-item:active {
+            transform: scale(0.96);
+            background: #f8fafc;
+        }
+
+        .menu-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .menu-title {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+
+        .menu-desc {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        /* Section info */
+        .info-card {
+            background: white;
+            margin: 0 20px 20px 20px;
+            padding: 18px;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .info-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #1a2a4f;
+        }
+
+        .info-text {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.4;
+        }
+
+        /* Bouton flottant chatbot */
+        .fab-chatbot {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            width: 60px;
-            height: 60px;
+            width: 56px;
+            height: 56px;
             background: #3b82f6;
-            border-radius: 50%;
+            border-radius: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 30px;
-            color: white;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             cursor: pointer;
             border: none;
             z-index: 100;
+            transition: all 0.2s;
+            color: white;
+            font-size: 28px;
         }
-        .footer { text-align: center; margin-top: 20px; }
-        .footer a { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 12px; }
+
+        .fab-chatbot:active {
+            transform: scale(0.94);
+        }
+
+        /* Modal chatbot */
+        .chatbot-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .chatbot-window {
+            background: white;
+            width: 100%;
+            max-width: 500px;
+            height: 80vh;
+            border-radius: 30px 30px 0 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .chatbot-header {
+            background: #1a2a4f;
+            color: white;
+            padding: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background: #f8fafc;
+        }
+
+        .message {
+            margin-bottom: 12px;
+            display: flex;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.bot {
+            justify-content: flex-start;
+        }
+
+        .message-content {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .message.user .message-content {
+            background: #1a2a4f;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.bot .message-content {
+            background: #e5e7eb;
+            color: #1e293b;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chatbot-input-area {
+            display: flex;
+            padding: 12px;
+            border-top: 1px solid #e2e8f0;
+            gap: 10px;
+            background: white;
+        }
+
+        .chatbot-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 30px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .chatbot-send {
+            background: #1a2a4f;
+            color: white;
+            border: none;
+            width: 44px;
+            border-radius: 22px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .close-chatbot {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        /* Navigation bottom */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 20px 20px;
+            border-top: 1px solid #e2e8f0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+
+        .nav-item {
+            text-align: center;
+            text-decoration: none;
+            color: #94a3b8;
+            font-size: 12px;
+            transition: color 0.2s;
+        }
+
+        .nav-item.active {
+            color: #1a2a4f;
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            font-size: 22px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 450px) {
+            .menu-grid {
+                gap: 12px;
+                padding: 16px;
+            }
+            .menu-icon {
+                font-size: 32px;
+            }
+            .menu-title {
+                font-size: 13px;
+            }
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="logo-section">
-        <div class="logo">🏥</div>
-        <h1>GMAO Sakété</h1>
-        <div class="subtitle">Espace Personnel Soignant</div>
-    </div>
 
-    <div class="user-card">
-        <div class="user-avatar">👨‍⚕️</div>
-        <div class="user-info">
+<!-- En-tête -->
+<div class="header">
+    <div class="header-top">
+        <div>
+            <div class="welcome">👋 Bonjour,</div>
             <div class="user-name" id="userName">Chargement...</div>
-            <div class="user-service" id="userService">Service Urgences</div>
+            <div class="user-service" id="userService">Service</div>
         </div>
-        <button class="logout-btn" onclick="logout()">Déconnexion</button>
+        <button class="logout-btn" onclick="logout()">🔓 Déconnexion</button>
     </div>
 
-    <div class="menu-grid">
-         <a href="statistiques.html" class="menu-item">
-            <div class="menu-icon">📊</div>
-            <div class="menu-title">Mes statistiques</div>
-            <div class="menu-desc">Suivi et performances</div>
-        </a>
-        <a href="scanner.html" class="menu-item">
-            <div class="menu-icon">📱</div>
-            <div class="menu-title">Scanner QR</div>
-            <div class="menu-desc">Scanner un équipement</div>
-        </a>
-        <a href="signaler-panne.html" class="menu-item">
-            <div class="menu-icon">⚠️</div>
-            <div class="menu-title">Signaler une panne</div>
-            <div class="menu-desc">Signaler un problème</div>
-        </a>
-        <a href="historique.html" class="menu-item">
-            <div class="menu-icon">📋</div>
-            <div class="menu-title">Historique</div>
-            <div class="menu-desc">Mes signalements</div>
-        </a>
-        <a href="profil.html" class="menu-item">
-            <div class="menu-icon">👤</div>
-            <div class="menu-title">Mon profil</div>
-            <div class="menu-desc">Informations</div>
-        </a>
-    </div>
-
-    <div class="footer">
-        <a href="#" onclick="openChatbot()">🤖 Assistant maintenance</a> | 
-        <a href="/login.html">🔐 Changer de compte</a>
+    <!-- Cartes stats -->
+    <div class="stats-cards">
+        <div class="stat-card">
+            <div class="stat-number" id="totalDemandes">-</div>
+            <div class="stat-label">Mes demandes</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="enCours">-</div>
+            <div class="stat-label">En cours</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="resolus">-</div>
+            <div class="stat-label">Résolus</div>
+        </div>
     </div>
 </div>
 
-<button class="chatbot-float" onclick="openChatbot()">🤖</button>
+<!-- Menu principal -->
+<div class="menu-grid">
+    <a href="signaler-panne.html" class="menu-item">
+        <div class="menu-icon">⚠️</div>
+        <div class="menu-title">Signaler une panne</div>
+        <div class="menu-desc">Signaler un problème</div>
+    </a>
+    <a href="scanner.html" class="menu-item">
+        <div class="menu-icon">📷</div>
+        <div class="menu-title">Scanner QR</div>
+        <div class="menu-desc">Scanner un équipement</div>
+    </a>
+    <a href="historique.html" class="menu-item">
+        <div class="menu-icon">📋</div>
+        <div class="menu-title">Historique</div>
+        <div class="menu-desc">Mes signalements</div>
+    </a>
+    <a href="statistiques.html" class="menu-item">
+        <div class="menu-icon">📊</div>
+        <div class="menu-title">Statistiques</div>
+        <div class="menu-desc">Suivi & performances</div>
+    </a>
+    <a href="profil.html" class="menu-item">
+        <div class="menu-icon">👤</div>
+        <div class="menu-title">Mon profil</div>
+        <div class="menu-desc">Informations personnelles</div>
+    </a>
+    <a href="#" class="menu-item" onclick="openChatbot(); return false;">
+        <div class="menu-icon">🤖</div>
+        <div class="menu-title">Assistant IA</div>
+        <div class="menu-desc">Support technique</div>
+    </a>
+</div>
+
+<!-- Info card -->
+<div class="info-card">
+    <div class="info-title">
+        <span>🏥</span> Hôpital de Zone Sakété-Ifangni
+    </div>
+    <div class="info-text">
+        📍 Service maintenance disponible 24h/24<br>
+        📞 Urgence technique : +229 97 12 34 56<br>
+        💬 Posez vos questions à l'assistant IA
+    </div>
+</div>
+
+<!-- Bouton flottant chatbot -->
+<button class="fab-chatbot" onclick="openChatbot()">💬</button>
+
+<!-- Modal Chatbot -->
+<div id="chatbotModal" class="chatbot-modal" onclick="if(event.target===this) closeChatbot()">
+    <div class="chatbot-window">
+        <div class="chatbot-header">
+            <span>🤖 Assistant Maintenance</span>
+            <button class="close-chatbot" onclick="closeChatbot()">×</button>
+        </div>
+        <div class="chatbot-messages" id="chatbotMessages">
+            <div class="message bot">
+                <div class="message-content">👋 Bonjour ! Je suis votre assistant. Comment puis-je vous aider ?</div>
+            </div>
+        </div>
+        <div class="chatbot-input-area">
+            <input type="text" class="chatbot-input" id="chatbotInput" placeholder="Écrivez votre message..." onkeypress="if(event.key==='Enter') sendChatbotMessage()">
+            <button class="chatbot-send" onclick="sendChatbotMessage()">➤</button>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom navigation -->
+<div class="bottom-nav">
+    <a href="index.html" class="nav-item active">
+        <span class="nav-icon">🏠</span>Accueil
+    </a>
+    <a href="signaler-panne.html" class="nav-item">
+        <span class="nav-icon">⚠️</span>Panne
+    </a>
+    <a href="scanner.html" class="nav-item">
+        <span class="nav-icon">📷</span>Scan
+    </a>
+    <a href="profil.html" class="nav-item">
+        <span class="nav-icon">👤</span>Profil
+    </a>
+</div>
 
 <script>
+    const API_URL = '/api';
+    let conversationId = null;
+
     function getToken() { return localStorage.getItem('token'); }
+
+    // Vérification du rôle
+    const userRole = localStorage.getItem('userRole');
+    if (!getToken()) window.location.href = '/login.html';
+    if (userRole === 'TECHNICIEN') window.location.href = '/technicien/dashboard.html';
+
+    // Empêcher retour arrière
+    history.pushState(null, null, location.href);
+    window.onpopstate = function() { history.go(1); };
 
     function logout() {
         localStorage.clear();
-        window.location.href = '/login.html';
+        window.location.replace('/login.html');
     }
 
+    // Charger les statistiques de l'utilisateur
+    async function chargerStats() {
+        try {
+            const res = await fetch(`${API_URL}/maintenances/soignant`, {
+                headers: { 'Authorization': `Bearer ${getToken()}` }
+            });
+            const signalements = await res.json();
+            
+            const total = signalements.length;
+            const encours = signalements.filter(s => s.statut !== 'TERMINE').length;
+            const resolus = signalements.filter(s => s.statut === 'TERMINE').length;
+            
+            document.getElementById('totalDemandes').innerText = total;
+            document.getElementById('enCours').innerText = encours;
+            document.getElementById('resolus').innerText = resolus;
+            
+            document.getElementById('userName').innerText = localStorage.getItem('userName') || 'Personnel Soignant';
+            document.getElementById('userService').innerText = localStorage.getItem('userService') || 'Urgences';
+        } catch(e) {
+            console.log('Erreur chargement stats');
+        }
+    }
+
+    // Chatbot
     function openChatbot() {
-        window.location.href = 'dashboard.html?openChat=true';
+        document.getElementById('chatbotModal').style.display = 'flex';
     }
 
-    function loadUserInfo() {
-        document.getElementById('userName').innerText = localStorage.getItem('userName') || 'Personnel Soignant';
-        document.getElementById('userService').innerText = localStorage.getItem('userService') || 'Service';
+    function closeChatbot() {
+        document.getElementById('chatbotModal').style.display = 'none';
     }
 
-    if(!getToken()) {
-        window.location.href = '/login.html';
+    function addChatbotMessage(text, sender) {
+        const container = document.getElementById('chatbotMessages');
+        const div = document.createElement('div');
+        div.className = `message ${sender}`;
+        div.innerHTML = `<div class="message-content">${text}</div>`;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
     }
-    loadUserInfo();
+
+    async function sendChatbotMessage() {
+        const input = document.getElementById('chatbotInput');
+        const message = input.value.trim();
+        if (!message) return;
+        
+        addChatbotMessage(message, 'user');
+        input.value = '';
+
+        try {
+            const res = await fetch(`${API_URL}/chatbot/message`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+                body: JSON.stringify({ message, conversationId })
+            });
+            const data = await res.json();
+            addChatbotMessage(data.reply || 'Désolé, je n\'ai pas compris.', 'bot');
+            conversationId = data.conversationId;
+        } catch(e) {
+            addChatbotMessage('❌ Erreur de connexion, réessayez.', 'bot');
+        }
+    }
+
+    chargerStats();
+    setInterval(chargerStats, 30000);
 </script>
 </body>
 </html>
