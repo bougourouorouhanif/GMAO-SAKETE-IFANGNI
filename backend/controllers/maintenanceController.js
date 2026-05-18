@@ -1,5 +1,15 @@
 import prisma from '../config/database.js';
 import { sendNotification } from '../config/socket.js';
+import { 
+  sendInterventionEmail, 
+  sendSignalementConfirmationEmail, 
+  sendInterventionTermineeEmail 
+} from '../config/email.js';
+import { 
+  sendInterventionSMS, 
+  sendSignalementSMS, 
+  sendInterventionTermineeSMS 
+} from '../config/sms.js';
 
 // Signaler une panne (via soignant ou chatbot)
 export const signalerPanne = async (req, res) => {
@@ -15,6 +25,11 @@ export const signalerPanne = async (req, res) => {
     if (!equipement) {
       return res.status(404).json({ message: 'Équipement non trouvé' });
     }
+
+    // Récupérer le soignant
+    const soignant = await prisma.user.findUnique({
+      where: { id: userId },
+    });
 
     // Mettre à jour le statut de l'équipement
     await prisma.equipement.update({
@@ -64,19 +79,42 @@ export const signalerPanne = async (req, res) => {
       },
     });
 
-    // Notifier tous les techniciens (via socket)
+    // 🔔 NOTIFICATION SOIGNANT (confirmation)
+    try {
+      await sendSignalementConfirmationEmail(soignant, equipement);
+      if (soignant.telephone) {
+        await sendSignalementSMS(soignant, equipement);
+      }
+    } catch (notifError) {
+      console.log('Notification soignant échouée:', notifError.message);
+    }
+
+    // 🔔 NOTIFICATION TECHNICIENS
     const techniciens = await prisma.user.findMany({
       where: { role: 'TECHNICIEN', statut: 'ACTIF' },
     });
     
-    techniciens.forEach(tech => {
+    for (const tech of techniciens) {
+      // Email
+      try {
+        await sendInterventionEmail(tech, intervention);
+      } catch(e) { console.log('Email tech échoué:', e.message); }
+      
+      // SMS
+      try {
+        if (tech.telephone) {
+          await sendInterventionSMS(tech, intervention);
+        }
+      } catch(e) { console.log('SMS tech échoué:', e.message); }
+      
+      // Socket
       sendNotification(tech.id, {
         type: 'NOUVELLE_PANNE',
         title: '🚨 Nouvelle panne signalée',
         body: `${equipement.nom} - ${equipement.service}`,
         data: { signalementId: signalement.id, equipementId: equipement.id },
       });
-    });
+    }
 
     res.status(201).json({
       message: 'Panne signalée avec succès',
@@ -111,7 +149,6 @@ export const getUrgences = async (req, res) => {
       ],
     });
 
-    // Ajouter la priorité calculée
     const result = urgences.map(u => ({
       ...u,
       priorite: u.signalement?.priorite || 'MOYENNE',
@@ -149,7 +186,7 @@ export const prendreEnCharge = async (req, res) => {
       data: { statut: 'EN_MAINTENANCE' },
     });
 
-    // Notifier le soignant
+    // Notifier le soignant (socket)
     if (intervention.signalement?.signaleParId) {
       sendNotification(intervention.signalement.signaleParId, {
         type: 'INTERVENTION_DEBUTE',
@@ -182,7 +219,11 @@ export const terminerIntervention = async (req, res) => {
       },
       include: {
         equipement: true,
-        signalement: true,
+        signalement: {
+          include: {
+            signalePar: true,
+          },
+        },
       },
     });
 
@@ -206,9 +247,20 @@ export const terminerIntervention = async (req, res) => {
       data: { resolue: true, dateResolution: new Date() },
     });
 
-    // Notifier le soignant
-    if (intervention.signalement?.signaleParId) {
-      sendNotification(intervention.signalement.signaleParId, {
+    // 🔔 NOTIFICATION SOIGNANT (panne résolue)
+    if (intervention.signalement?.signalePar) {
+      const soignant = intervention.signalement.signalePar;
+      try {
+        await sendInterventionTermineeEmail(soignant, intervention);
+        if (soignant.telephone) {
+          await sendInterventionTermineeSMS(soignant, intervention.equipement);
+        }
+      } catch (notifError) {
+        console.log('Notification terminaison échouée:', notifError.message);
+      }
+      
+      // Socket
+      sendNotification(soignant.id, {
         type: 'INTERVENTION_TERMINEE',
         title: '✅ Panne résolue',
         body: `${intervention.equipement.nom} est à nouveau fonctionnel`,
@@ -251,7 +303,6 @@ export const creerIntervention = async (req, res) => {
   const technicienId = req.user.id;
 
   try {
-    // Vérifier si l'équipement existe
     const equipement = await prisma.equipement.findUnique({
       where: { id: parseInt(equipementId) }
     });
@@ -260,13 +311,11 @@ export const creerIntervention = async (req, res) => {
       return res.status(404).json({ message: 'Équipement non trouvé' });
     }
 
-    // Mettre à jour le statut de l'équipement
     await prisma.equipement.update({
       where: { id: equipement.id },
       data: { statut: 'EN_MAINTENANCE' }
     });
 
-    // Créer l'intervention directement (sans signalement)
     const intervention = await prisma.intervention.create({
       data: {
         equipementId: equipement.id,
@@ -278,7 +327,6 @@ export const creerIntervention = async (req, res) => {
       }
     });
 
-    // Créer une alerte
     await prisma.alerte.create({
       data: {
         type: 'MAINTENANCE_DUE',
@@ -296,5 +344,30 @@ export const creerIntervention = async (req, res) => {
   } catch (error) {
     console.error('Erreur création intervention:', error);
     res.status(500).json({ message: 'Erreur serveur: ' + error.message });
+  }
+};
+
+// Récupérer les signalements du soignant connecté
+export const getMesSignalements = async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    const signalements = await prisma.signalement.findMany({
+      where: { signaleParId: userId },
+      include: {
+        equipement: true,
+        intervention: {
+          include: {
+            technicien: { select: { nom: true, prenom: true } }
+          }
+        }
+      },
+      orderBy: { dateSignalement: 'desc' }
+    });
+
+    res.json(signalements);
+  } catch (error) {
+    console.error('Erreur récupération signalements:', error);
+    res.status(500).json({ message: 'Erreur lors de la récupération' });
   }
 };

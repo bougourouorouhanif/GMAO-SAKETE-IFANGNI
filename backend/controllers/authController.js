@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import prisma from '../config/database.js';
 import { generateMatricule, sendWelcomeEmail, sendValidationEmail } from '../config/email.js';
+import { sendValidationSMS } from '../config/sms.js';
 
 // Inscription (auto-inscription soignant, sauf email spécial pour technicien)
 export const register = async (req, res) => {
@@ -43,14 +44,12 @@ export const register = async (req, res) => {
             },
         });
 
-        // ENVOI D'EMAIL DÉSACTIVÉ (évite les timeouts sur Render)
-        /*
+        // ENVOI D'EMAIL (réactivé)
         try {
             await sendWelcomeEmail(user, password);
         } catch (emailError) {
-            console.log('Email non envoyé (configuration manquante)');
+            console.log('Email non envoyé:', emailError.message);
         }
-        */
 
         res.status(201).json({
             message: 'Inscription réussie ! Vous pouvez vous connecter.',
@@ -107,7 +106,7 @@ export const login = async (req, res) => {
         const token = jwt.sign(
             { id: user.id, email: user.email, role: user.role },
             process.env.JWT_SECRET || 'secretkey',
-            { expiresIn: '7d' }
+            { expiresIn: '30d' }  // 30 jours
         );
 
         res.json({
@@ -142,14 +141,15 @@ export const validateUser = async (req, res) => {
             },
         });
 
-        // Email désactivé
-        /*
+        // ENVOI EMAIL + SMS DE VALIDATION
         try {
             await sendValidationEmail(user);
-        } catch (emailError) {
-            console.log('Email de validation non envoyé');
+            if (user.telephone) {
+                await sendValidationSMS(user);
+            }
+        } catch (notifError) {
+            console.log('Notification non envoyée:', notifError.message);
         }
-        */
 
         res.json({ message: 'Compte validé avec succès', user });
     } catch (error) {
@@ -187,6 +187,22 @@ export const toggleUserStatus = async (req, res) => {
         console.error('Erreur toggle:', error);
         res.status(500).json({ message: 'Erreur lors de l\'opération' });
     }
+};
+
+// Rafraîchir le token
+export const refreshToken = async (req, res) => {
+    const user = req.user;
+    
+    const newToken = jwt.sign(
+        { id: user.id, email: user.email, role: user.role },
+        process.env.JWT_SECRET || 'secretkey',
+        { expiresIn: '30d' }
+    );
+    
+    res.json({ 
+        token: newToken,
+        expiresIn: 30 * 24 * 60 * 60 * 1000
+    });
 };
 
 // Vérifier le token
