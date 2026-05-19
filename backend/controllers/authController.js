@@ -1,7 +1,8 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import prisma from '../config/database.js';
-import { generateMatricule, sendWelcomeEmail, sendValidationEmail } from '../config/email.js';
+import { sendWelcomeEmail, sendValidationEmail } from '../config/email.js';
+import { generateMatricule } from '../config/utils.js';
 import { sendValidationSMS } from '../config/sms.js';
 
 // Inscription (auto-inscription soignant, sauf email spécial pour technicien)
