@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <meta name="theme-color" content="#1a2a4f">
-    <title>GMAO Mobile - Connexion</title>
+    <title>GMAO - Connexion</title>
     <style>
         * {
             margin: 0;
@@ -17,18 +17,16 @@
             background: linear-gradient(135deg, #1a2a4f 0%, #1e3a5f 100%);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             padding: 20px;
-            padding-bottom: 30px;
         }
 
         .auth-container {
-            max-width: 500px;
+            max-width: 450px;
             margin: 0 auto;
         }
 
         .logo-section {
             text-align: center;
             margin-bottom: 30px;
-            animation: fadeInDown 0.6s ease;
         }
 
         .logo {
@@ -47,19 +45,19 @@
 
         h1 {
             color: white;
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 600;
         }
 
         .subtitle {
             color: rgba(255,255,255,0.8);
-            font-size: 14px;
+            font-size: 12px;
             margin-top: 5px;
         }
 
         .hospital-name {
             color: #00d4ff;
-            font-size: 12px;
+            font-size: 11px;
             margin-top: 5px;
         }
 
@@ -93,42 +91,11 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        /* Onglets FORMULAIRES */
-        .form-tabs {
-            display: flex;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 60px;
-            padding: 5px;
-            margin-bottom: 25px;
-        }
-
-        .form-tab {
-            flex: 1;
-            text-align: center;
-            padding: 12px;
-            border: none;
-            background: transparent;
-            color: rgba(255,255,255,0.7);
-            font-size: 16px;
-            font-weight: 500;
-            border-radius: 40px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .form-tab.active {
-            background: white;
-            color: #1a2a4f;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
         .form-card {
             background: rgba(255,255,255,0.95);
             backdrop-filter: blur(10px);
             border-radius: 32px;
             padding: 32px 24px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
             animation: fadeInUp 0.6s ease;
         }
 
@@ -156,26 +123,16 @@
             font-size: 18px;
         }
 
-        input, select {
+        input {
             width: 100%;
             padding: 14px 14px 14px 45px;
             border: 1.5px solid #e2e8f0;
             border-radius: 16px;
             font-size: 15px;
-            transition: 0.2s;
             background: white;
-            font-family: inherit;
         }
 
-        select {
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 14px center;
-            background-size: 18px;
-        }
-
-        input:focus, select:focus {
+        input:focus {
             outline: none;
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
@@ -191,12 +148,7 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.3s;
             margin-top: 10px;
-        }
-
-        .btn-primary:active {
-            transform: scale(0.98);
         }
 
         .error-message, .info-message, .success-message {
@@ -210,7 +162,6 @@
         .info-message { background: #dbeafe; color: #1e40af; border-left: 3px solid #3b82f6; }
         .success-message { background: #dcfce7; color: #166534; border-left: 3px solid #22c55e; }
 
-        /* SECTION AIDE */
         .help-section {
             background: rgba(255,255,255,0.1);
             backdrop-filter: blur(10px);
@@ -239,28 +190,9 @@
         }
 
         .help-item:last-child { border-bottom: none; }
-
-        .help-icon {
-            width: 36px;
-            height: 36px;
-            background: rgba(255,255,255,0.15);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-
-        .help-text {
-            flex: 1;
-            color: white;
-            font-size: 13px;
-        }
-
-        .help-arrow {
-            color: rgba(255,255,255,0.5);
-            font-size: 18px;
-        }
+        .help-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .help-text { flex: 1; color: white; font-size: 13px; }
+        .help-arrow { color: rgba(255,255,255,0.5); font-size: 18px; }
 
         .footer {
             text-align: center;
@@ -269,7 +201,6 @@
             font-size: 10px;
         }
 
-        /* MODAL */
         .modal {
             display: none;
             position: fixed;
@@ -290,40 +221,10 @@
             overflow-y: auto;
             padding: 24px;
         }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .modal-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #1a2a4f;
-        }
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #666;
-        }
-        .modal-body {
-            font-size: 14px;
-            color: #333;
-            line-height: 1.5;
-        }
-        .modal-body h4 { margin: 15px 0 5px; color: #1a2a4f; }
-        .modal-body ul { padding-left: 20px; margin: 10px 0; }
-
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-title { font-size: 18px; font-weight: bold; color: #1a2a4f; }
+        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #666; }
+        .modal-body { font-size: 14px; color: #333; line-height: 1.5; }
         .loader {
             display: inline-block;
             width: 16px;
@@ -338,7 +239,10 @@
 
         @media (max-width: 480px) {
             .form-card { padding: 24px 20px; }
-            h1 { font-size: 24px; }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -351,31 +255,30 @@
         <div class="hospital-name">Hôpital de Zone Sakété-Ifangni</div>
     </div>
 
-    
+    <!-- ONGLETS RÔLES -->
+    <div class="role-tabs">
+        <button class="role-tab active" onclick="selectRole('technicien', event)">🔧 Technicien</button>
+        <button class="role-tab" onclick="selectRole('soignant', event)">👨‍⚕️ Soignant</button>
+    </div>
 
     <!-- Formulaire de connexion -->
     <div id="loginForm" class="form-card">
         <div id="loginError" class="error-message"></div>
-        <div id="loginInfo" class="info-message"></div>
-
         <div class="form-group">
             <label>Email professionnel</label>
             <div class="input-icon">
                 <span>📧</span>
-                <input type="email" id="loginEmail" placeholder="prenom.nom@hopital.bj" autocomplete="email">
+                <input type="email" id="loginEmail" placeholder="prenom.nom@hopital.bj">
             </div>
         </div>
-
         <div class="form-group">
             <label>Mot de passe</label>
             <div class="input-icon">
                 <span>🔒</span>
-                <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+                <input type="password" id="loginPassword" placeholder="••••••••">
             </div>
         </div>
-
         <button class="btn-primary" onclick="login()" id="loginBtn">Se connecter</button>
-
         <div class="back-link" style="text-align:center; margin-top:15px;">
             <a href="#" onclick="switchTab('register')" style="color:#1a2a4f;">Créer un compte</a>
         </div>
@@ -394,15 +297,20 @@
         <div class="form-group"><label>Service *</label><div class="input-icon"><span>🏥</span>
             <select id="regService">
                 <option value="">Sélectionnez</option>
-                <option value="URGENCES">🚨 Urgences</option><option value="RADIOLOGIE">🩻 Radiologie</option>
-                <option value="BLOC_OPERATOIRE">🏥 Bloc opératoire</option><option value="PEDIATRIE">👶 Pédiatrie</option>
-                <option value="MEDECINE_INTERNE">💊 Médecine interne</option><option value="CHIRURGIE">🔪 Chirurgie</option>
-                <option value="LABORATOIRE">🔬 Laboratoire</option><option value="USI">💓 USI</option>
-                <option value="REANIMATION">🫀 Réanimation</option><option value="MAINTENANCE">🔧 Maintenance</option>
+                <option value="URGENCES">🚨 Urgences</option>
+                <option value="RADIOLOGIE">🩻 Radiologie</option>
+                <option value="BLOC_OPERATOIRE">🏥 Bloc opératoire</option>
+                <option value="PEDIATRIE">👶 Pédiatrie</option>
+                <option value="MEDECINE_INTERNE">💊 Médecine interne</option>
+                <option value="CHIRURGIE">🔪 Chirurgie</option>
+                <option value="LABORATOIRE">🔬 Laboratoire</option>
+                <option value="USI">💓 USI</option>
+                <option value="REANIMATION">🫀 Réanimation</option>
+                <option value="MAINTENANCE">🔧 Maintenance</option>
                 <option value="AUTRE">📌 Autre</option>
             </select>
         </div></div>
-        <div class="form-group"><label>Téléphone (optionnel)</label><div class="input-icon"><span>📞</span><input type="tel" id="regPhone" placeholder="+229 00 00 00 00"></div></div>
+        <div class="form-group"><label>Téléphone</label><div class="input-icon"><span>📞</span><input type="tel" id="regPhone" placeholder="+229 00 00 00 00"></div></div>
         <div class="form-group"><label>Mot de passe *</label><div class="input-icon"><span>🔒</span><input type="password" id="regPassword" placeholder="Minimum 6 caractères"></div></div>
         <div class="form-group"><label>Confirmer *</label><div class="input-icon"><span>✓</span><input type="password" id="regConfirmPassword" placeholder=""></div></div>
 
@@ -413,12 +321,12 @@
     <!-- SECTION AIDE -->
     <div class="help-section">
         <div class="help-title"><span>❓</span> Aide & Support</div>
-        <div class="help-item" onclick="openHelp('guide')"><div class="help-icon">📖</div><div class="help-text">Guide d'utilisation mobile</div><div class="help-arrow">›</div></div>
-        <div class="help-item" onclick="openHelp('faq')"><div class="help-icon">❓</div><div class="help-text">FAQ - Questions fréquentes</div><div class="help-arrow">›</div></div>
-        <div class="help-item" onclick="openHelp('contact')"><div class="help-icon">📞</div><div class="help-text">Contacter le support technique</div><div class="help-arrow">›</div></div>
-        <div class="help-item" onclick="openHelp('whatsapp')"><div class="help-icon">💬</div><div class="help-text">WhatsApp Assistance</div><div class="help-arrow">›</div></div>
+        <div class="help-item" onclick="openHelp('guide')"><div class="help-icon">📖</div><div class="help-text">Guide d'utilisation</div><div class="help-arrow">›</div></div>
+        <div class="help-item" onclick="openHelp('faq')"><div class="help-icon">❓</div><div class="help-text">FAQ</div><div class="help-arrow">›</div></div>
+        <div class="help-item" onclick="openHelp('contact')"><div class="help-icon">📞</div><div class="help-text">Support technique</div><div class="help-arrow">›</div></div>
+        <div class="help-item" onclick="openHelp('whatsapp')"><div class="help-icon">💬</div><div class="help-text">WhatsApp</div><div class="help-arrow">›</div></div>
     </div>
-    <div class="footer">GMAO - Hôpital de Zone Sakété-Ifangni • Version Mobile 2.0</div>
+    <div class="footer">GMAO - Hôpital de Zone Sakété-Ifangni • Version 2.0</div>
 </div>
 
 <!-- MODAL AIDE -->
@@ -433,7 +341,6 @@
     const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
     let currentRole = 'technicien';
 
-    // Identifiants par rôle
     const credentials = {
         technicien: { email: 'tech.biomedical@hopital.bj', password: 'admin123' },
         soignant: { email: 'infirmier.urgences@hopital.bj', password: 'admin123' }
@@ -509,7 +416,7 @@
                 localStorage.setItem('userName', data.user.nom);
                 localStorage.setItem('userId', data.user.id);
                 localStorage.setItem('userService', data.user.service || '');
-                showSuccess('loginError', 'Connexion réussie ! Redirection...');
+                showSuccess('loginError', 'Connexion réussie !');
                 setTimeout(() => {
                     window.location.href = data.user.role === 'TECHNICIEN' ? '/technicien/dashboard.html' : '/soignant/index.html';
                 }, 1000);
@@ -553,11 +460,13 @@
 
             if (response.ok) {
                 document.getElementById('pendingMessage').style.display = 'block';
-                showSuccess('registerSuccess', '✅ Inscription réussie ! En attente de validation.');
-                document.getElementById('regNom').value = ''; document.getElementById('regPrenom').value = '';
-                document.getElementById('regEmail').value = ''; document.getElementById('regMatricule').value = '';
-                document.getElementById('regService').value = ''; document.getElementById('regPhone').value = '';
-                document.getElementById('regPassword').value = ''; document.getElementById('regConfirmPassword').value = '';
+                showSuccess('registerSuccess', '✅ Inscription réussie !');
+                document.getElementById('regNom').value = '';
+                document.getElementById('regEmail').value = '';
+                document.getElementById('regMatricule').value = '';
+                document.getElementById('regService').value = '';
+                document.getElementById('regPassword').value = '';
+                document.getElementById('regConfirmPassword').value = '';
                 setTimeout(() => { switchTab('login'); showSuccess('loginError', 'Compte créé. En attente de validation.'); }, 3000);
             } else {
                 showError('registerError', data.message || 'Erreur lors de l\'inscription');
@@ -570,12 +479,11 @@
         }
     }
 
-    // AIDE
     const helpContent = {
-        guide: '<h4>📖 Guide d\'utilisation mobile</h4><p><strong>Technicien :</strong></p><ul><li>Accédez au dashboard pour voir les interventions</li><li>Prenez en charge les urgences</li><li>Scannez les QR codes des équipements</li></ul><p><strong>Soignant :</strong></p><ul><li>Signalez une panne en quelques clics</li><li>Scannez pour voir les infos d\'un équipement</li></ul>',
-        faq: '<h4>❓ FAQ</h4><p><strong>Comment scanner ?</strong><br>Cliquez sur l\'icône 📷 dans le menu.</p><p><strong>Mon compte est en attente ?</strong><br>Un technicien doit le valider.</p><p><strong>Mot de passe oublié ?</strong><br>Contactez le support.</p>',
-        contact: '<h4>📞 Support technique</h4><p><strong>Téléphone :</strong><br>+229 97 12 34 56</p><p><strong>Email :</strong><br>support@gmao-sakete.bj</p><p><strong>Horaires :</strong><br>Lundi - Vendredi: 8h - 17h</p><hr><p><strong>Urgence 24/7 :</strong><br>+229 90 00 11 22</p>',
-        whatsapp: '<h4>💬 WhatsApp Assistance</h4><p>Cliquez ci-dessous pour discuter avec un technicien.</p><div style="background:#25D366; color:white; padding:12px; border-radius:12px; text-align:center; margin:10px 0;"><a href="https://wa.me/22997123456" style="color:white; text-decoration:none;">📱 Ouvrir WhatsApp</a></div>'
+        guide: '<h4>📖 Guide</h4><ul><li>Technicien: dashboard, inventaire, maintenances</li><li>Soignant: signalement, scanner QR, chatbot</li></ul>',
+        faq: '<h4>❓ FAQ</h4><p><strong>Compte en attente ?</strong><br>Un technicien doit le valider.</p>',
+        contact: '<h4>📞 Support</h4><p>+229 97 12 34 56<br>support@gmao-sakete.bj</p>',
+        whatsapp: '<h4>💬 WhatsApp</h4><div style="background:#25D366; color:white; padding:12px; border-radius:12px; text-align:center;"><a href="https://wa.me/22997123456" style="color:white; text-decoration:none;">📱 Ouvrir WhatsApp</a></div>'
     };
 
     function openHelp(type) {
@@ -587,13 +495,11 @@
 
     function closeHelp() { document.getElementById('helpModal').style.display = 'none'; }
 
-    // Vérifier session existante - REDIRECTION CORRIGÉE
     if (localStorage.getItem('token')) {
         const userRole = localStorage.getItem('userRole');
         window.location.href = userRole === 'TECHNICIEN' ? '/technicien/dashboard.html' : '/soignant/index.html';
     }
 
-    // Initialisation : pré-remplir technicien
     selectRole('technicien', null);
 </script>
 </body>
