@@ -471,10 +471,6 @@
     if (!getToken()) window.location.href = '/login.html';
     if (userRole === 'TECHNICIEN') window.location.href = '/technicien/dashboard.html';
 
-    // Empêcher retour arrière
-    history.pushState(null, null, location.href);
-    window.onpopstate = function() { history.go(1); };
-
     function logout() {
         localStorage.clear();
         window.location.replace('/login.html');

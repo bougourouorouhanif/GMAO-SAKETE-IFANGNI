@@ -389,6 +389,12 @@
     if (!getToken()) {
         window.location.href = '/login.html';
     }
+    
+    // Vérification du rôle technicien
+    const userRole = localStorage.getItem('userRole');
+    if (userRole !== 'TECHNICIEN') {
+        window.location.href = '/soignant/index.html';
+    }
 
     // Masquer le loader après chargement complet
     window.addEventListener('load', function() {
@@ -457,10 +463,13 @@
     function imprimerBilan() { window.print(); }
     function logout() { localStorage.clear(); window.location.href = '/login.html'; }
 
-    setTimeout(initMap, 500);
-    initChart();
-    chargerAlertes();
-    document.getElementById('userName').innerText = localStorage.getItem('userName') || 'Jean ADJOVI';
+    // Initialisation après chargement DOM
+    document.addEventListener('DOMContentLoaded', function() {
+        initMap();
+        initChart();
+        chargerAlertes();
+        document.getElementById('userName').innerText = localStorage.getItem('userName') || 'Jean ADJOVI';
+    });
 </script>
 </body>
 </html>
