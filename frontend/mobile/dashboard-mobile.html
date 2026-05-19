@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Dashboard - GMAO Mobile</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; padding-bottom: 70px; }
+        .header { background: linear-gradient(135deg, #1a2a4f, #1e3a5f); color: white; padding: 20px; padding-top: env(safe-area-inset-top, 20px); }
+        .welcome { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+        .date { font-size: 13px; opacity: 0.8; }
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
+        .stat-card { background: white; border-radius: 20px; padding: 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform 0.2s; cursor: pointer; }
+        .stat-card:active { transform: scale(0.98); }
+        .stat-value { font-size: 28px; font-weight: bold; color: #1a2a4f; }
+        .stat-label { font-size: 12px; color: #666; margin-top: 5px; }
+        .section { background: white; border-radius: 20px; margin: 15px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .section-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: #1a2a4f; display: flex; justify-content: space-between; }
+        .alert-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee; gap: 12px; cursor: pointer; }
+        .alert-critical { width: 10px; height: 10px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 0 2px #fee2e2; }
+        .alert-high { background: #f97316; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 10px 20px padding-bottom: env(safe-area-inset-bottom, 10px); border-top: 1px solid #eee; }
+        .nav-item { text-align: center; text-decoration: none; color: #94a3b8; font-size: 12px; transition: color 0.2s; }
+        .nav-item.active { color: #1a2a4f; font-weight: 600; }
+        .nav-icon { font-size: 24px; display: block; margin-bottom: 4px; }
+        .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: loading 1.5s infinite; border-radius: 12px; height: 80px; margin: 10px; }
+        @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .refresh-btn { background: none; border: none; font-size: 18px; cursor: pointer; }
+        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 8px 16px; border-radius: 30px; font-size: 13px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 1000; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="welcome" id="userName">Chargement...</div>
+        <div class="date" id="currentDate"></div>
+    </div>
+
+    <div class="stats-grid" id="statsGrid">
+        <div class="stat-card skeleton"></div><div class="stat-card skeleton"></div>
+        <div class="stat-card skeleton"></div><div class="stat-card skeleton"></div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">🚨 Urgences <span id="urgencesCount" class="refresh-btn" onclick="refreshData()">🔄</span></div>
+        <div id="urgencesList"><div class="skeleton" style="height: 60px;"></div></div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">🔧 Mes interventions</div>
+        <div id="interventionsList"><div class="skeleton" style="height: 60px;"></div></div>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="dashboard-mobile.html" class="nav-item active"><span class="nav-icon">🏠</span>Accueil</a>
+        <a href="interventions-mobile.html" class="nav-item"><span class="nav-icon">🔧</span>Travaux</a>
+        <a href="scanner-mobile.html" class="nav-item"><span class="nav-icon">📷</span>Scan</a>
+        <a href="profil-mobile.html" class="nav-item"><span class="nav-icon">👤</span>Profil</a>
+    </div>
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const API_URL = '/api';
+        let cacheData = {};
+        
+        function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.opacity = '1'; setTimeout(() => t.style.opacity = '0', 2000); }
+        
+        async function fetchWithCache(url, options = {}) {
+            const cacheKey = url;
+            if (cacheData[cacheKey] && Date.now() - cacheData[cacheKey].timestamp < 30000) return cacheData[cacheKey].data;
+            try {
+                const res = await fetch(url, options);
+                const data = await res.json();
+                cacheData[cacheKey] = { data, timestamp: Date.now() };
+                return data;
+            } catch(e) { if (cacheData[cacheKey]) return cacheData[cacheKey].data; throw e; }
+        }
+        
+        async function loadDashboard() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) throw new Error('No token');
+                const data = await fetchWithCache(`${API_URL}/mobile/dashboard`, { headers: { 'Authorization': `Bearer ${token}` } });
+                
+                document.getElementById('statsGrid').innerHTML = `
+                    <div class="stat-card" onclick="location.href='interventions-mobile.html'"><div class="stat-value">${data.stats?.urgencesCount || 0}</div><div class="stat-label">Urgences</div></div>
+                    <div class="stat-card" onclick="location.href='interventions-mobile.html?statut=MES_INTERVENTIONS'"><div class="stat-value">${data.stats?.interventionsEnCours || 0}</div><div class="stat-label">En cours</div></div>
+                    <div class="stat-card" onclick="location.href='equipements-mobile.html'"><div class="stat-value">${data.stats?.totalEquipements || 0}</div><div class="stat-label">Équipements</div></div>
+                    <div class="stat-card" onclick="location.href='alertes-mobile.html'"><div class="stat-value">${data.stats?.alertesCount || 0}</div><div class="stat-label">Alertes</div></div>
+                `;
+                
+                document.getElementById('urgencesCount').innerHTML = `${data.urgences?.length || 0} 🔄`;
+                document.getElementById('urgencesList').innerHTML = data.urgences?.map(u => `
+                    <div class="alert-item" onclick="location.href='intervention-mobile.html?id=${u.id}'">
+                        <div class="alert-critical ${u.priorite === 'HAUTE' ? 'alert-high' : ''}"></div>
+                        <div style="flex:1"><strong>${u.equipement?.nom}</strong><br><small>${u.equipement?.service} • ${new Date(u.dateSignalement).toLocaleTimeString()}</small></div>
+                        <span>➤</span>
+                    </div>
+                `).join('') || '<div style="padding:20px;text-align:center;color:#999;">Aucune urgence</div>';
+                
+                document.getElementById('interventionsList').innerHTML = data.interventionsEnCours?.map(i => `
+                    <div class="alert-item" onclick="location.href='intervention-mobile.html?id=${i.id}'">
+                        <div>🔧</div>
+                        <div style="flex:1"><strong>${i.equipement?.nom}</strong><br><small>${i.equipement?.service} • Démarré le ${new Date(i.dateDebut).toLocaleDateString()}</small></div>
+                        <span>➤</span>
+                    </div>
+                `).join('') || '<div style="padding:20px;text-align:center;color:#999;">Aucune intervention en cours</div>';
+                
+                document.getElementById('userName').innerHTML = `👋 Bonjour, ${localStorage.getItem('userName') || 'Technicien'}`;
+                document.getElementById('currentDate').innerHTML = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+            } catch(e) { console.error(e); showToast('Erreur de chargement'); }
+        }
+        
+        async function refreshData() { cacheData = {}; await loadDashboard(); showToast('Données actualisées'); }
+        
+        if (!localStorage.getItem('token')) window.location.href = '/login.html';
+        loadDashboard();
+        setInterval(() => { cacheData = {}; loadDashboard(); }, 60000);
+    </script>
+</body>
+</html>

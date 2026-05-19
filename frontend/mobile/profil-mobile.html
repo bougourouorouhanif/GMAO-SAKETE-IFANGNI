@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Mon Profil - GMAO Mobile</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; padding-bottom: 70px; }
+        .header { background: linear-gradient(135deg, #1a2a4f, #1e3a5f); color: white; padding: 30px 20px; text-align: center; }
+        .avatar { width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 40px; }
+        .card { background: white; margin: 15px; padding: 20px; border-radius: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .info-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+        .label { color: #64748b; }
+        .value { font-weight: 500; }
+        .logout-btn { background: #ef4444; color: white; border: none; padding: 15px; border-radius: 50px; width: calc(100% - 30px); margin: 15px; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.2s; }
+        .logout-btn:active { transform: scale(0.98); }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 10px 20px; border-top: 1px solid #eee; }
+        .nav-item { text-align: center; text-decoration: none; color: #94a3b8; font-size: 12px; }
+        .nav-item.active { color: #1a2a4f; font-weight: 600; }
+        .nav-icon { font-size: 24px; display: block; margin-bottom: 4px; }
+        .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: loading 1.5s infinite; border-radius: 20px; height: 300px; margin: 15px; }
+        @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    </style>
+</head>
+<body>
+    <div class="header"><div class="avatar">👤</div><h2 id="userName">Chargement...</h2><p id="userRole"></p></div>
+    <div id="content"><div class="skeleton"></div></div>
+    <button class="logout-btn" onclick="logout()">🚪 Se déconnecter</button>
+    <div class="bottom-nav">
+        <a href="dashboard-mobile.html" class="nav-item"><span class="nav-icon">🏠</span>Accueil</a>
+        <a href="interventions-mobile.html" class="nav-item"><span class="nav-icon">🔧</span>Travaux</a>
+        <a href="scanner-mobile.html" class="nav-item"><span class="nav-icon">📷</span>Scan</a>
+        <a href="profil-mobile.html" class="nav-item active"><span class="nav-icon">👤</span>Profil</a>
+    </div>
+    <script>
+        async function loadProfile() {
+            try {
+                const res = await fetch(`${API_URL}/mobile/profil`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const data = await res.json();
+                const user = data.technicien;
+                document.getElementById('userName').innerText = `${user.nom} ${user.prenom || ''}`;
+                document.getElementById('userRole').innerHTML = user.role === 'TECHNICIEN' ? '🔧 Technicien Biomédical' : '👨‍⚕️ Personnel Soignant';
+                document.getElementById('content').innerHTML = `
+                    <div class="card"><div class="info-item"><span class="label">📧 Email</span><span class="value">${user.email}</span></div>
+                    <div class="info-item"><span class="label">🆔 Matricule</span><span class="value">${user.matricule}</span></div>
+                    <div class="info-item"><span class="label">🏥 Service</span><span class="value">${user.service || 'Non défini'}</span></div>
+                    <div class="info-item"><span class="label">📞 Téléphone</span><span class="value">${user.telephone || 'Non renseigné'}</span></div>
+                    <div class="info-item"><span class="label">📅 Inscrit le</span><span class="value">${new Date(user.createdAt).toLocaleDateString()}</span></div></div>
+                    <div class="card"><div class="info-item"><span class="label">📊 Interventions</span><span class="value">${data.stats?.totalInterventions || 0}</span></div>
+                    <div class="info-item"><span class="label">✅ Terminées</span><span class="value">${data.stats?.interventionsTerminees || 0}</span></div>
+                    <div class="info-item"><span class="label">📈 Taux succès</span><span class="value">${data.stats?.tauxSucces || 0}%</span></div>
+                    <div class="info-item"><span class="label">⭐ Satisfaction</span><span class="value">${data.stats?.satisfactionMoyenne || 0}/5</span></div></div>
+                `;
+            } catch(e) { console.error(e); document.getElementById('content').innerHTML = '<div class="card" style="text-align:center;color:red;">❌ Erreur de chargement</div>'; }
+        }
+        function logout() { localStorage.clear(); window.location.href = '/login.html'; }
+        if(!localStorage.getItem('token')) window.location.href = '/login.html';
+        const API_URL = '/api';
+        loadProfile();
+    </script>
+</body>
+</html>

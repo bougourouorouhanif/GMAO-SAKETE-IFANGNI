@@ -161,6 +161,24 @@ export const getMobileDashboard = async (req, res) => {
   }
 };
 
+
+// Rafraîchir le token (prolonger la session)
+export const refreshToken = async (req, res) => {
+  const user = req.user;
+  
+  // Générer un nouveau token avec durée prolongée
+  const newToken = jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    process.env.JWT_SECRET || 'secretkey',
+    { expiresIn: '30d' }  // 30 jours
+  );
+  
+  res.json({ 
+    token: newToken,
+    expiresIn: 30 * 24 * 60 * 60 * 1000 // 30 jours en ms
+  });
+};
+
 // ============================================
 // INTERVENTIONS MOBILE
 // ============================================

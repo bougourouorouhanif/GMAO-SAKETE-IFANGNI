@@ -210,8 +210,8 @@
         addChatbotMessage(message, 'user');
         input.value = '';
         try {
-            const res = await fetch('https://gmao-sakete-ifangni-1.onrender.com/api/chatbot/message', {
-                method: 'POST',
+ const res = await fetch('/api/chatbot/message', {
+            method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
                 body: JSON.stringify({ message })
             });

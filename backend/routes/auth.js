@@ -9,6 +9,7 @@ const router = express.Router();
 // Routes publiques
 router.post('/register', registerValidation, validate, register);
 router.post('/login', loginValidation, validate, login);
+router.post('/refresh', verifyToken, refreshToken);
 
 // Routes protégées (technicien uniquement)
 router.put('/users/:userId/validate', verifyToken, isTechnicien, validateUser);

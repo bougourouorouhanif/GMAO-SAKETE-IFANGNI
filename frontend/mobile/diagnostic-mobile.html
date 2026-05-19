@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Diagnostic Expert - GMAO</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; padding-bottom: 70px; }
+        .header { background: linear-gradient(135deg, #1a2a4f, #1e3a5f); color: white; padding: 20px; text-align: center; }
+        .chat-container { display: flex; flex-direction: column; height: calc(100vh - 150px); background: white; margin: 10px; border-radius: 16px; overflow: hidden; }
+        .messages { flex: 1; overflow-y: auto; padding: 15px; }
+        .message { margin-bottom: 12px; display: flex; }
+        .message.user { justify-content: flex-end; }
+        .message.bot { justify-content: flex-start; }
+        .message-content { max-width: 80%; padding: 10px 15px; border-radius: 20px; font-size: 14px; }
+        .user .message-content { background: #1a2a4f; color: white; border-bottom-right-radius: 5px; }
+        .bot .message-content { background: #e5e7eb; color: #333; border-bottom-left-radius: 5px; }
+        .input-area { display: flex; padding: 10px; background: white; border-top: 1px solid #ddd; gap: 10px; }
+        .input-area input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 25px; outline: none; }
+        .input-area button { background: #1a2a4f; color: white; border: none; padding: 12px 20px; border-radius: 25px; cursor: pointer; }
+        .equipment-select { padding: 10px; background: #f0f0f0; border-bottom: 1px solid #ddd; }
+        .equipment-select select { width: 100%; padding: 10px; border-radius: 8px; }
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px; border-top: 1px solid #ddd;
+        }
+        .nav-item { text-align: center; text-decoration: none; color: #666; font-size: 12px; }
+        .nav-item.active { color: #1a2a4f; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>🤖 Diagnostic Expert IA</h2>
+        <p>Assistant technique intelligent</p>
+    </div>
+
+    <div class="chat-container">
+        <div class="equipment-select">
+            <select id="equipmentSelect">
+                <option value="">Sélectionnez un équipement (optionnel)</option>
+            </select>
+        </div>
+        <div class="messages" id="messages">
+            <div class="message bot">
+                <div class="message-content">👋 Bonjour ! Décrivez le problème technique rencontré sur l'équipement.</div>
+            </div>
+        </div>
+        <div class="input-area">
+            <input type="text" id="messageInput" placeholder="Décrivez le problème..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <button onclick="sendMessage()">Envoyer</button>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="dashboard-mobile.html" class="nav-item">🏠 Accueil</a>
+        <a href="interventions-mobile.html" class="nav-item">🔧 Travaux</a>
+        <a href="scanner-mobile.html" class="nav-item">📷 Scan</a>
+        <a href="profil-mobile.html" class="nav-item active">🤖 Diagnostic</a>
+    </div>
+
+    <script>
+        const API_URL = '/api';
+        let conversationId = null;
+        
+        async function loadEquipments() {
+            try {
+                const res = await fetch(`${API_URL}/equipements`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const data = await res.json();
+                const select = document.getElementById('equipmentSelect');
+                data.forEach(equip => {
+                    const option = document.createElement('option');
+                    option.value = equip.id;
+                    option.textContent = `${equip.nom} - ${equip.service}`;
+                    select.appendChild(option);
+                });
+            } catch(e) { console.error(e); }
+        }
+        
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            if (!message) return;
+            const equipmentId = document.getElementById('equipmentSelect').value;
+            
+            addMessage(message, 'user');
+            input.value = '';
+            
+            try {
+                const res = await fetch(`${API_URL}/diagnostic/message`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                    body: JSON.stringify({ message, equipmentId, conversationId })
+                });
+                const data = await res.json();
+                addMessage(data.reply, 'bot');
+                conversationId = data.conversationId;
+            } catch(e) { addMessage('❌ Erreur, réessayez', 'bot'); }
+        }
+        
+        function addMessage(text, sender) {
+            const container = document.getElementById('messages');
+            const div = document.createElement('div');
+            div.className = `message ${sender}`;
+            div.innerHTML = `<div class="message-content">${text}</div>`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        if (!localStorage.getItem('token')) window.location.href = '/login.html';
+        loadEquipments();
+    </script>
+</body>
+</html>
