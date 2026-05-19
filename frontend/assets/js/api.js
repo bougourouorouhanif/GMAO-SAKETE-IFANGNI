@@ -1,7 +1,6 @@
 // API Service pour GMAO Sakété
 
-const API_URL = 'https://gmao-sakete-ifangni-1.onrender.comhttps://gmao-sakete-ifangni-1.onrender.com/api';
-
+const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
 // Récupérer le token
 function getToken() {
     return localStorage.getItem('token');
