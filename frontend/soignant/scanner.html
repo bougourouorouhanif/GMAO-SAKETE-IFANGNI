@@ -80,7 +80,7 @@
         }
         
         // Sinon, charger via l'API
-        const response = await fetch('/api/equipements/scan-qr', {
+        const response = await fetch('https://gmao-sakete-ifangni-1.onrender.com/api/equipements/scan-qr', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
             body: JSON.stringify({ qrData })

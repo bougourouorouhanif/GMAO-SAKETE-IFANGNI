@@ -45,7 +45,7 @@
 
     async function loadHistorique() {
         const statut = document.getElementById('statusFilter').value;
-        const url = statut !== '' ? `/api/soignant/mes-signalements?traite=${statut}` : '/api/soignant/mes-signalements';
+        const url = statut !== '' ? `https://gmao-sakete-ifangni-1.onrender.com/api/soignant/mes-signalements?traite=${statut}` : 'https://gmao-sakete-ifangni-1.onrender.com/api/soignant/mes-signalements';
         const res = await fetch(url, { headers: { 'Authorization': `Bearer ${getToken()}` } });
         const reports = await res.json();
         

@@ -51,7 +51,7 @@
     function getToken() { return localStorage.getItem('token'); }
 
     async function loadProfil() {
-        const res = await fetch('/api/soignant/profil', { headers: { 'Authorization': `Bearer ${getToken()}` } });
+        const res = await fetch('https://gmao-sakete-ifangni-1.onrender.com/api/soignant/profil', { headers: { 'Authorization': `Bearer ${getToken()}` } });
         const data = await res.json();
         const user = data.user;
         

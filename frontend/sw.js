@@ -19,7 +19,7 @@ const urlsToCache = [
   '/assets/css/admin.css',
   
   // JS
-  '/assets/js/api.js',
+  '/assets/jshttps://gmao-sakete-ifangni-1.onrender.com/api.js',
   '/assets/js/auth.js',
   '/assets/js/utils.js',
   
@@ -117,7 +117,7 @@ self.addEventListener('fetch', event => {
   const requestUrl = new URL(event.request.url);
   
   // Ignorer les requêtes API (ne pas cacher)
-  if (requestUrl.pathname.startsWith('/api/')) {
+  if (requestUrl.pathname.startsWith('https://gmao-sakete-ifangni-1.onrender.com/api/')) {
     // Stratégie: réseau d'abord pour les API
     event.respondWith(
       fetch(event.request)
@@ -267,7 +267,7 @@ async function syncInterventions() {
     const pendingRequests = await cache.keys();
     
     for (const request of pendingRequests) {
-      if (request.url.includes('/api/maintenances/signaler') && 
+      if (request.url.includes('https://gmao-sakete-ifangni-1.onrender.com/api/maintenances/signaler') && 
           request.method === 'POST') {
         const response = await fetch(request);
         if (response.ok) {
@@ -294,14 +294,14 @@ async function updateBackgroundData() {
   try {
     const token = await getTokenFromCache();
     if (token) {
-      const response = await fetch('/api/dashboard/technicien', {
+      const response = await fetch('https://gmao-sakete-ifangni-1.onrender.com/api/dashboard/technicien', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
       if (response.ok) {
         const data = await response.json();
         const cache = await caches.open(CACHE_NAME);
-        await cache.put('/api/dashboard/technicien', new Response(JSON.stringify(data)));
+        await cache.put('https://gmao-sakete-ifangni-1.onrender.com/api/dashboard/technicien', new Response(JSON.stringify(data)));
       }
     }
   } catch (error) {

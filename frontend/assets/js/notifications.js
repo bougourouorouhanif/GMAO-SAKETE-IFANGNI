@@ -39,7 +39,7 @@ async function registerPushSubscription() {
         
         // Envoyer la subscription au serveur
         const token = localStorage.getItem('token');
-        await fetch('/api/mobile/push-token', {
+        await fetch('https://gmao-sakete-ifangni-1.onrender.com/api/mobile/push-token', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

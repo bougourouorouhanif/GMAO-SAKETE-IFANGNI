@@ -62,7 +62,7 @@
     function getToken() { return localStorage.getItem('token'); }
 
     async function loadEquipements() {
-        const res = await fetch('/api/equipements', { headers: { 'Authorization': `Bearer ${getToken()}` } });
+        const res = await fetch('https://gmao-sakete-ifangni-1.onrender.com/api/equipements', { headers: { 'Authorization': `Bearer ${getToken()}` } });
         const equipements = await res.json();
         const select = document.getElementById('equipementId');
         select.innerHTML = '<option value="">Sélectionner un équipement</option>' + 
@@ -81,7 +81,7 @@
         if(!equipementId) { alert('Veuillez sélectionner un équipement'); return; }
         if(!description) { alert('Veuillez décrire le problème'); return; }
         
-        const res = await fetch('/api/maintenances/signaler', {
+        const res = await fetch('https://gmao-sakete-ifangni-1.onrender.com/api/maintenances/signaler', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
             body: JSON.stringify({ equipementId: parseInt(equipementId), description, priorite })

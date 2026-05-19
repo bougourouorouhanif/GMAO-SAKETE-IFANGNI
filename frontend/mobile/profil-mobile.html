@@ -58,7 +58,7 @@
         }
         function logout() { localStorage.clear(); window.location.href = '/login.html'; }
         if(!localStorage.getItem('token')) window.location.href = '/login.html';
-        const API_URL = '/api';
+        const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
         loadProfile();
     </script>
 </body>

@@ -230,7 +230,7 @@
                 const cache = await caches.open('gmao-cache-v2');
                 
                 // Récupérer les équipements
-                const equipResponse = await cache.match('/api/equipements');
+                const equipResponse = await cache.match('https://gmao-sakete-ifangni-1.onrender.com/api/equipements');
                 if (equipResponse) {
                     const equipments = await equipResponse.json();
                     document.getElementById('cachedEquipments').innerText = equipments.length || '0';

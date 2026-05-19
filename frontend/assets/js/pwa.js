@@ -12,7 +12,7 @@ const PWA_CONFIG = {
         '/assets/css/style.css',
         '/assets/css/mobile.css',
         '/assets/css/chatbot.css',
-        '/assets/js/api.js',
+        '/assets/jshttps://gmao-sakete-ifangni-1.onrender.com/api.js',
         '/assets/js/auth.js',
         '/assets/js/utils.js',
         '/assets/js/notification.js',
@@ -158,7 +158,7 @@ async function syncOfflineData() {
     const requests = await cache.keys();
     
     for (const request of requests) {
-        if (request.url.includes('/api/') && request.method === 'POST') {
+        if (request.url.includes('https://gmao-sakete-ifangni-1.onrender.com/api/') && request.method === 'POST') {
             try {
                 const response = await fetch(request);
                 if (response.ok) {
