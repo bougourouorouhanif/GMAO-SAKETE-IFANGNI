@@ -40,7 +40,7 @@ const PORT = process.env.PORT || 5000;
 
 // ============ CONFIGURATION CORS ============
 const corsOptions = {
-    origin: ['https://gmao-sakete.netlify.app', 'https://*.netlify.app'],
+    origin: ['https://gmao-sakete.netlify.app', 'https://*.netlify.app', 'https://gmao-sakete.vercel.app', 'https://*.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
