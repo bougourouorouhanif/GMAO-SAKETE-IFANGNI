@@ -353,8 +353,8 @@
 
     <!-- ONGLETS RÔLES -->
     <div class="role-tabs">
-        <button class="role-tab active" onclick="selectRole('technicien')">🔧 Technicien</button>
-        <button class="role-tab" onclick="selectRole('soignant')">👨‍⚕️ Soignant</button>
+        <button class="role-tab active" onclick="selectRole('technicien', event)">🔧 Technicien</button>
+        <button class="role-tab" onclick="selectRole('soignant', event)">👨‍⚕️ Soignant</button>
     </div>
 
     <!-- Formulaire de connexion -->
@@ -443,10 +443,10 @@
         soignant: { email: 'infirmier.urgences@hopital.bj', password: 'admin123' }
     };
 
-    function selectRole(role) {
+    function selectRole(role, evt) {
         currentRole = role;
         document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
-        event.target.classList.add('active');
+        if (evt && evt.target) { evt.target.classList.add('active');
         
         // Remplir automatiquement les identifiants
         document.getElementById('loginEmail').value = credentials[role].email;
@@ -599,7 +599,7 @@
     }
 
     // Initialisation : pré-remplir technicien
-    selectRole('technicien');
+    selectRole('technicien', event);
 </script>
 </body>
 </html>
