@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <meta name="theme-color" content="#1a2a4f">
-    <title>GMAO Sakété</title>
+    <meta name="theme-color" content="#1b5e20">
+    <title>GMAO Sakété - Hôpital de Zone</title>
     <style>
         * {
             margin: 0;
@@ -14,8 +14,8 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, #1a2a4f 0%, #1e3a5f 100%);
             min-height: 100vh;
+            background: #e8f5e9;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -23,9 +23,8 @@
         }
 
         .container {
-            max-width: 400px;
+            max-width: 500px;
             width: 100%;
-            text-align: center;
             animation: fadeIn 0.8s ease;
         }
 
@@ -34,9 +33,13 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        .logo-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
         .logo {
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(10px);
+            background: #1b5e20;
             width: 100px;
             height: 100px;
             border-radius: 50%;
@@ -45,34 +48,48 @@
             justify-content: center;
             margin: 0 auto 20px;
             font-size: 50px;
-            border: 2px solid rgba(255,255,255,0.3);
+            border: 2px solid #ffd600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         h1 {
-            color: white;
+            color: #1b5e20;
             font-size: 28px;
             font-weight: 600;
-            margin-bottom: 10px;
         }
 
         .subtitle {
-            color: rgba(255,255,255,0.8);
+            color: #2e7d32;
             font-size: 14px;
-            margin-bottom: 40px;
+            margin-top: 8px;
+        }
+
+        .hospital-name {
+            color: #ffd600;
+            font-size: 13px;
+            margin-top: 5px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
 
         .btn-access {
             display: block;
-            background: linear-gradient(135deg, #00d4ff 0%, #3b82f6 100%);
-            color: white;
+            background: linear-gradient(135deg, #ffd600 0%, #ffb300 100%);
+            color: #1b5e20;
             text-align: center;
             padding: 16px;
             border-radius: 50px;
             font-size: 18px;
-            font-weight: 600;
+            font-weight: 700;
             text-decoration: none;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-access:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
         }
 
         .btn-access:active {
@@ -80,26 +97,43 @@
         }
 
         .footer {
-            color: rgba(255,255,255,0.4);
-            font-size: 11px;
+            text-align: center;
+            margin-top: 20px;
         }
 
         .footer a {
-            color: rgba(255,255,255,0.5);
+            color: #1b5e20;
             text-decoration: none;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .footer a:hover {
+            opacity: 1;
+        }
+
+        .version {
+            color: #2e7d32;
+            font-size: 10px;
+            margin-top: 15px;
+            opacity: 0.6;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="logo">🏥</div>
-    <h1>GMAO Sakété</h1>
-    <div class="subtitle">Gestion de Maintenance Assistée par Ordinateur<br>Hôpital de Zone Sakété-Ifangni</div>
+    <div class="logo-section">
+        <div class="logo">🏥</div>
+        <h1>GMAO Sakété</h1>
+        <div class="subtitle">Gestion de Maintenance Assistée par Ordinateur</div>
+        <div class="hospital-name">Hôpital de Zone Sakété-Ifangni</div>
+    </div>
 
     <a href="/login.html" class="btn-access">🔐 Accéder à la plateforme</a>
 
     <div class="footer">
         <a href="/mobile/index.html">📱 Version mobile</a>
+        <div class="version">Version 2.0 | GMAO Sakété-Ifangni</div>
     </div>
 </div>
 
