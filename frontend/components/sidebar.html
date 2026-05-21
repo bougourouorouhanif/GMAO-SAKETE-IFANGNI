@@ -1,4 +1,4 @@
-<!-- frontend/composants/sidebar.html - Sidebar technicien -->
+<!-- frontend/components/sidebar.html - Sidebar technicien -->
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
         <div class="sidebar-logo">🏥 <span>GMAO</span> Sakété</div>
@@ -10,7 +10,6 @@
         <a href="dashboard.html"           class="sidebar-item"><span class="sidebar-icon">📊</span><span class="sidebar-text">Accueil</span></a>
         <a href="inventaire.html"          class="sidebar-item"><span class="sidebar-icon">📦</span><span class="sidebar-text">Inventaire</span></a>
         <a href="maintenances.html"        class="sidebar-item"><span class="sidebar-icon">🔧</span><span class="sidebar-text">Maintenance</span></a>
-        <!-- ✅ Historique travaux sorti du lien Maintenance -->
         <a href="historique-travaux.html"  class="sidebar-item sidebar-sub"><span class="sidebar-icon">📋</span><span class="sidebar-text">Historique travaux</span></a>
         <a href="stock.html"               class="sidebar-item"><span class="sidebar-icon">⚙️</span><span class="sidebar-text">Pièces</span></a>
 
@@ -30,8 +29,14 @@
         <a href="profil.html"              class="sidebar-item"><span class="sidebar-icon">👤</span><span class="sidebar-text">Mon profil</span></a>
 
         <div class="sidebar-section">Outils</div>
-        <!-- ✅ Lien corrigé : chatbot.html -->
         <a href="chatbot.html"             class="sidebar-item"><span class="sidebar-icon">🤖</span><span class="sidebar-text">Diagnostic expert</span></a>
+    </div>
+
+    <!-- ✅ Bouton de déconnexion ajouté -->
+    <div class="sidebar-footer">
+        <button class="sidebar-logout-btn" onclick="window.logout()">
+            🚪 Déconnexion
+        </button>
     </div>
 </div>
 
@@ -62,7 +67,11 @@
     .sidebar-logo span { color: #ffd600; }
     .sidebar-subtitle { font-size: 11px; opacity: 0.6; margin-top: 4px; }
 
-    .sidebar-menu { flex: 1; padding: 8px 0 20px; }
+    .sidebar-menu { 
+        flex: 1; 
+        padding: 8px 0 20px;
+        overflow-y: auto;
+    }
 
     .sidebar-section {
         font-size: 10px;
@@ -111,6 +120,35 @@
     .sidebar-icon { width: 22px; text-align: center; font-size: 17px; flex-shrink: 0; }
     .sidebar-text { font-size: 14px; font-weight: 500; }
 
+    /* ✅ Footer avec bouton de déconnexion */
+    .sidebar-footer {
+        padding: 16px 20px;
+        border-top: 1px solid rgba(255,255,255,0.15);
+        margin-top: auto;
+    }
+
+    .sidebar-logout-btn {
+        width: 100%;
+        background: #ef4444;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .sidebar-logout-btn:hover {
+        background: #dc2626;
+        transform: translateY(-1px);
+    }
+
     @media (max-width: 768px) {
         .sidebar {
             transform: translateX(-100%);
@@ -134,9 +172,18 @@
     })();
 
     // ── Déconnexion globale ───────────────────────────────
-    // ✅ Redirige vers /connexion.html
     window.logout = function() {
-        localStorage.clear();
-        window.location.replace('/login.html');
+        if (confirm('🚪 Voulez-vous vraiment vous déconnecter ?')) {
+            localStorage.clear();
+            window.location.replace('/login.html');
+        }
+    };
+
+    // ── Menu mobile (toggle) ──────────────────────────────
+    window.toggleMobileMenu = function() {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) {
+            sidebar.classList.toggle('open');
+        }
     };
 </script>
