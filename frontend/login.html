@@ -335,17 +335,17 @@
     <div id="loginForm" class="form-card">
         <div id="loginError" class="error-message"></div>
         <div class="form-group">
-            <label>Email professionnel</label>
+            <label>Email </label>
             <div class="input-icon">
                 <span>📧</span>
-                <input type="email" id="loginEmail" placeholder="prenom.nom@hopital.bj">
+                <input type="email" id="loginEmail" >
             </div>
         </div>
         <div class="form-group">
             <label>Mot de passe</label>
             <div class="input-icon">
                 <span>🔒</span>
-                <input type="password" id="loginPassword" placeholder="••••••••">
+                <input type="password" id="loginPassword" >
             </div>
         </div>
         <button class="btn-primary" id="loginBtn">Se connecter</button>
@@ -361,7 +361,7 @@
 
         <div class="form-group"><label>Nom complet *</label><div class="input-icon"><span>👨‍⚕️</span><input type="text" id="regNom" placeholder="Votre nom"></div></div>
         <div class="form-group"><label>Prénom</label><div class="input-icon"><span>👤</span><input type="text" id="regPrenom" placeholder="Votre prénom"></div></div>
-        <div class="form-group"><label>Email *</label><div class="input-icon"><span>📧</span><input type="email" id="regEmail" placeholder="prenom.nom@hopital.bj"></div></div>
+        <div class="form-group"><label>Email *</label><div class="input-icon"><span>📧</span><input type="email" id="regEmail" ></div></div>
         <div class="form-group"><label>Service *</label><div class="input-icon"><span>🏥</span>
             <select id="regService">
                 <option value="">Sélectionnez votre service</option>
@@ -378,7 +378,7 @@
                 <option value="AUTRE">📌 Autre</option>
             </select>
         </div></div>
-        <div class="form-group"><label>Téléphone</label><div class="input-icon"><span>📞</span><input type="tel" id="regPhone" placeholder="+229 XX XX XX XX"></div></div>
+        <div class="form-group"><label>Téléphone</label><div class="input-icon"><span>📞</span><input type="tel" id="regPhone" placeholder="+229 XX XX XX XX XX"></div></div>
         <div class="form-group"><label>Mot de passe *</label><div class="input-icon"><span>🔒</span><input type="password" id="regPassword" placeholder="Minimum 6 caractères"></div></div>
         <div class="form-group"><label>Confirmer le mot de passe *</label><div class="input-icon"><span>✓</span><input type="password" id="regConfirmPassword" placeholder="Retapez votre mot de passe"></div></div>
 
@@ -626,8 +626,8 @@
     const helpContent = {
         guide: '<h4>📖 Guide d\'utilisation</h4><ul><li><strong>Technicien :</strong> Dashboard, gestion de l\'inventaire, suivi des maintenances, validation des comptes soignants</li><li><strong>Soignant :</strong> Signalement de pannes, scan QR code, chatbot de diagnostic</li><li><strong>Support :</strong> Contacter le technicien biomédical pour toute urgence</li></ul>',
         faq: '<h4>❓ FAQ</h4><p><strong>Mon compte est en attente ?</strong><br>Un technicien biomédical doit valider votre compte avant la première connexion.</p><p><strong>Mot de passe oublié ?</strong><br>Contactez le support technique pour réinitialiser votre mot de passe.</p><p><strong>L\'application ne charge pas ?</strong><br>Vérifiez votre connexion internet ou réessayez plus tard.</p>',
-        contact: '<h4>📞 Support technique</h4><p><strong>Téléphone :</strong> +229 97 12 34 56</p><p><strong>Email :</strong> support@gmao-sakete.bj</p><p><strong>Heures :</strong> 8h00 - 18h00 (Lun-Ven)</p>',
-        whatsapp: '<h4>💬 Support WhatsApp</h4><div style="background:#25D366; color:white; padding:12px; border-radius:12px; text-align:center; margin:10px 0;"><a href="https://wa.me/22997123456" style="color:white; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px;"><span>📱</span> Ouvrir WhatsApp</a></div><p>Réponse dans les 24h ouvrables.</p>'
+        contact: '<h4>📞 Support technique</h4><p><strong>Téléphone :</strong> +229 01 41 80 34 59 </p><p><strong>Email :</strong> support@gmao-sakete.bj</p><p><strong>Heures :</strong> 8h00 - 18h00 (Lun-Ven)</p>',
+        whatsapp: '<h4>💬 Support WhatsApp</h4><div style="background:#25D366; color:white; padding:12px; border-radius:12px; text-align:center; margin:10px 0;"><a href="https://wa.me/22941803459" style="color:white; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px;"><span>📱</span> Ouvrir WhatsApp</a></div><p>Réponse dans les 24h ouvrables.</p>'
     };
 
     function openHelp(type) {
