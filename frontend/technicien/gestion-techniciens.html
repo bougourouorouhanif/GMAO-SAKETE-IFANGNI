@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="theme-color" content="#1b5e20">
     <title>Gestion Techniciens - GMAO Sakété</title>
     <style>
         * {
@@ -42,6 +43,8 @@
             font-size: 24px;
         }
 
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+
         .btn-add {
             background: #1b5e20;
             color: white;
@@ -53,10 +56,19 @@
             font-weight: bold;
         }
 
-        .btn-add:hover {
-            background: #2e7d32;
-            transform: translateY(-2px);
+        .btn-add:hover { background: #2e7d32; transform: translateY(-2px); }
+
+        .btn-refresh {
+            background: #f0fdf4;
+            border: 1px solid #1b5e20;
+            color: #1b5e20;
+            padding: 10px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.2s;
         }
+
+        .btn-refresh:hover { background: #1b5e20; color: white; }
 
         .btn-depart {
             background: #f97316;
@@ -69,9 +81,7 @@
             transition: 0.2s;
         }
 
-        .btn-depart:hover {
-            background: #ea580c;
-        }
+        .btn-depart:hover { background: #ea580c; }
 
         .btn-reactivate {
             background: #22c55e;
@@ -84,9 +94,7 @@
             transition: 0.2s;
         }
 
-        .btn-reactivate:hover {
-            background: #16a34a;
-        }
+        .btn-reactivate:hover { background: #16a34a; }
 
         .btn-delete {
             background: #ef4444;
@@ -98,9 +106,7 @@
             transition: 0.2s;
         }
 
-        .btn-delete:hover {
-            background: #dc2626;
-        }
+        .btn-delete:hover { background: #dc2626; }
 
         .filter-bar {
             display: flex;
@@ -192,7 +198,10 @@
             min-width: 150px;
             text-align: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
         }
+
+        .stat-card:hover { transform: translateY(-3px); }
 
         .stat-number {
             font-size: 32px;
@@ -285,6 +294,13 @@
             font-size: 14px;
         }
 
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1b5e20;
+        }
+
         .btn-primary {
             background: #1b5e20;
             color: white;
@@ -297,9 +313,7 @@
             transition: 0.2s;
         }
 
-        .btn-primary:hover {
-            background: #2e7d32;
-        }
+        .btn-primary:hover { background: #2e7d32; }
 
         .btn-danger {
             background: #ef4444;
@@ -313,12 +327,23 @@
             transition: 0.2s;
         }
 
-        .btn-danger:hover {
-            background: #dc2626;
+        .btn-danger:hover { background: #dc2626; }
+
+        .loader {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
         }
 
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         @media (max-width: 768px) {
-            body { margin-left: 0; }
+            body { margin-left: 0; padding: 70px 15px 15px 15px; }
             th, td { padding: 8px 10px; font-size: 12px; }
             .btn-depart, .btn-reactivate, .btn-delete { padding: 4px 10px; font-size: 11px; }
         }
@@ -331,7 +356,10 @@
 <div class="main-content">
     <div class="header">
         <h1>👨‍🔧 GESTION DES TECHNICIENS</h1>
-        <button class="btn-add" onclick="openAddModal()">➕ Nouveau technicien</button>
+        <div class="btn-group">
+            <button class="btn-refresh" onclick="refreshAllData()">🔄 Rafraîchir</button>
+            <button class="btn-add" onclick="openAddModal()">➕ Nouveau technicien</button>
+        </div>
     </div>
 
     <div class="stats-cards">
@@ -346,132 +374,257 @@
             <option value="active">✅ Actifs</option>
             <option value="archived">📦 Archivés</option>
         </select>
-        <input type="text" id="searchInput" placeholder="🔍 Rechercher par nom, email..." onkeyup="loadTechniciens()">
+        <input type="text" id="searchInput" placeholder="🔍 Rechercher par nom, email..." onkeyup="debouncedSearch()">
     </div>
 
     <div class="table-container">
         <table>
-            <thead><tr><th>Matricule</th><th>Nom</th><th>Email</th><th>Service</th><th>Interventions</th><th>Statut</th><th>Actions</th></tr></thead>
-            <tbody id="techniciensList"><tr><td colspan="7" class="empty-state">Chargement...</td></tr></tbody>
+            <thead>
+                <tr>
+                    <th>Matricule</th>
+                    <th>Nom complet</th>
+                    <th>Email</th>
+                    <th>Service</th>
+                    <th>Interventions</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="techniciensList">
+                <tr><td colspan="7" class="empty-state">⏳ Chargement......</td></tr>
+            </tbody>
         </table>
     </div>
 
     <div class="section">
         <div class="section-title">📤 DERNIERS DÉPARTS ENREGISTRÉS</div>
-        <div id="departsList"><div class="empty-state">Chargement...</div></div>
+        <div id="departsList"><div class="empty-state">⏳ Chargement...</div></div>
     </div>
 </div>
 
-<div id="addModal" class="modal">
+<!-- Modal Ajout -->
+<div id="addModal" class="modal" onclick="if(event.target===this) closeAddModal()">
     <div class="modal-content">
         <h3>➕ Ajouter un technicien</h3>
         <div class="form-group"><label>Nom *</label><input type="text" id="techNom" placeholder="Ex: ADJOVI"></div>
         <div class="form-group"><label>Prénom</label><input type="text" id="techPrenom" placeholder="Ex: Jean"></div>
-        <div class="form-group"><label>Email *</label><input type="email" id="techEmail" placeholder="tech@hopital.bj"></div>
+        <div class="form-group"><label>Email *</label><input type="email" id="techEmail" placeholder="technicien@hopital.bj"></div>
         <div class="form-group"><label>Téléphone</label><input type="tel" id="techPhone" placeholder="+229 XX XX XX XX"></div>
         <div class="form-group"><label>Service</label><input type="text" id="techService" value="MAINTENANCE"></div>
-        <div class="form-group"><label>Mot de passe *</label><input type="password" id="techPassword" value="tech123"></div>
+        <div class="form-group"><label>Mot de passe *</label><input type="password" id="techPassword" value="tech123" placeholder="Mot de passe par défaut"></div>
         <button class="btn-primary" onclick="createTechnicien()">✅ Créer le technicien</button>
         <button class="btn-danger" onclick="closeAddModal()">Annuler</button>
     </div>
 </div>
 
-<div id="departModal" class="modal">
+<!-- Modal Départ -->
+<div id="departModal" class="modal" onclick="if(event.target===this) closeDepartModal()">
     <div class="modal-content">
         <h3>📤 Enregistrer un départ</h3>
         <div class="form-group"><label>Technicien</label><input type="text" id="departTechnicienNom" readonly style="background:#f1f5f9;"></div>
         <div class="form-group"><label>Nouvel hôpital *</label><input type="text" id="nouveauHopital" placeholder="Ex: CHU Cotonou"></div>
-        <div class="form-group"><label>Motif</label><select id="motifDepart"><option value="MUTATION">Mutation</option><option value="DEMISSION">Démission</option><option value="FIN_CONTRAT">Fin contrat</option><option value="RETRAITE">Retraite</option></select></div>
-        <div class="form-group"><label>Remarques</label><textarea id="rapportDepart" rows="3"></textarea></div>
-        <button class="btn-primary" onclick="confirmerDepart()">✅ Confirmer</button>
+        <div class="form-group"><label>Motif</label>
+            <select id="motifDepart">
+                <option value="MUTATION">Mutation</option>
+                <option value="DEMISSION">Démission</option>
+                <option value="FIN_CONTRAT">Fin contrat</option>
+                <option value="RETRAITE">Retraite</option>
+            </select>
+        </div>
+        <div class="form-group"><label>Remarques</label><textarea id="rapportDepart" rows="3" placeholder="Informations complémentaires..."></textarea></div>
+        <button class="btn-primary" onclick="confirmerDepart()">✅ Confirmer le départ</button>
         <button class="btn-danger" onclick="closeDepartModal()">Annuler</button>
     </div>
 </div>
 
 <script>
-   const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
+    const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
     let currentDepartId = null;
+    let searchTimeout = null;
 
     function getToken() { return localStorage.getItem('token'); }
+    
+    // Auth check
     if (!getToken()) window.location.href = '/login.html';
+    
+    const userRole = localStorage.getItem('userRole');
+    if (userRole !== 'TECHNICIEN') window.location.href = '/soignant/index.html';
 
     function loadSidebar() {
         fetch('/components/sidebar.html')
             .then(response => response.text())
-            .then(data => document.getElementById('sidebar-container').innerHTML = data)
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                const links = document.querySelectorAll('.sidebar-item');
+                links.forEach(link => {
+                    if (link.getAttribute('href') === 'gestion-techniciens.html') {
+                        link.classList.add('active');
+                    }
+                });
+            })
             .catch(error => console.error('Erreur sidebar:', error));
+    }
+
+    function debouncedSearch() {
+        if (searchTimeout) clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => loadTechniciens(), 500);
     }
 
     async function loadTechniciens() {
         const filter = document.getElementById('filterStatus').value;
         const search = document.getElementById('searchInput').value;
+        
         let url = `${API_URL}/techniciens?search=${encodeURIComponent(search)}`;
         if (filter === 'active') url += '&archived=false';
         else if (filter === 'archived') url += '&archived=true';
         
         try {
-            const res = await fetch(url, { headers: { 'Authorization': `Bearer ${getToken()}` } });
+            const res = await fetch(url, { 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            if (!res.ok) throw new Error('Erreur chargement');
+            
             const data = await res.json();
-            if (data.length === 0) {
-                document.getElementById('techniciensList').innerHTML = '<tr><td colspan="7" class="empty-state">📭 Aucun technicien trouvé</td></tr>';
+            let techniciens = Array.isArray(data) ? data : (data.techniciens || []);
+            
+            if (techniciens.length === 0) {
+                document.getElementById('techniciensList').innerHTML = 
+                    '<tr><td colspan="7" class="empty-state">📭 Aucun technicien trouvé</td></tr>';
                 return;
             }
-            document.getElementById('techniciensList').innerHTML = data.map(t => `
-                <tr>
-                    <td>${t.matricule || 'N/A'}${t.prenom ? `/${t.prenom.charAt(0)}` : ''}</td>
-                    <td><strong>${t.nom} ${t.prenom || ''}</strong></td>
-                    <td>${t.email}</td>
-                    <td>${t.service || 'MAINTENANCE'}</td>
-                    <td><span class="badge">📋 ${t.interventions?.length || 0}</span></td>
-                    <td><span class="${t.statut === 'ACTIF' ? 'status-active' : 'status-inactive'}">${t.statut === 'ACTIF' ? '✅ Actif' : '📦 Archivé'}</span></td>
-                    <td>
-                        ${t.statut === 'ACTIF' ? 
-                            `<button class="btn-depart" onclick="openDepartModal(${t.id}, '${t.nom} ${t.prenom || ''}')">📤 Départ</button>
-                             <button class="btn-delete" onclick="deleteTechnicien(${t.id})">🗑️ Suppr</button>` : 
-                            `<button class="btn-reactivate" onclick="reactiverTechnicien(${t.id})">🔄 Réactiver</button>
-                             <button class="btn-delete" onclick="deleteTechnicien(${t.id})">🗑️ Suppr</button>`
-                        }
-                    </td>
-                </tr>
-            `).join('');
-        } catch (error) { console.error('Erreur:', error); }
+            
+            document.getElementById('techniciensList').innerHTML = techniciens.map(t => {
+                const matricule = t.matricule || `${t.nom.substring(0, 3)}${t.id || ''}`;
+                return `
+                    <tr>
+                        <td>${escapeHtml(matricule)}</td>
+                        <td><strong>${escapeHtml(t.nom)} ${escapeHtml(t.prenom || '')}</strong></td>
+                        <td>${escapeHtml(t.email)}</td>
+                        <td>${escapeHtml(t.service || 'MAINTENANCE')}</td>
+                        <td><span class="badge">📋 ${t.interventions?.length || t.nbInterventions || 0}</span></td>
+                        <td><span class="${t.statut === 'ACTIF' ? 'status-active' : 'status-inactive'}">${t.statut === 'ACTIF' ? '✅ Actif' : '📦 Archivé'}</span></td>
+                        <td>
+                            ${t.statut === 'ACTIF' ? 
+                                `<button class="btn-depart" onclick="openDepartModal(${t.id}, '${escapeHtml(t.nom)} ${escapeHtml(t.prenom || '')}')">📤 Départ</button>
+                                 <button class="btn-delete" onclick="deleteTechnicien(${t.id})">🗑️ Suppr</button>` : 
+                                `<button class="btn-reactivate" onclick="reactiverTechnicien(${t.id})">🔄 Réactiver</button>
+                                 <button class="btn-delete" onclick="deleteTechnicien(${t.id})">🗑️ Suppr</button>`
+                            }
+                         </td>
+                    </tr>
+                `;
+            }).join('');
+        } catch (error) { 
+            console.error('Erreur:', error);
+            document.getElementById('techniciensList').innerHTML = 
+                '<tr><td colspan="7" class="empty-state">❌ Erreur de chargement</td></tr>';
+        }
     }
 
     async function loadDeparts() {
         try {
-            const res = await fetch(`${API_URL}/techniciens/departs/liste`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
+            const res = await fetch(`${API_URL}/techniciens/departs/liste`, { 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            if (!res.ok) throw new Error('Erreur');
+            
             const departs = await res.json();
-            if (departs.length === 0) { document.getElementById('departsList').innerHTML = '<div class="empty-state">📭 Aucun départ enregistré</div>'; return; }
-            document.getElementById('departsList').innerHTML = departs.slice(0, 5).map(d => `
-                <div class="depart-item"><div>📤</div><div style="flex:1"><strong>${d.technicien?.nom}</strong><br><small>🎯 ${d.nouveauHopital} | ${d.motif}</small><br><small>📅 ${new Date(d.dateDepart).toLocaleDateString()}</small></div></div>
+            const departsList = Array.isArray(departs) ? departs : (departs.departs || []);
+            
+            if (departsList.length === 0) { 
+                document.getElementById('departsList').innerHTML = 
+                    '<div class="empty-state">📭 Aucun départ enregistré</div>'; 
+                return; 
+            }
+            
+            document.getElementById('departsList').innerHTML = departsList.slice(0, 5).map(d => `
+                <div class="depart-item">
+                    <div>📤</div>
+                    <div style="flex:1">
+                        <strong>${escapeHtml(d.technicien?.nom || d.nom || '-')}</strong>
+                        <br><small>🎯 ${escapeHtml(d.nouveauHopital || '-')} | ${escapeHtml(d.motif || '-')}</small>
+                        <br><small>📅 ${formatDate(d.dateDepart)}</small>
+                    </div>
+                </div>
             `).join('');
-        } catch (error) { console.error('Erreur:', error); }
+        } catch (error) { 
+            console.error('Erreur:', error);
+            document.getElementById('departsList').innerHTML = 
+                '<div class="empty-state">❌ Erreur de chargement</div>';
+        }
     }
 
     async function loadStats() {
         try {
-            const res = await fetch(`${API_URL}/techniciens`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
+            // Récupérer tous les techniciens pour les stats
+            const res = await fetch(`${API_URL}/techniciens`, { 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
             const data = await res.json();
-            document.getElementById('totalActifs').innerText = data.filter(t => t.statut === 'ACTIF').length;
-            document.getElementById('totalArchives').innerText = data.filter(t => t.statut === 'INACTIF').length;
-            const resDeparts = await fetch(`${API_URL}/techniciens/departs/stats`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
-            const stats = await resDeparts.json();
-            document.getElementById('totalDeparts').innerText = stats.total || 0;
-        } catch (error) { console.error('Erreur stats:', error); }
+            const techniciens = Array.isArray(data) ? data : (data.techniciens || []);
+            
+            document.getElementById('totalActifs').innerText = techniciens.filter(t => t.statut === 'ACTIF').length;
+            document.getElementById('totalArchives').innerText = techniciens.filter(t => t.statut === 'INACTIF').length;
+            
+            // Stats départs
+            const resDeparts = await fetch(`${API_URL}/techniciens/departs/stats`, { 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            if (resDeparts.ok) {
+                const stats = await resDeparts.json();
+                document.getElementById('totalDeparts').innerText = stats.total || 0;
+            }
+        } catch (error) { 
+            console.error('Erreur stats:', error);
+        }
     }
 
     async function createTechnicien() {
         const data = {
-            nom: document.getElementById('techNom').value,
-            prenom: document.getElementById('techPrenom').value,
-            email: document.getElementById('techEmail').value,
-            telephone: document.getElementById('techPhone').value,
-            service: document.getElementById('techService').value,
-            password: document.getElementById('techPassword').value
+            nom: document.getElementById('techNom').value.trim(),
+            prenom: document.getElementById('techPrenom').value.trim(),
+            email: document.getElementById('techEmail').value.trim(),
+            telephone: document.getElementById('techPhone').value.trim(),
+            service: document.getElementById('techService').value.trim(),
+            password: document.getElementById('techPassword').value,
+            role: 'TECHNICIEN'
         };
-        const res = await fetch(`${API_URL}/techniciens`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` }, body: JSON.stringify(data) });
-        if (res.ok) { alert('✅ Technicien ajouté'); closeAddModal(); loadTechniciens(); loadStats(); }
-        else alert('❌ Erreur');
+        
+        if (!data.nom || !data.email || !data.password) {
+            alert('Veuillez remplir tous les champs obligatoires');
+            return;
+        }
+        
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loader"></span> Création...';
+        btn.disabled = true;
+        
+        try {
+            const res = await fetch(`${API_URL}/techniciens`, { 
+                method: 'POST', 
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${getToken()}` 
+                }, 
+                body: JSON.stringify(data) 
+            });
+            
+            if (res.ok) { 
+                alert('✅ Technicien ajouté avec succès'); 
+                closeAddModal(); 
+                loadTechniciens(); 
+                loadStats(); 
+            } else {
+                const error = await res.json();
+                alert('❌ Erreur: ' + (error.message || 'Création impossible'));
+            }
+        } catch (error) {
+            alert('❌ Erreur de connexion');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
     }
 
     function openDepartModal(id, nom) {
@@ -484,35 +637,111 @@
     }
 
     async function confirmerDepart() {
+        const nouveauHopital = document.getElementById('nouveauHopital').value.trim();
+        if (!nouveauHopital) {
+            alert('Veuillez indiquer le nouvel hôpital');
+            return;
+        }
+        
         const data = {
-            nouveauHopital: document.getElementById('nouveauHopital').value,
+            nouveauHopital: nouveauHopital,
             motif: document.getElementById('motifDepart').value,
             rapport: document.getElementById('rapportDepart').value,
             archiveInterventions: true
         };
-        const res = await fetch(`${API_URL}/techniciens/${currentDepartId}/depart`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` }, body: JSON.stringify(data) });
-        if (res.ok) { alert('✅ Départ enregistré'); closeDepartModal(); loadTechniciens(); loadDeparts(); loadStats(); }
-        else alert('❌ Erreur');
+        
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loader"></span> Enregistrement...';
+        btn.disabled = true;
+        
+        try {
+            const res = await fetch(`${API_URL}/techniciens/${currentDepartId}/depart`, { 
+                method: 'POST', 
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${getToken()}` 
+                }, 
+                body: JSON.stringify(data) 
+            });
+            
+            if (res.ok) { 
+                alert('✅ Départ enregistré avec succès'); 
+                closeDepartModal(); 
+                loadTechniciens(); 
+                loadDeparts(); 
+                loadStats(); 
+            } else {
+                alert('❌ Erreur lors de l\'enregistrement du départ');
+            }
+        } catch (error) {
+            alert('❌ Erreur de connexion');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
     }
 
     async function reactiverTechnicien(id) {
         if (confirm('Réactiver ce technicien ?')) {
-            await fetch(`${API_URL}/techniciens/${id}/reactiver`, { method: 'PUT', headers: { 'Authorization': `Bearer ${getToken()}` } });
-            loadTechniciens(); loadStats();
+            try {
+                await fetch(`${API_URL}/techniciens/${id}/reactiver`, { 
+                    method: 'PUT', 
+                    headers: { 'Authorization': `Bearer ${getToken()}` } 
+                });
+                loadTechniciens(); 
+                loadStats();
+            } catch (error) {
+                alert('Erreur lors de la réactivation');
+            }
         }
     }
 
     async function deleteTechnicien(id) {
-        if (confirm('Supprimer définitivement ?')) {
-            await fetch(`${API_URL}/techniciens/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${getToken()}` } });
-            loadTechniciens(); loadStats();
+        if (confirm('⚠️ Supprimer définitivement ce technicien ? Cette action est irréversible.')) {
+            try {
+                await fetch(`${API_URL}/techniciens/${id}`, { 
+                    method: 'DELETE', 
+                    headers: { 'Authorization': `Bearer ${getToken()}` } 
+                });
+                loadTechniciens(); 
+                loadStats();
+            } catch (error) {
+                alert('Erreur lors de la suppression');
+            }
         }
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        try {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return '-';
+            return date.toLocaleDateString('fr-FR');
+        } catch { return '-'; }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function refreshAllData() {
+        loadTechniciens();
+        loadDeparts();
+        loadStats();
     }
 
     function openAddModal() { document.getElementById('addModal').style.display = 'flex'; }
     function closeAddModal() { document.getElementById('addModal').style.display = 'none'; }
     function closeDepartModal() { document.getElementById('departModal').style.display = 'none'; }
 
+    // Initialisation
     loadSidebar();
     loadTechniciens();
     loadDeparts();
