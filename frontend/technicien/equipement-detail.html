@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="theme-color" content="#1b5e20">
     <title>Fiche technique - GMAO Sakété</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -16,28 +17,164 @@
         }
 
         .main-content { max-width: 1000px; margin: 0 auto; }
-        .back-link { display: inline-block; margin-bottom: 20px; color: #3b82f6; text-decoration: none; }
-        .card { background: white; border-radius: 20px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .title { font-size: 20px; font-weight: bold; margin-bottom: 20px; color: #1b5e20; border-left: 4px solid #1b5e20; padding-left: 12px; }
-        .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-        .info-item { border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
-        .info-label { color: #64748b; font-size: 12px; margin-bottom: 3px; }
-        .info-value { font-weight: 500; font-size: 14px; }
-        .status { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        
+        .back-link { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 5px;
+            margin-bottom: 20px; 
+            color: #1b5e20; 
+            text-decoration: none; 
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .back-link:hover { transform: translateX(-3px); color: #2e7d32; }
+        
+        .card { 
+            background: white; 
+            border-radius: 20px; 
+            padding: 28px; 
+            margin-bottom: 20px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: box-shadow 0.2s;
+        }
+        .card:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+        
+        .title { 
+            font-size: 22px; 
+            font-weight: bold; 
+            margin-bottom: 20px; 
+            color: #1b5e20; 
+            border-left: 4px solid #ffd600; 
+            padding-left: 15px; 
+        }
+        
+        .info-grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 18px; 
+            margin-bottom: 20px;
+        }
+        
+        .info-item { 
+            border-bottom: 1px solid #e2e8f0; 
+            padding-bottom: 10px;
+        }
+        
+        .info-label { 
+            color: #64748b; 
+            font-size: 11px; 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px; 
+        }
+        
+        .info-value { 
+            font-weight: 600; 
+            font-size: 15px; 
+            color: #1e293b;
+        }
+        
+        .status { 
+            display: inline-block; 
+            padding: 5px 14px; 
+            border-radius: 20px; 
+            font-size: 12px; 
+            font-weight: bold; 
+        }
         .status-FONCTIONNEL { background: #dcfce7; color: #166534; }
         .status-EN_PANNE { background: #fee2e2; color: #dc2626; }
         .status-EN_MAINTENANCE { background: #fef3c7; color: #d97706; }
-        .qr-container { text-align: center; padding: 20px; background: #f8fafc; border-radius: 16px; margin-top: 10px; }
-        .qr-container img { max-width: 150px; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px; background: white; }
-        .btn { padding: 8px 20px; border: none; border-radius: 30px; cursor: pointer; margin-right: 10px; }
+        
+        .qr-container { 
+            text-align: center; 
+            padding: 20px; 
+            background: #f8fafc; 
+            border-radius: 16px; 
+            margin: 20px 0 10px;
+        }
+        .qr-container img { 
+            max-width: 180px; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 16px; 
+            padding: 10px; 
+            background: white;
+            transition: transform 0.2s;
+        }
+        .qr-container img:hover { transform: scale(1.05); }
+        
+        .btn-group { 
+            display: flex; 
+            gap: 12px; 
+            margin-top: 20px; 
+            flex-wrap: wrap; 
+        }
+        .btn { 
+            padding: 10px 24px; 
+            border: none; 
+            border-radius: 40px; 
+            cursor: pointer; 
+            font-weight: 600;
+            font-size: 13px;
+            transition: 0.2s;
+        }
         .btn-primary { background: #1b5e20; color: white; }
+        .btn-primary:hover { background: #2e7d32; transform: translateY(-2px); }
         .btn-warning { background: #ef4444; color: white; }
+        .btn-warning:hover { background: #dc2626; transform: translateY(-2px); }
         .btn-secondary { background: #e2e8f0; color: #475569; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
-        th { background: #f8fafc; font-weight: 600; }
-        .empty-state { text-align: center; padding: 30px; color: #94a3b8; }
-        @media (max-width: 768px) { body { margin-left: 0; } .info-grid { grid-template-columns: 1fr; } }
+        .btn-secondary:hover { background: #cbd5e1; transform: translateY(-2px); }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 15px; 
+        }
+        th, td { 
+            padding: 12px; 
+            text-align: left; 
+            border-bottom: 1px solid #e2e8f0; 
+        }
+        th { 
+            background: #f8fafc; 
+            font-weight: 600; 
+            color: #1e293b;
+        }
+        tr { transition: background 0.2s; }
+        tr:hover { background: #f8fafc; }
+        
+        .empty-state { 
+            text-align: center; 
+            padding: 40px; 
+            color: #94a3b8; 
+        }
+        
+        .badge-termine { background: #dcfce7; color: #166534; padding: 3px 10px; border-radius: 20px; display: inline-block; font-size: 11px; }
+        .badge-cours { background: #dbeafe; color: #2563eb; padding: 3px 10px; border-radius: 20px; display: inline-block; font-size: 11px; }
+        .badge-attente { background: #fef3c7; color: #d97706; padding: 3px 10px; border-radius: 20px; display: inline-block; font-size: 11px; }
+        
+        .loader {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+        .loader-spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #1b5e20;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 10px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        @media (max-width: 768px) { 
+            body { margin-left: 0; padding: 70px 15px 15px 15px; } 
+            .info-grid { grid-template-columns: 1fr; gap: 12px; }
+            .card { padding: 20px; }
+        }
     </style>
 </head>
 <body>
@@ -45,55 +182,172 @@
 <div id="sidebar-container"></div>
 
 <div class="main-content">
-    <a href="inventaire.html" class="back-link">← Retour à l'inventaire</a>
-    <div id="content"><div class="empty-state">Chargement de la fiche technique...</div></div>
+    <a href="inventaire.html" class="back-link">
+        ← Retour à l'inventaire
+    </a>
+    <div id="content">
+        <div class="loader">
+            <div class="loader-spinner"></div>
+            <div>Chargement de la fiche technique...</div>
+        </div>
+    </div>
 </div>
 
 <script>
-   const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
-    const id = new URLSearchParams(location.search).get('id');
+    const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
+    const equipementId = new URLSearchParams(location.search).get('id');
 
     function getToken() { return localStorage.getItem('token'); }
+    
+    // Auth check
     if (!getToken()) window.location.href = '/login.html';
-    if (!id) window.location.href = 'inventaire.html';
+    
+    const userRole = localStorage.getItem('userRole');
+    if (userRole !== 'TECHNICIEN') window.location.href = '/soignant/index.html';
+    
+    if (!equipementId) window.location.href = 'inventaire.html';
 
     function loadSidebar() {
         fetch('/components/sidebar.html')
             .then(response => response.text())
-            .then(data => document.getElementById('sidebar-container').innerHTML = data)
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                const links = document.querySelectorAll('.sidebar-item');
+                links.forEach(link => {
+                    if (link.getAttribute('href') === 'inventaire.html') {
+                        link.classList.add('active');
+                    }
+                });
+            })
             .catch(error => console.error('Erreur sidebar:', error));
     }
 
-    async function load() {
+    function getStatusText(statut) {
+        const map = {
+            'FONCTIONNEL': '✅ Fonctionnel',
+            'EN_PANNE': '❌ En panne',
+            'EN_MAINTENANCE': '🔧 En maintenance',
+            'OPERATIONNEL': '✅ Opérationnel'
+        };
+        return map[statut] || statut;
+    }
+
+    function getStatusBadge(statut) {
+        const map = {
+            'TERMINE': '<span class="badge-termine">✅ Terminé</span>',
+            'EN_COURS': '<span class="badge-cours">🔧 En cours</span>',
+            'EN_ATTENTE': '<span class="badge-attente">⏳ En attente</span>'
+        };
+        return map[statut] || `<span class="badge-attente">${statut || '-'}</span>`;
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
         try {
-            const res = await fetch(`${API_URL}/equipements/${id}`, {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return '-';
+            return date.toLocaleDateString('fr-FR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        } catch { return '-'; }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    async function loadEquipement() {
+        try {
+            const res = await fetch(`${API_URL}/equipements/${equipementId}`, {
                 headers: { 'Authorization': `Bearer ${getToken()}` }
             });
+            
             if (!res.ok) throw new Error('Équipement non trouvé');
+            
             const e = await res.json();
-
-            const dateMiseService = e.dateMiseService ? new Date(e.dateMiseService).toLocaleDateString('fr-FR') : '-';
-            const garantieFin = e.garantieFin ? new Date(e.garantieFin).toLocaleDateString('fr-FR') : '-';
-
+            
+            const dateMiseService = formatDate(e.dateMiseService);
+            const garantieFin = formatDate(e.garantieFin);
+            
+            // Vérifier si la garantie est expirée
+            let garantieClass = '';
+            let garantieText = '';
+            if (e.garantieFin) {
+                const today = new Date();
+                const garantieDate = new Date(e.garantieFin);
+                if (garantieDate < today) {
+                    garantieClass = 'style="color:#dc2626;"';
+                    garantieText = ' (Expirée)';
+                }
+            }
+            
             document.getElementById('content').innerHTML = `
                 <div class="card">
-                    <div class="title">📦 FICHE TECHNIQUE - ${e.nom}</div>
+                    <div class="title">📦 FICHE TECHNIQUE - ${escapeHtml(e.nom)}</div>
                     <div class="info-grid">
-                        <div class="info-item"><div class="info-label">Code inventaire</div><div class="info-value">${e.codeInventaire}</div></div>
-                        <div class="info-item"><div class="info-label">Statut</div><div class="info-value"><span class="status status-${e.statut}">${e.statut === 'FONCTIONNEL' ? '✅ Fonctionnel' : e.statut === 'EN_PANNE' ? '❌ En panne' : '🔧 Maintenance'}</span></div></div>
-                        <div class="info-item"><div class="info-label">Marque / Modèle</div><div class="info-value">${e.marque || '-'} ${e.modele || ''}</div></div>
-                        <div class="info-item"><div class="info-label">Numéro de série</div><div class="info-value">${e.numeroSerie || '-'}</div></div>
-                        <div class="info-item"><div class="info-label">Type médical</div><div class="info-value">${e.typeMedical}</div></div>
-                        <div class="info-item"><div class="info-label">Criticité</div><div class="info-value">${e.criticite}</div></div>
-                        <div class="info-item"><div class="info-label">Service</div><div class="info-value">${e.service}</div></div>
-                        <div class="info-item"><div class="info-label">Localisation</div><div class="info-value">${e.batiment ? 'Bâtiment ' + e.batiment : ''} ${e.salle ? '- Salle ' + e.salle : ''}</div></div>
-                        <div class="info-item"><div class="info-label">Date mise en service</div><div class="info-value">${dateMiseService}</div></div>
-                        <div class="info-item"><div class="info-label">Fin de garantie</div><div class="info-value">${garantieFin}</div></div>
+                        <div class="info-item">
+                            <div class="info-label">Code inventaire</div>
+                            <div class="info-value">${escapeHtml(e.codeInventaire || '-')}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Statut</div>
+                            <div class="info-value"><span class="status status-${e.statut}">${getStatusText(e.statut)}</span></div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Marque / Modèle</div>
+                            <div class="info-value">${escapeHtml(e.marque || '-')} ${escapeHtml(e.modele || '')}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Numéro de série</div>
+                            <div class="info-value">${escapeHtml(e.numeroSerie || '-')}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Type médical</div>
+                            <div class="info-value">${escapeHtml(e.typeMedical || '-')}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Criticité</div>
+                            <div class="info-value">${escapeHtml(e.criticite || 'NORMALE')}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Service</div>
+                            <div class="info-value">${escapeHtml(e.service || '-')}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Localisation</div>
+                            <div class="info-value">${escapeHtml(e.batiment ? 'Bâtiment ' + e.batiment : '')} ${escapeHtml(e.salle ? '- Salle ' + e.salle : '')}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Date mise en service</div>
+                            <div class="info-value">${dateMiseService}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Fin de garantie</div>
+                            <div class="info-value" ${garantieClass}>${garantieFin}${garantieText}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Fournisseur</div>
+                            <div class="info-value">${escapeHtml(e.fournisseur || '-')}</div>
+                        </div>
                     </div>
+                    
                     <div class="qr-container">
-                        ${e.qrcode ? `<img src="${e.qrcode}" alt="QR Code"><br><small>📱 Scanner pour accès rapide</small>` : '<small>QR Code non généré</small>'}
+                        ${e.qrcode ? 
+                            `<img src="${e.qrcode}" alt="QR Code de l'équipement" title="Scanner pour accès rapide">
+                             <br><small style="color:#64748b">📱 Scanner ce QR code pour accès rapide sur mobile</small>` : 
+                            `<small style="color:#94a3b8">🔲 QR Code non généré. Modifiez l'équipement pour le générer.</small>`
+                        }
                     </div>
-                    <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    
+                    <div class="btn-group">
                         <button class="btn btn-primary" onclick="window.location.href='equipement-form.html?id=${e.id}'">✏️ Modifier</button>
                         <button class="btn btn-warning" onclick="signalerPanne(${e.id})">⚠️ Signaler une panne</button>
                         <button class="btn btn-secondary" onclick="window.print()">🖨️ Imprimer</button>
@@ -101,13 +355,23 @@
                 </div>
                 <div class="card">
                     <div class="title">🔧 Historique des interventions</div>
-                    <div id="historique">Chargement...</div>
+                    <div id="historique"><div class="loader"><div class="loader-spinner"></div><div>Chargement...</div></div></div>
                 </div>
             `;
-
-            await loadHistorique(e.id);
+            
+            await loadHistorique(equipementId);
+            
         } catch (error) {
-            document.getElementById('content').innerHTML = `<div class="card"><div class="title">❌ Erreur</div><p>Impossible de charger l'équipement</p></div>`;
+            console.error('Erreur:', error);
+            document.getElementById('content').innerHTML = `
+                <div class="card">
+                    <div class="title">❌ Erreur</div>
+                    <p style="color:#64748b">Impossible de charger les informations de l'équipement.</p>
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-secondary" onclick="window.location.href='inventaire.html'">← Retour à l'inventaire</button>
+                    </div>
+                </div>
+            `;
         }
     }
 
@@ -116,28 +380,55 @@
             const res = await fetch(`${API_URL}/maintenances/historique/${equipementId}`, {
                 headers: { 'Authorization': `Bearer ${getToken()}` }
             });
-            const historique = await res.json();
+            
+            if (!res.ok) throw new Error('Erreur chargement historique');
+            
+            const data = await res.json();
+            let historique = Array.isArray(data) ? data : (data.interventions || []);
+            
             if (historique.length === 0) {
-                document.getElementById('historique').innerHTML = '<div class="empty-state">📭 Aucune intervention</div>';
+                document.getElementById('historique').innerHTML = '<div class="empty-state">📭 Aucune intervention enregistrée pour cet équipement</div>';
                 return;
             }
+            
             document.getElementById('historique').innerHTML = `
                 <div style="overflow-x: auto;">
                     <table>
-                        <thead><tr><th>Date</th><th>Type</th><th>Technicien</th><th>Statut</th></tr></thead>
-                        <tbody>${historique.map(i => `<tr><td>${new Date(i.dateDebut).toLocaleDateString()}</td><td>${i.type}</td><td>${i.technicien?.nom || '-'}</td><td>${i.statut}</td></tr>`).join('')}</tbody>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Technicien</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${historique.map(i => `
+                                <tr onclick="window.location.href='intervention-form.html?id=${i.id}'" style="cursor:pointer">
+                                    <td>${formatDate(i.dateDebut || i.createdAt)}</td>
+                                    <td>${i.type === 'CORRECTIF' ? '🛠️ Correctif' : (i.type === 'PREVENTIF' ? '📅 Préventif' : i.type || '-')}</td>
+                                    <td>${escapeHtml((i.signalement?.description || i.diagnostic || i.description || '-').substring(0, 80))}${(i.signalement?.description?.length > 80 ? '...' : '')}</td>
+                                    <td>${escapeHtml(i.technicien?.nom || i.technicienNom || '-')}</td>
+                                    <td>${getStatusBadge(i.statut)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
                     </table>
                 </div>
             `;
         } catch (error) {
-            document.getElementById('historique').innerHTML = '<div class="empty-state">❌ Erreur de chargement</div>';
+            console.error('Erreur historique:', error);
+            document.getElementById('historique').innerHTML = '<div class="empty-state">❌ Erreur de chargement de l\'historique</div>';
         }
     }
 
-    function signalerPanne(id) { window.location.href = `../soignant/signaler-panne.html?equipementId=${id}`; }
+    function signalerPanne(id) { 
+        window.location.href = `../soignant/signaler-panne.html?equipementId=${id}`; 
+    }
 
     loadSidebar();
-    load();
+    loadEquipement();
 </script>
 </body>
 </html>
