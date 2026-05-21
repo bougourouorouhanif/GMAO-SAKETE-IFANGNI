@@ -1,11 +1,12 @@
 // Service Worker pour GMAO Sakété-Ifangni
-// Version: 2.0.0
+// Version: 2.1.0
 // Permet le mode hors ligne et l'installation sur mobile
 
 const CACHE_NAME = 'gmao-cache-v2';
 const OFFLINE_URL = '/offline.html';
+const API_BASE_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
 
-// Fichiers à mettre en cache
+// Fichiers statiques à mettre en cache (uniquement ceux qui existent réellement)
 const urlsToCache = [
   '/',
   '/index.html',
@@ -13,19 +14,20 @@ const urlsToCache = [
   '/register.html',
   '/offline.html',
   
-  // CSS
+  // CSS principaux
   '/assets/css/style.css',
   '/assets/css/mobile.css',
-  '/assets/css/admin.css',
   
-  // JS
-  '/assets/jshttps://gmao-sakete-ifangni-1.onrender.com/api.js',
+  // JS principaux (correction URL)
+  '/assets/js/api.js',
   '/assets/js/auth.js',
   '/assets/js/utils.js',
   
-  // Images
+  // Images principales
   '/assets/images/logo.png',
-  '/assets/images/background-login.jpg',
+  '/assets/images/FOND.png',
+  
+  // Icônes PWA
   '/assets/images/icons/icon-72.png',
   '/assets/images/icons/icon-96.png',
   '/assets/images/icons/icon-128.png',
@@ -35,55 +37,23 @@ const urlsToCache = [
   '/assets/images/icons/icon-384.png',
   '/assets/images/icons/icon-512.png',
   
-  // Pages technicien
-  '/technicien/index.html',
-  '/technicien/dashboard.html',
-  '/technicien/inventaire.html',
-  '/technicien/equipement-detail.html',
-  '/technicien/equipement-form.html',
-  '/technicien/maintenances.html',
-  '/technicien/intervention-form.html',
-  '/technicien/preventive.html',
-  '/technicien/diagnostic-bot.html',
-  '/technicien/stock.html',
-  '/technicien/piece-form.html',
-  '/technicien/utilisateurs.html',
-  '/technicien/planning-garde.html',
-  '/technicien/codir-rapports.html',
-  '/technicien/parametres.html',
-  '/technicien/profil.html',
-  '/technicien/fournisseurs.html',
-  '/technicien/contrats.html',
-  '/technicien/alertes.html',
-  '/technicien/documents.html',
-  
-  // Pages soignant
-  '/soignant/index.html',
-  '/soignant/dashboard.html',
-  '/soignant/signaler-panne.html',
-  '/soignant/scanner.html',
-  '/soignant/historique.html',
-  '/soignant/profil.html',
-  
-  // Pages mobile
-  '/mobile/index.html',
-  '/mobile/intervention.html',
-  '/mobile/equipement.html',
-  '/mobile/diagnostic.html'
+  // Manifest
+  '/manifest.json'
 ];
 
 // Installation du Service Worker
 self.addEventListener('install', event => {
-  console.log('[Service Worker] Installation');
+  console.log('[SW] Installation v2.1.0');
   
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('[Service Worker] Mise en cache des fichiers');
+        console.log('[SW] Mise en cache des fichiers statiques');
         return cache.addAll(urlsToCache);
       })
       .catch(err => {
-        console.error('[Service Worker] Erreur cache:', err);
+        console.error('[SW] Erreur cache initial:', err);
+        // On continue même si certains fichiers manquent
       })
   );
   
@@ -93,14 +63,14 @@ self.addEventListener('install', event => {
 
 // Activation - Nettoyage des anciens caches
 self.addEventListener('activate', event => {
-  console.log('[Service Worker] Activation');
+  console.log('[SW] Activation');
   
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('[Service Worker] Suppression ancien cache:', cacheName);
+          if (cacheName !== CACHE_NAME && cacheName.startsWith('gmao-cache')) {
+            console.log('[SW] Suppression ancien cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -108,7 +78,7 @@ self.addEventListener('activate', event => {
     })
   );
   
-  // Prendre le contrôle des clients
+  // Prendre le contrôle immédiat
   return self.clients.claim();
 });
 
@@ -116,14 +86,15 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const requestUrl = new URL(event.request.url);
   
-  // Ignorer les requêtes API (ne pas cacher)
-  if (requestUrl.pathname.startsWith('https://gmao-sakete-ifangni-1.onrender.com/api/')) {
-    // Stratégie: réseau d'abord pour les API
+  // === STRATÉGIES DE CACHE ===
+  
+  // 1. Requêtes API : stratégie "Network First"
+  if (requestUrl.pathname.startsWith('/api/') || requestUrl.href.includes(API_BASE_URL)) {
     event.respondWith(
       fetch(event.request)
         .then(response => {
-          // Mettre en cache les réponses API GET
-          if (event.request.method === 'GET') {
+          // Mettre en cache les réponses GET réussies
+          if (event.request.method === 'GET' && response.ok) {
             const responseClone = response.clone();
             caches.open(CACHE_NAME).then(cache => {
               cache.put(event.request, responseClone);
@@ -131,11 +102,16 @@ self.addEventListener('fetch', event => {
           }
           return response;
         })
-        .catch(() => {
-          // En cas d'échec, retourner une réponse d'erreur
+        .catch(async () => {
+          // Tentative de récupération depuis le cache
+          const cachedResponse = await caches.match(event.request);
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          // Réponse d'erreur personnalisée
           return new Response(JSON.stringify({ 
             offline: true, 
-            message: 'Mode hors ligne. Impossible de contacter le serveur.' 
+            message: 'Mode hors ligne. Connexion requise.' 
           }), {
             status: 503,
             headers: { 'Content-Type': 'application/json' }
@@ -145,52 +121,63 @@ self.addEventListener('fetch', event => {
     return;
   }
   
-  // Pour les requêtes statiques: stratégie cache d'abord
+  // 2. Fichiers statiques (HTML, CSS, JS, images) : stratégie "Cache First"
   event.respondWith(
     caches.match(event.request)
-      .then(response => {
-        if (response) {
-          // Retourner le cache si disponible
-          return response;
+      .then(cachedResponse => {
+        if (cachedResponse) {
+          // Retourner depuis le cache
+          return cachedResponse;
         }
         
-        // Sinon, faire la requête réseau
+        // Sinon, requête réseau
         return fetch(event.request)
           .then(response => {
-            // Vérifier si la réponse est valide
+            // Vérifier si la réponse est valide pour mise en cache
             if (!response || response.status !== 200 || response.type !== 'basic') {
               return response;
             }
             
-            // Cloner et mettre en cache
+            // Mettre en cache pour la prochaine fois
             const responseToCache = response.clone();
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
-              });
-              
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseToCache);
+            });
+            
             return response;
           })
-          .catch(() => {
-            // Si hors ligne et pas de cache, retourner la page offline
-            if (event.request.headers.get('accept').includes('text/html')) {
-              return caches.match(OFFLINE_URL);
+          .catch(async () => {
+            // Si requête HTML en échec, afficher page hors ligne
+            const acceptHeader = event.request.headers.get('accept') || '';
+            if (acceptHeader.includes('text/html')) {
+              const offlinePage = await caches.match(OFFLINE_URL);
+              if (offlinePage) return offlinePage;
             }
+            
+            // Sinon, retourner une réponse générique
+            return new Response('Ressource non disponible hors ligne', {
+              status: 503,
+              statusText: 'Service Unavailable'
+            });
           });
       })
   );
 });
 
-// Gestion des notifications push
+// ==================== NOTIFICATIONS PUSH ====================
+
 self.addEventListener('push', event => {
-  console.log('[Service Worker] Notification push reçue', event);
+  console.log('[SW] Notification push reçue');
   
   let data = {
     title: 'GMAO Sakété',
-    body: 'Une nouvelle notification',
+    body: 'Nouvelle notification',
     icon: '/assets/images/icons/icon-192.png',
     badge: '/assets/images/icons/icon-72.png',
     tag: 'gmao-notification',
+    vibrate: [200, 100, 200],
+    requireInteraction: false,
+    url: '/',
     data: {}
   };
   
@@ -209,20 +196,19 @@ self.addEventListener('push', event => {
       icon: data.icon,
       badge: data.badge,
       tag: data.tag,
-      vibrate: [200, 100, 200],
-      requireInteraction: data.requireInteraction || false,
-      data: data.data,
+      vibrate: data.vibrate,
+      requireInteraction: data.requireInteraction,
+      data: { url: data.url, ...data.data },
       actions: [
-        { action: 'open', title: 'Voir' },
-        { action: 'close', title: 'Fermer' }
+        { action: 'open', title: '🔍 Voir' },
+        { action: 'close', title: '❌ Fermer' }
       ]
     })
   );
 });
 
-// Gestion du clic sur les notifications
 self.addEventListener('notificationclick', event => {
-  console.log('[Service Worker] Clic sur notification', event);
+  console.log('[SW] Clic sur notification', event.action);
   
   event.notification.close();
   
@@ -235,7 +221,7 @@ self.addEventListener('notificationclick', event => {
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true })
       .then(windowClients => {
-        // Si une fenêtre est déjà ouverte, l'utiliser
+        // Vérifier si une fenêtre est déjà ouverte sur cette URL
         for (let client of windowClients) {
           if (client.url === urlToOpen && 'focus' in client) {
             return client.focus();
@@ -249,93 +235,156 @@ self.addEventListener('notificationclick', event => {
   );
 });
 
-// Synchronisation en arrière-plan
+// ==================== SYNCHRONISATION ARRIÈRE-PLAN ====================
+
 self.addEventListener('sync', event => {
-  console.log('[Service Worker] Synchronisation', event.tag);
+  console.log('[SW] Synchronisation demandée:', event.tag);
   
-  if (event.tag === 'sync-interventions') {
-    event.waitUntil(syncInterventions());
+  if (event.tag === 'sync-signalements') {
+    event.waitUntil(syncPendingReports());
   }
 });
 
-// Fonction de synchronisation des interventions hors ligne
-async function syncInterventions() {
-  console.log('[Service Worker] Synchronisation des interventions');
+async function syncPendingReports() {
+  console.log('[SW] Synchronisation des signalements en attente');
   
   try {
-    const cache = await caches.open(CACHE_NAME);
-    const pendingRequests = await cache.keys();
+    // Récupérer les signalements en attente depuis IndexedDB ou localStorage
+    const pendingReports = await getPendingReports();
     
-    for (const request of pendingRequests) {
-      if (request.url.includes('https://gmao-sakete-ifangni-1.onrender.com/api/maintenances/signaler') && 
-          request.method === 'POST') {
-        const response = await fetch(request);
+    for (const report of pendingReports) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/maintenances/signaler`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${report.token}`
+          },
+          body: JSON.stringify(report.data)
+        });
+        
         if (response.ok) {
-          await cache.delete(request);
-          console.log('[Service Worker] Requête synchronisée:', request.url);
+          await removePendingReport(report.id);
+          console.log('[SW] Signalement synchronisé:', report.id);
+        }
+      } catch (err) {
+        console.error('[SW] Erreur sync signalement:', err);
+      }
+    }
+  } catch (error) {
+    console.error('[SW] Erreur synchronisation:', error);
+  }
+}
+
+// Helper: Récupérer les signalements en attente
+async function getPendingReports() {
+  try {
+    const cache = await caches.open(CACHE_NAME);
+    const response = await cache.match('/pending-reports');
+    if (response) {
+      return await response.json();
+    }
+  } catch (e) {}
+  return [];
+}
+
+async function removePendingReport(id) {
+  const reports = await getPendingReports();
+  const filtered = reports.filter(r => r.id !== id);
+  const cache = await caches.open(CACHE_NAME);
+  await cache.put('/pending-reports', new Response(JSON.stringify(filtered)));
+}
+
+// ==================== MESSAGES DEPUIS LA PAGE ====================
+
+self.addEventListener('message', event => {
+  console.log('[SW] Message reçu:', event.data.type);
+  
+  switch (event.data.type) {
+    case 'CACHE_TOKEN':
+      // Stocker le token pour les futures synchronisations
+      caches.open(CACHE_NAME).then(cache => {
+        cache.put('/token-cache', new Response(JSON.stringify({ 
+          token: event.data.token,
+          expiry: Date.now() + 7 * 24 * 60 * 60 * 1000
+        })));
+      });
+      break;
+      
+    case 'CLEAR_CACHE':
+      caches.delete(CACHE_NAME).then(() => {
+        console.log('[SW] Cache effacé');
+      });
+      break;
+      
+    case 'PENDING_REPORT':
+      // Ajouter un signalement en attente
+      getPendingReports().then(reports => {
+        reports.push({
+          id: Date.now(),
+          data: event.data.report,
+          token: event.data.token
+        });
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put('/pending-reports', new Response(JSON.stringify(reports)));
+        });
+      });
+      break;
+      
+    case 'SKIP_WAITING':
+      self.skipWaiting();
+      break;
+      
+    default:
+      console.log('[SW] Message inconnu:', event.data.type);
+  }
+});
+
+// ==================== SYNCHRONISATION PÉRIODIQUE ====================
+
+if ('periodicsync' in self.registration) {
+  self.addEventListener('periodicsync', event => {
+    if (event.tag === 'update-data') {
+      event.waitUntil(updateBackgroundData());
+    }
+  });
+}
+
+async function updateBackgroundData() {
+  console.log('[SW] Mise à jour données en arrière-plan');
+  
+  try {
+    // Récupérer le token depuis le cache
+    const cache = await caches.open(CACHE_NAME);
+    const tokenResponse = await cache.match('/token-cache');
+    
+    if (tokenResponse) {
+      const { token } = await tokenResponse.json();
+      
+      if (token) {
+        // Tenter de mettre à jour les données dashboard
+        const response = await fetch(`${API_BASE_URL}/dashboard/technicien`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          await cache.put('/dashboard-cache', new Response(JSON.stringify(data)));
+          console.log('[SW] Dashboard mis à jour');
         }
       }
     }
   } catch (error) {
-    console.error('[Service Worker] Erreur synchronisation:', error);
+    console.error('[SW] Erreur mise à jour:', error);
   }
 }
 
-// Mise à jour périodique en arrière-plan (si supporté)
-self.addEventListener('periodicsync', event => {
-  if (event.tag === 'update-data') {
-    event.waitUntil(updateBackgroundData());
-  }
+// ==================== GESTION DES ERREURS ====================
+
+self.addEventListener('error', event => {
+  console.error('[SW] Erreur:', event.error);
 });
 
-async function updateBackgroundData() {
-  console.log('[Service Worker] Mise à jour données en arrière-plan');
-  
-  try {
-    const token = await getTokenFromCache();
-    if (token) {
-      const response = await fetch('https://gmao-sakete-ifangni-1.onrender.com/api/dashboard/technicien', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        const cache = await caches.open(CACHE_NAME);
-        await cache.put('https://gmao-sakete-ifangni-1.onrender.com/api/dashboard/technicien', new Response(JSON.stringify(data)));
-      }
-    }
-  } catch (error) {
-    console.error('[Service Worker] Erreur mise à jour:', error);
-  }
-}
-
-async function getTokenFromCache() {
-  const cache = await caches.open(CACHE_NAME);
-  const response = await cache.match('/token-cache');
-  if (response) {
-    const data = await response.json();
-    return data.token;
-  }
-  return null;
-}
-
-// Gestion des erreurs de réseau
-self.addEventListener('fetcherror', event => {
-  console.log('[Service Worker] Erreur réseau', event);
-});
-
-// Message depuis la page principale
-self.addEventListener('message', event => {
-  console.log('[Service Worker] Message reçu', event.data);
-  
-  if (event.data.type === 'CACHE_TOKEN') {
-    const token = event.data.token;
-    caches.open(CACHE_NAME).then(cache => {
-      cache.put('/token-cache', new Response(JSON.stringify({ token })));
-    });
-  }
-  
-  if (event.data.type === 'CLEAR_CACHE') {
-    caches.delete(CACHE_NAME);
-  }
+self.addEventListener('unhandledrejection', event => {
+  console.error('[SW] Promise non gérée:', event.reason);
 });
