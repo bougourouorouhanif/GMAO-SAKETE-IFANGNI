@@ -2,17 +2,51 @@
 <footer class="gmao-footer">
     <div class="footer-container">
         <div class="footer-info">
-            <div class="footer-logo">🏥 GMAO Sakété-Ifangni</div>
-            <div class="footer-version">Version 2.0 | © 2026</div>
+            <div class="footer-logo">
+                <span>🏥</span> GMAO Sakété-Ifangni
+            </div>
+            <div class="footer-version">
+                Version 2.1.0 | © 2026 Hôpital de Zone Sakété-Ifangni
+            </div>
+            <div class="footer-build">
+                Dernière mise à jour : 21 mai 2026
+            </div>
         </div>
+        
         <div class="footer-links">
-            <a href="/index.html">🏠 Accueil</a>
-            <a href="#" onclick="showHelp()">❓ Aide</a>
-            <a href="#" onclick="showAbout()">ℹ️ À propos</a>
-            <a href="/mobile/index.html">📱 Version mobile</a>
+            <a href="/index.html" class="footer-link">
+                <span>🏠</span> Accueil
+            </a>
+            <a href="#" class="footer-link" onclick="showHelp(event)">
+                <span>❓</span> Aide
+            </a>
+            <a href="#" class="footer-link" onclick="showAbout(event)">
+                <span>ℹ️</span> À propos
+            </a>
+            <a href="/mobile/index.html" class="footer-link">
+                <span>📱</span> Version mobile
+            </a>
+            <a href="#" class="footer-link" onclick="showContact(event)">
+                <span>📞</span> Contact
+            </a>
         </div>
+        
         <div class="footer-contact">
-            📞 Service Biomédical: +229 97 12 34 56
+            <div class="contact-item">
+                <span>📞</span> Service Biomédical: <strong>+229 97 12 34 56</strong>
+            </div>
+            <div class="contact-item">
+                <span>✉️</span> Email: <strong>support@gmao-sakete.bj</strong>
+            </div>
+            <div class="contact-item">
+                <span>⏰</span> Disponible 24h/24, 7j/7
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer-bottom">
+        <div class="footer-bottom-text">
+            Gestion de Maintenance Assistée par Ordinateur - Solution complète pour les établissements de santé
         </div>
     </div>
 </footer>
@@ -21,35 +55,387 @@
     .gmao-footer {
         background: #1e293b;
         color: #94a3b8;
-        padding: 20px;
+        padding: 30px 20px 20px;
         margin-top: 40px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
+    
     .footer-container {
         max-width: 1200px;
         margin: 0 auto;
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-start;
         flex-wrap: wrap;
-        gap: 15px;
+        gap: 30px;
     }
-    .footer-logo { font-weight: bold; color: white; margin-bottom: 5px; }
-    .footer-version { font-size: 11px; }
-    .footer-links a {
+    
+    .footer-info {
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .footer-logo {
+        font-weight: bold;
+        color: white;
+        font-size: 18px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .footer-version {
+        font-size: 11px;
+        margin-bottom: 4px;
+    }
+    
+    .footer-build {
+        font-size: 10px;
+        opacity: 0.6;
+    }
+    
+    .footer-links {
+        flex: 1;
+        min-width: 200px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .footer-link {
         color: #94a3b8;
         text-decoration: none;
-        margin: 0 10px;
-        font-size: 12px;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+        width: fit-content;
     }
-    .footer-links a:hover { color: white; }
-    .footer-contact { font-size: 12px; }
+    
+    .footer-link:hover {
+        color: white;
+        transform: translateX(3px);
+    }
+    
+    .footer-link span {
+        font-size: 14px;
+    }
+    
+    .footer-contact {
+        flex: 1;
+        min-width: 220px;
+    }
+    
+    .contact-item {
+        font-size: 12px;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .contact-item strong {
+        color: #e2e8f0;
+    }
+    
+    .footer-bottom {
+        max-width: 1200px;
+        margin: 20px auto 0;
+        padding-top: 20px;
+        border-top: 1px solid #334155;
+        text-align: center;
+    }
+    
+    .footer-bottom-text {
+        font-size: 10px;
+        opacity: 0.5;
+    }
+    
+    /* Modal d'aide */
+    .footer-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .footer-modal-content {
+        background: white;
+        border-radius: 24px;
+        padding: 28px;
+        max-width: 450px;
+        width: 90%;
+        animation: modalFadeIn 0.3s ease;
+    }
+    
+    @keyframes modalFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .footer-modal-content h3 {
+        color: #0066FF;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .footer-modal-content .modal-close {
+        background: #0066FF;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 30px;
+        cursor: pointer;
+        margin-top: 20px;
+        width: 100%;
+        font-weight: 600;
+    }
+    
+    .help-section {
+        margin-bottom: 15px;
+    }
+    
+    .help-section-title {
+        font-weight: bold;
+        color: #1e293b;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+    
+    .help-section-content {
+        font-size: 13px;
+        color: #64748b;
+        line-height: 1.5;
+    }
+    
     @media (max-width: 768px) {
-        .footer-container { flex-direction: column; text-align: center; }
-        .footer-links { margin: 10px 0; }
+        .footer-container {
+            flex-direction: column;
+            text-align: center;
+            align-items: center;
+        }
+        
+        .footer-links {
+            align-items: center;
+        }
+        
+        .footer-link {
+            width: auto;
+        }
+        
+        .contact-item {
+            justify-content: center;
+        }
+        
+        .footer-logo {
+            justify-content: center;
+        }
     }
 </style>
 
 <script>
-    function showHelp() { alert('📖 Aide GMAO\n\n🔧 Technicien: Gestion complète\n👨‍⚕️ Soignant: Signalement de pannes\n📱 Version mobile disponible'); }
-    function showAbout() { alert('🏥 GMAO - Hôpital de Zone Sakété-Ifangni\n\nGestion de Maintenance Assistée par Ordinateur\nVersion 2.0\n\n© 2026 - Tous droits réservés'); }
+    function showHelp(event) {
+        if (event) event.preventDefault();
+        
+        const modal = document.createElement('div');
+        modal.className = 'footer-modal';
+        modal.innerHTML = `
+            <div class="footer-modal-content">
+                <h3>📖 Aide - GMAO Sakété</h3>
+                
+                <div class="help-section">
+                    <div class="help-section-title">🔧 Pour les Techniciens</div>
+                    <div class="help-section-content">
+                        • Gestion complète de l'inventaire<br>
+                        • Suivi des interventions et maintenances<br>
+                        • Gestion des pièces de rechange<br>
+                        • Rapports CoDIR et statistiques<br>
+                        • Validation des comptes soignants
+                    </div>
+                </div>
+                
+                <div class="help-section">
+                    <div class="help-section-title">👨‍⚕️ Pour les Soignants</div>
+                    <div class="help-section-content">
+                        • Signalement rapide des pannes<br>
+                        • Scan QR code des équipements<br>
+                        • Suivi de l'historique des signalements<br>
+                        • Assistant IA pour le diagnostic
+                    </div>
+                </div>
+                
+                <div class="help-section">
+                    <div class="help-section-title">📱 Version Mobile</div>
+                    <div class="help-section-content">
+                        • Accès à toutes les fonctionnalités depuis votre smartphone<br>
+                        • Interface adaptée aux petits écrans<br>
+                        • Scan QR code intégré
+                    </div>
+                </div>
+                
+                <div class="help-section">
+                    <div class="help-section-title">📞 Support Technique</div>
+                    <div class="help-section-content">
+                        Tél: +229 01 41 80 34 59 <br>
+                        Email: support@gmao-sakete.bj<br>
+                        Disponible 24h/24, 7j/7
+                    </div>
+                </div>
+                
+                <button class="modal-close" onclick="this.closest('.footer-modal').remove()">Fermer</button>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        modal.style.display = 'flex';
+        
+        // Fermer en cliquant en dehors
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+    }
+    
+    function showAbout(event) {
+        if (event) event.preventDefault();
+        
+        const modal = document.createElement('div');
+        modal.className = 'footer-modal';
+        modal.innerHTML = `
+            <div class="footer-modal-content">
+                <h3>ℹ️ À propos de GMAO Sakété</h3>
+                
+                <div class="help-section">
+                    <div class="help-section-title">🏥 Hôpital de Zone Sakété-Ifangni</div>
+                    <div class="help-section-content">
+                        GMAO (Gestion de Maintenance Assistée par Ordinateur)<br>
+                        Solution complète pour la gestion technique des équipements biomédicaux.
+                    </div>
+                </div>
+                
+                <div class="help-section">
+                    <div class="help-section-title">📊 Version</div>
+                    <div class="help-section-content">
+                        Version 2.1.0<br>
+                        Dernière mise à jour : 21 mai 2026
+                    </div>
+                </div>
+                
+                <div class="help-section">
+                    <div class="help-section-title">🛠️ Technologies</div>
+                    <div class="help-section-content">
+                        • Frontend: HTML5, CSS3, JavaScript<br>
+                        • Backend: Node.js, Express<br>
+                        • Base de données: PostgreSQL<br>
+                        • API RESTful
+                    </div>
+                </div>
+                
+                <div class="help-section">
+                    <div class="help-section-title">👥 Équipe</div>
+                    <div class="help-section-content">
+                        Développé par la Direction des Systèmes d'Information<br>
+                        &copy; 2026 - Tous droits réservés
+                    </div>
+                </div>
+                
+                <button class="modal-close" onclick="this.closest('.footer-modal').remove()">Fermer</button>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        modal.style.display = 'flex';
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+    }
+    
+    function showContact(event) {
+        if (event) event.preventDefault();
+        
+        const modal = document.createElement('div');
+        modal.className = 'footer-modal';
+        modal.innerHTML = `
+            <div class="footer-modal-content">
+                <h3>📞 Nous contacter</h3>
+                
+                <div class="help-section">
+                    <div class="help-section-title">📍 Adresse</div>
+                    <div class="help-section-content">
+                        Hôpital de Zone Sakété-Ifangni<br>
+                        Sakété, Bénin
+                    </div>
+                </div>
+                
+                <div class="help-section">
+                    <div class="help-section-title">📱 Téléphone</div>
+                    <div class="help-section-content">
+                        Service Biomédical: <strong>+229 01 41 80 34 59 </strong>
+                    </div>
+                </div>
+                
+                <div class="help-section">
+                    <div class="help-section-title">✉️ Email</div>
+                    <div class="help-section-content">
+                        Support technique: <strong>support@gmao-sakete.bj</strong><br>
+                        Direction: <strong>direction@hopital-sakete.bj</strong>
+                    </div>
+                </div>
+                
+                <div class="help-section">
+                    <div class="help-section-title">⏰ Horaires support</div>
+                    <div class="help-section-content">
+                        Service maintenance: 24h/24, 7j/7<br>
+                        Support technique: Lundi-Vendredi, 8h-18h
+                    </div>
+                </div>
+                
+                <button class="modal-close" onclick="this.closest('.footer-modal').remove()">Fermer</button>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        modal.style.display = 'flex';
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+    }
+    
+    // Chargement dynamique des liens actifs
+    function updateActiveFooterLinks() {
+        const currentPath = window.location.pathname;
+        const links = document.querySelectorAll('.footer-link');
+        links.forEach(link => {
+            const href = link.getAttribute('href');
+            if (href && href !== '#' && currentPath.includes(href)) {
+                link.style.color = 'white';
+                link.style.fontWeight = 'bold';
+            }
+        });
+    }
+    
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', updateActiveFooterLinks);
 </script>
