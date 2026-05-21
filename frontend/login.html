@@ -6,9 +6,6 @@
     <meta name="theme-color" content="#1b5e20">
     <title>GMAO - Connexion</title>
     
-</head>
-<body>
-
     <style>
     * {
         margin: 0;
@@ -61,12 +58,11 @@
         justify-content: center;
         margin: 0 auto 15px;
         font-size: 40px;
-        border: 2px solid ;
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
     h1 {
-        color:  #0066FF;
+        color: #0066FF;
         font-size: 24px;
         font-weight: 600;
     }
@@ -83,8 +79,6 @@
         margin-top: 5px;
         font-weight: 500;
     }
-
-
     
     .role-tabs {
         display: flex;
@@ -95,12 +89,21 @@
         padding: 5px;
         margin-bottom: 25px;
         border: 1px solid rgba(255, 255, 255, 0.2);
+        gap: 5px;
     }
-  
 
-
-
-    
+    .role-tab {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 40px;
+        background: transparent;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 14px;
+    }
 
     .role-tab.active {
         background: #0066FF; 
@@ -131,7 +134,6 @@
         margin-bottom: 6px;
     }
 
-
     .input-icon {
         position: relative;
     }
@@ -142,9 +144,10 @@
         top: 50%;
         transform: translateY(-50%);
         font-size: 18px;
+        z-index: 1;
     }
 
-    input {
+    input, select {
         width: 100%;
         padding: 14px 14px 14px 45px;
         border: 1px solid rgba(255, 255, 255, 0.3);
@@ -155,11 +158,24 @@
         transition: all 0.3s;
     }
 
+    select {
+        appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='white'><path d='M7 10l5 5 5-5z'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        cursor: pointer;
+    }
+
+    select option {
+        background: #1b5e20;
+        color: white;
+    }
+
     input::placeholder {
         color: rgba(255, 255, 255, 0.7);
     }
 
-    input:focus {
+    input:focus, select:focus {
         outline: none;
         border-color: #ffd600;
         background: rgba(255, 255, 255, 0.15);
@@ -181,12 +197,14 @@
         box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
 
-
-
-
-    .btn-primary:hover {
+    .btn-primary:hover:not(:disabled) {
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
     }
 
     .error-message, .info-message, .success-message {
@@ -227,6 +245,13 @@
         padding: 10px 0;
         border-bottom: 1px solid #e8f5e9;
         cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .help-item:hover {
+        background: rgba(255,255,255,0.1);
+        border-radius: 12px;
+        padding-left: 8px;
     }
 
     .help-item:last-child { border-bottom: none; }
@@ -268,7 +293,7 @@
         display: inline-block;
         width: 16px;
         height: 16px;
-        border: 2px solid #1b5e20;
+        border: 2px solid white;
         border-radius: 50%;
         border-top-color: transparent;
         animation: spin 0.6s linear infinite;
@@ -276,14 +301,24 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    .back-link a {
+        color: #ffd600;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
     @media (max-width: 480px) {
         .form-card { padding: 24px 20px; }
+        .role-tab { padding: 10px; font-size: 12px; }
     }
     @keyframes fadeInUp {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
     }
-</style>
+    </style>
+</head>
+<body>
+
 <div class="auth-container">
     <div class="logo-section">
         <div class="logo">🏥</div>
@@ -293,8 +328,8 @@
     </div>
 
     <div class="role-tabs">
-        <button class="role-tab active" onclick="selectRole('technicien', event)">🔧 Technicien</button>
-        <button class="role-tab" onclick="selectRole('soignant', event)">👨‍⚕️ Soignant</button>
+        <button class="role-tab active" data-role="technicien">🔧 Technicien</button>
+        <button class="role-tab" data-role="soignant">👨‍⚕️ Soignant</button>
     </div>
 
     <div id="loginForm" class="form-card">
@@ -313,9 +348,9 @@
                 <input type="password" id="loginPassword" placeholder="••••••••">
             </div>
         </div>
-        <button class="btn-primary" onclick="login()" id="loginBtn">Se connecter</button>
+        <button class="btn-primary" id="loginBtn">Se connecter</button>
         <div class="back-link" style="text-align:center; margin-top:15px;">
-            <a href="#" onclick="switchTab('register')" style="color:#1b5e20;">Créer un compte</a>
+            <a href="#" id="showRegisterLink">Créer un compte</a>
         </div>
     </div>
 
@@ -324,13 +359,12 @@
         <div id="registerSuccess" class="success-message"></div>
         <div id="pendingMessage" class="info-message">⏳ Votre compte est en attente de validation par le technicien biomédical.</div>
 
-        <div class="form-group"><label>Nom complet *</label><div class="input-icon"><span>👨‍⚕️</span><input type="text" id="regNom" placeholder="DOSSOU"></div></div>
-        <div class="form-group"><label>Prénom</label><div class="input-icon"><span>👤</span><input type="text" id="regPrenom" placeholder="Paul"></div></div>
+        <div class="form-group"><label>Nom complet *</label><div class="input-icon"><span>👨‍⚕️</span><input type="text" id="regNom" placeholder="Votre nom"></div></div>
+        <div class="form-group"><label>Prénom</label><div class="input-icon"><span>👤</span><input type="text" id="regPrenom" placeholder="Votre prénom"></div></div>
         <div class="form-group"><label>Email *</label><div class="input-icon"><span>📧</span><input type="email" id="regEmail" placeholder="prenom.nom@hopital.bj"></div></div>
-        <div class="form-group"><label>Matricule *</label><div class="input-icon"><span>🆔</span><input type="text" id="regMatricule" placeholder="HZSI-2024-001"></div></div>
         <div class="form-group"><label>Service *</label><div class="input-icon"><span>🏥</span>
             <select id="regService">
-                <option value="">Sélectionnez</option>
+                <option value="">Sélectionnez votre service</option>
                 <option value="URGENCES">🚨 Urgences</option>
                 <option value="RADIOLOGIE">🩻 Radiologie</option>
                 <option value="BLOC_OPERATOIRE">🏥 Bloc opératoire</option>
@@ -344,71 +378,46 @@
                 <option value="AUTRE">📌 Autre</option>
             </select>
         </div></div>
-        <div class="form-group"><label>Téléphone</label><div class="input-icon"><span>📞</span><input type="tel" id="regPhone" placeholder="+229 00 00 00 00"></div></div>
+        <div class="form-group"><label>Téléphone</label><div class="input-icon"><span>📞</span><input type="tel" id="regPhone" placeholder="+229 XX XX XX XX"></div></div>
         <div class="form-group"><label>Mot de passe *</label><div class="input-icon"><span>🔒</span><input type="password" id="regPassword" placeholder="Minimum 6 caractères"></div></div>
-        <div class="form-group"><label>Confirmer *</label><div class="input-icon"><span>✓</span><input type="password" id="regConfirmPassword" placeholder=""></div></div>
+        <div class="form-group"><label>Confirmer le mot de passe *</label><div class="input-icon"><span>✓</span><input type="password" id="regConfirmPassword" placeholder="Retapez votre mot de passe"></div></div>
 
-        <button class="btn-primary" onclick="register()" id="registerBtn">📝 S'inscrire</button>
-        <div class="back-link" style="text-align:center; margin-top:15px;"><a href="#" onclick="switchTab('login')" style="color:#1b5e20;">Déjà un compte ? Se connecter</a></div>
+        <button class="btn-primary" id="registerBtn">📝 S'inscrire</button>
+        <div class="back-link" style="text-align:center; margin-top:15px;"><a href="#" id="showLoginLink">Déjà un compte ? Se connecter</a></div>
     </div>
 
     <div class="help-section">
         <div class="help-title"><span>❓</span> Aide & Support</div>
-        <div class="help-item" onclick="openHelp('guide')"><div class="help-icon">📖</div><div class="help-text">Guide d'utilisation</div><div class="help-arrow">›</div></div>
-        <div class="help-item" onclick="openHelp('faq')"><div class="help-icon">❓</div><div class="help-text">FAQ</div><div class="help-arrow">›</div></div>
-        <div class="help-item" onclick="openHelp('contact')"><div class="help-icon">📞</div><div class="help-text">Support technique</div><div class="help-arrow">›</div></div>
-        <div class="help-item" onclick="openHelp('whatsapp')"><div class="help-icon">💬</div><div class="help-text">WhatsApp</div><div class="help-arrow">›</div></div>
+        <div class="help-item" data-help="guide"><div class="help-icon">📖</div><div class="help-text">Guide d'utilisation</div><div class="help-arrow">›</div></div>
+        <div class="help-item" data-help="faq"><div class="help-icon">❓</div><div class="help-text">FAQ</div><div class="help-arrow">›</div></div>
+        <div class="help-item" data-help="contact"><div class="help-icon">📞</div><div class="help-text">Support technique</div><div class="help-arrow">›</div></div>
+        <div class="help-item" data-help="whatsapp"><div class="help-icon">💬</div><div class="help-text">WhatsApp</div><div class="help-arrow">›</div></div>
     </div>
     <div class="footer">GMAO - Hôpital de Zone Sakété-Ifangni • Version 2.0</div>
 </div>
 
-<div id="helpModal" class="modal" onclick="if(event.target===this) closeHelp()">
+<div id="helpModal" class="modal">
     <div class="modal-content">
-        <div class="modal-header"><span class="modal-title" id="modalTitle">Aide</span><button class="modal-close" onclick="closeHelp()">×</button></div>
+        <div class="modal-header"><span class="modal-title" id="modalTitle">Aide</span><button class="modal-close" id="closeModalBtn">×</button></div>
         <div class="modal-body" id="modalBody"></div>
     </div>
 </div>
 
 <script>
+    // Configuration
     const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
     let currentRole = 'technicien';
 
-    const credentials = {
-        technicien: { email: 'tech.biomedical@hopital.bj', password: 'admin123' },
-        soignant: { email: 'infirmier.urgences@hopital.bj', password: 'admin123' }
-    };
-
-    function selectRole(role, evt) {
-        currentRole = role;
-        document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
-        if (evt && evt.target) {
-            evt.target.classList.add('active');
-        }
-        document.getElementById('loginEmail').value = credentials[role].email;
-        document.getElementById('loginPassword').value = credentials[role].password;
-    }
-
-    function switchTab(tab) {
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-        const tabs = document.querySelectorAll('.form-tab');
-
-        if (tab === 'login') {
-            loginForm.style.display = 'block';
-            registerForm.style.display = 'none';
-            tabs[0].classList.add('active');
-            tabs[1].classList.remove('active');
-        } else {
-            loginForm.style.display = 'none';
-            registerForm.style.display = 'block';
-            tabs[0].classList.remove('active');
-            tabs[1].classList.add('active');
-        }
-        hideMessages();
-    }
-
+    // Éléments DOM
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    
+    // ==================== FONCTIONS UTILITAIRES ====================
+    
     function hideMessages() {
-        ['loginError', 'loginInfo', 'registerError', 'registerSuccess'].forEach(id => {
+        ['loginError', 'registerError', 'registerSuccess', 'pendingMessage'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.style.display = 'none';
         });
@@ -416,23 +425,79 @@
 
     function showError(elementId, message) {
         const el = document.getElementById(elementId);
-        if (el) { el.innerHTML = message; el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 5000); }
+        if (el) { 
+            el.innerHTML = message; 
+            el.style.display = 'block'; 
+            setTimeout(() => {
+                if (el.style.display === 'block') el.style.display = 'none';
+            }, 5000);
+        }
     }
 
     function showSuccess(elementId, message) {
         const el = document.getElementById(elementId);
-        if (el) { el.innerHTML = message; el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 3000); }
+        if (el) { 
+            el.innerHTML = message; 
+            el.style.display = 'block'; 
+            setTimeout(() => {
+                if (el.style.display === 'block') el.style.display = 'none';
+            }, 3000);
+        }
     }
 
+    // ==================== GESTION DES ONGLETS ====================
+    
+    function switchTab(tab) {
+        if (tab === 'login') {
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+        } else {
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+            document.getElementById('pendingMessage').style.display = 'block';
+        }
+        hideMessages();
+    }
+
+    // ==================== SÉLECTION DU RÔLE ====================
+    
+    function selectRole(role) {
+        currentRole = role;
+        
+        // Mise à jour des classes actives
+        document.querySelectorAll('.role-tab').forEach(tab => {
+            if (tab.getAttribute('data-role') === role) {
+                tab.classList.add('active');
+            } else {
+                tab.classList.remove('active');
+            }
+        });
+        
+        // On vide les champs à chaque changement de rôle
+        document.getElementById('loginEmail').value = '';
+        document.getElementById('loginPassword').value = '';
+    }
+
+    // ==================== LOGIN ====================
+    
     async function login() {
         const email = document.getElementById('loginEmail').value.trim();
         const password = document.getElementById('loginPassword').value;
 
-        if (!email || !password) { showError('loginError', 'Veuillez remplir tous les champs'); return; }
+        if (!email || !password) { 
+            showError('loginError', 'Veuillez remplir tous les champs'); 
+            return; 
+        }
+        
+        if (!email.includes('@')) {
+            showError('loginError', 'Email invalide');
+            return;
+        }
 
-        const btn = document.getElementById('loginBtn');
-        btn.innerHTML = '<span class="loader"></span> Connexion...';
-        btn.disabled = true;
+        // Désactiver le bouton
+        loginBtn.disabled = true;
+        const originalBtnText = loginBtn.innerHTML;
+        loginBtn.innerHTML = '<span class="loader"></span> Connexion...';
 
         const urlParams = new URLSearchParams(window.location.search);
         const isMobile = urlParams.get('mobile') === 'true';
@@ -443,119 +508,225 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
+            
             const data = await response.json();
 
-            if (response.ok) {
+            if (response.ok && data.token) {
                 localStorage.setItem('token', data.token);
-                localStorage.setItem('userRole', data.user.role);
-                localStorage.setItem('userName', data.user.nom);
-                localStorage.setItem('userId', data.user.id);
-                localStorage.setItem('userService', data.user.service || '');
+                localStorage.setItem('userRole', data.user?.role || currentRole.toUpperCase());
+                localStorage.setItem('userName', data.user?.nom || email.split('@')[0]);
+                localStorage.setItem('userId', data.user?.id || '');
+                localStorage.setItem('userService', data.user?.service || '');
+                
                 showSuccess('loginError', 'Connexion réussie !');
                 
                 setTimeout(() => {
-                    if (data.user.role === 'TECHNICIEN') {
-                        if (isMobile) {
-                            window.location.href = '/mobile/dashboard-mobile.html';
-                        } else {
-                            window.location.href = '/technicien/dashboard.html';
-                        }
+                    const userRole = (data.user?.role || currentRole).toUpperCase();
+                    if (userRole === 'TECHNICIEN') {
+                        window.location.href = isMobile ? '/mobile/dashboard-mobile.html' : '/technicien/dashboard.html';
                     } else {
-                        if (isMobile) {
-                            window.location.href = '/soignant/index.html?mobile=true';
-                        } else {
-                            window.location.href = '/soignant/index.html';
-                        }
+                        window.location.href = isMobile ? '/soignant/index.html?mobile=true' : '/soignant/index.html';
                     }
                 }, 1000);
             } else {
                 showError('loginError', data.message || 'Email ou mot de passe incorrect');
             }
         } catch (error) {
-            showError('loginError', 'Erreur de connexion');
+            console.error('Login error:', error);
+            showError('loginError', 'Erreur de connexion au serveur. Vérifiez votre connexion internet.');
         } finally {
-            btn.innerHTML = 'Se connecter';
-            btn.disabled = false;
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = originalBtnText;
         }
     }
 
+    // ==================== REGISTER ====================
+    
     async function register() {
         const nom = document.getElementById('regNom').value.trim();
         const prenom = document.getElementById('regPrenom').value.trim();
         const email = document.getElementById('regEmail').value.trim();
-        const matricule = document.getElementById('regMatricule').value.trim();
         const service = document.getElementById('regService').value;
         const telephone = document.getElementById('regPhone').value.trim();
         const password = document.getElementById('regPassword').value;
         const confirmPassword = document.getElementById('regConfirmPassword').value;
 
-        if (!nom || !email || !matricule || !service || !password) { showError('registerError', 'Veuillez remplir tous les champs obligatoires'); return; }
-        if (password !== confirmPassword) { showError('registerError', 'Les mots de passe ne correspondent pas'); return; }
-        if (password.length < 6) { showError('registerError', 'Mot de passe minimum 6 caractères'); return; }
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('registerError', 'Email invalide'); return; }
+        // Validations
+        if (!nom || !email || !service || !password) { 
+            showError('registerError', 'Veuillez remplir tous les champs obligatoires (*)'); 
+            return; 
+        }
+        if (password !== confirmPassword) { 
+            showError('registerError', 'Les mots de passe ne correspondent pas'); 
+            return; 
+        }
+        if (password.length < 6) { 
+            showError('registerError', 'Mot de passe minimum 6 caractères'); 
+            return; 
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) { 
+            showError('registerError', 'Email invalide (ex: nom@hopital.bj)'); 
+            return; 
+        }
 
-        const btn = document.getElementById('registerBtn');
-        btn.innerHTML = '<span class="loader"></span> Inscription...';
-        btn.disabled = true;
+        // Désactiver le bouton
+        registerBtn.disabled = true;
+        const originalBtnText = registerBtn.innerHTML;
+        registerBtn.innerHTML = '<span class="loader"></span> Inscription...';
 
         try {
             const response = await fetch(`${API_URL}/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nom, prenom: prenom || null, email, matricule, service, telephone: telephone || null, password, role: 'SOIGNANT' })
+                body: JSON.stringify({ 
+                    nom, 
+                    prenom: prenom || null, 
+                    email, 
+                    service, 
+                    telephone: telephone || null, 
+                    password, 
+                    role: 'SOIGNANT' 
+                })
             });
+            
             const data = await response.json();
 
             if (response.ok) {
                 document.getElementById('pendingMessage').style.display = 'block';
-                showSuccess('registerSuccess', '✅ Inscription réussie !');
+                showSuccess('registerSuccess', '✅ Inscription réussie ! En attente de validation par un technicien.');
+                
+                // Réinitialiser le formulaire
                 document.getElementById('regNom').value = '';
+                document.getElementById('regPrenom').value = '';
                 document.getElementById('regEmail').value = '';
-                document.getElementById('regMatricule').value = '';
                 document.getElementById('regService').value = '';
+                document.getElementById('regPhone').value = '';
                 document.getElementById('regPassword').value = '';
                 document.getElementById('regConfirmPassword').value = '';
-                setTimeout(() => { switchTab('login'); showSuccess('loginError', 'Compte créé. En attente de validation.'); }, 3000);
+                
+                setTimeout(() => { 
+                    switchTab('login'); 
+                    showSuccess('loginError', 'Compte créé avec succès. En attente de validation par le technicien biomédical.');
+                }, 3000);
             } else {
                 showError('registerError', data.message || 'Erreur lors de l\'inscription');
             }
         } catch (error) {
+            console.error('Register error:', error);
             showError('registerError', 'Erreur de connexion. Veuillez réessayer.');
         } finally {
-            btn.innerHTML = '📝 S\'inscrire';
-            btn.disabled = false;
+            registerBtn.disabled = false;
+            registerBtn.innerHTML = originalBtnText;
         }
     }
 
+    // ==================== AIDE / MODAL ====================
+    
     const helpContent = {
-        guide: '<h4>📖 Guide</h4><ul><li>Technicien: dashboard, inventaire, maintenances</li><li>Soignant: signalement, scanner QR, chatbot</li></ul>',
-        faq: '<h4>❓ FAQ</h4><p><strong>Compte en attente ?</strong><br>Un technicien doit le valider.</p>',
-        contact: '<h4>📞 Support</h4><p>+229 97 12 34 56<br>support@gmao-sakete.bj</p>',
-        whatsapp: '<h4>💬 WhatsApp</h4><div style="background:#25D366; color:white; padding:12px; border-radius:12px; text-align:center;"><a href="https://wa.me/22997123456" style="color:white; text-decoration:none;">📱 Ouvrir WhatsApp</a></div>'
+        guide: '<h4>📖 Guide d\'utilisation</h4><ul><li><strong>Technicien :</strong> Dashboard, gestion de l\'inventaire, suivi des maintenances, validation des comptes soignants</li><li><strong>Soignant :</strong> Signalement de pannes, scan QR code, chatbot de diagnostic</li><li><strong>Support :</strong> Contacter le technicien biomédical pour toute urgence</li></ul>',
+        faq: '<h4>❓ FAQ</h4><p><strong>Mon compte est en attente ?</strong><br>Un technicien biomédical doit valider votre compte avant la première connexion.</p><p><strong>Mot de passe oublié ?</strong><br>Contactez le support technique pour réinitialiser votre mot de passe.</p><p><strong>L\'application ne charge pas ?</strong><br>Vérifiez votre connexion internet ou réessayez plus tard.</p>',
+        contact: '<h4>📞 Support technique</h4><p><strong>Téléphone :</strong> +229 97 12 34 56</p><p><strong>Email :</strong> support@gmao-sakete.bj</p><p><strong>Heures :</strong> 8h00 - 18h00 (Lun-Ven)</p>',
+        whatsapp: '<h4>💬 Support WhatsApp</h4><div style="background:#25D366; color:white; padding:12px; border-radius:12px; text-align:center; margin:10px 0;"><a href="https://wa.me/22997123456" style="color:white; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px;"><span>📱</span> Ouvrir WhatsApp</a></div><p>Réponse dans les 24h ouvrables.</p>'
     };
 
     function openHelp(type) {
-        const titles = { guide: '📖 Guide', faq: '❓ FAQ', contact: '📞 Support', whatsapp: '💬 WhatsApp' };
+        const titles = { 
+            guide: '📖 Guide d\'utilisation', 
+            faq: '❓ FAQ - Foire aux questions', 
+            contact: '📞 Support technique', 
+            whatsapp: '💬 Support WhatsApp' 
+        };
         document.getElementById('modalTitle').innerText = titles[type] || 'Aide';
         document.getElementById('modalBody').innerHTML = helpContent[type] || '<p>Contenu non disponible</p>';
         document.getElementById('helpModal').style.display = 'flex';
     }
 
-    function closeHelp() { document.getElementById('helpModal').style.display = 'none'; }
+    function closeHelp() { 
+        document.getElementById('helpModal').style.display = 'none'; 
+    }
 
-    if (localStorage.getItem('token')) {
-        const userRole = localStorage.getItem('userRole');
-        const urlParams = new URLSearchParams(window.location.search);
-        const isMobile = urlParams.get('mobile') === 'true';
-        
-        if (userRole === 'TECHNICIEN') {
-            window.location.href = isMobile ? '/mobile/dashboard-mobile.html' : '/technicien/dashboard.html';
-        } else if (userRole === 'SOIGNANT') {
-            window.location.href = isMobile ? '/soignant/index.html?mobile=true' : '/soignant/index.html';
+    // ==================== VÉRIFICATION DE SESSION ====================
+    
+    function checkExistingSession() {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const userRole = localStorage.getItem('userRole');
+            const urlParams = new URLSearchParams(window.location.search);
+            const isMobile = urlParams.get('mobile') === 'true';
+            
+            if (userRole === 'TECHNICIEN') {
+                window.location.href = isMobile ? '/mobile/dashboard-mobile.html' : '/technicien/dashboard.html';
+            } else if (userRole === 'SOIGNANT') {
+                window.location.href = isMobile ? '/soignant/index.html?mobile=true' : '/soignant/index.html';
+            } else {
+                // Token invalide, on le supprime
+                localStorage.removeItem('token');
+                localStorage.removeItem('userRole');
+            }
         }
     }
 
-    selectRole('technicien', null);
+    // ==================== INITIALISATION ====================
+    
+    function init() {
+        // Vérifier si déjà connecté
+        checkExistingSession();
+        
+        // Configuration des événements
+        document.querySelectorAll('.role-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                const role = tab.getAttribute('data-role');
+                if (role) selectRole(role);
+            });
+        });
+        
+        document.getElementById('showRegisterLink')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchTab('register');
+        });
+        
+        document.getElementById('showLoginLink')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchTab('login');
+        });
+        
+        document.getElementById('loginBtn')?.addEventListener('click', login);
+        document.getElementById('registerBtn')?.addEventListener('click', register);
+        
+        document.getElementById('closeModalBtn')?.addEventListener('click', closeHelp);
+        document.getElementById('helpModal')?.addEventListener('click', (e) => {
+            if (e.target === document.getElementById('helpModal')) closeHelp();
+        });
+        
+        document.querySelectorAll('.help-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const helpType = item.getAttribute('data-help');
+                if (helpType) openHelp(helpType);
+            });
+        });
+        
+        // Permettre la soumission avec la touche Entrée
+        const loginPassword = document.getElementById('loginPassword');
+        if (loginPassword) {
+            loginPassword.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') login();
+            });
+        }
+        
+        const regConfirmPassword = document.getElementById('regConfirmPassword');
+        if (regConfirmPassword) {
+            regConfirmPassword.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') register();
+            });
+        }
+        
+        // Initialiser avec le rôle technicien (champs vides)
+        selectRole('technicien');
+    }
+    
+    // Démarrer l'application
+    init();
 </script>
 </body>
 </html>
