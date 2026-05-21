@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Diagnostic Expert - GMAO Sakété</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -20,12 +16,9 @@
             overflow: hidden;
         }
 
-        .main-content {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
+        .main-content { display: flex; flex-direction: column; height: 100vh; }
 
+        /* HEADER */
         .header {
             background: #1b5e20;
             color: white;
@@ -37,37 +30,8 @@
             top: 0;
             z-index: 100;
         }
-
-        .back-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            font-size: 20px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-        }
-
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .header-title {
-            flex: 1;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .header-subtitle {
-            font-size: 12px;
-            opacity: 0.8;
-        }
-
+        .header-title { flex: 1; font-size: 18px; font-weight: bold; }
+        .header-subtitle { font-size: 12px; opacity: 0.8; }
         .scan-btn {
             background: #ffd600;
             color: #1b5e20;
@@ -81,12 +45,9 @@
             gap: 5px;
             font-weight: bold;
         }
+        .scan-btn:hover { background: #ffeb3b; transform: translateY(-2px); }
 
-        .scan-btn:hover {
-            background: #ffeb3b;
-            transform: translateY(-2px);
-        }
-
+        /* CONTEXT ÉQUIPEMENT */
         .equipment-context {
             background: white;
             padding: 12px 16px;
@@ -95,14 +56,12 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-
         .equipment-context-icon { font-size: 30px; }
         .equipment-context-info { flex: 1; }
         .equipment-context-name { font-weight: bold; font-size: 16px; }
         .equipment-context-service { font-size: 12px; color: #64748b; }
-
         .clear-equipment {
             background: #e2e8f0;
             border: none;
@@ -111,9 +70,9 @@
             font-size: 11px;
             cursor: pointer;
         }
-
         .clear-equipment:hover { background: #cbd5e1; }
 
+        /* ACTIONS RAPIDES */
         .quick-actions {
             display: flex;
             gap: 8px;
@@ -124,7 +83,6 @@
             margin: 0 12px;
             border-radius: 16px;
         }
-
         .quick-btn {
             background: #f1f5f9;
             border: none;
@@ -134,9 +92,9 @@
             white-space: nowrap;
             cursor: pointer;
         }
-
         .quick-btn:hover { background: #1b5e20; color: white; }
 
+        /* CHAT */
         .chat-container {
             flex: 1;
             overflow-y: auto;
@@ -151,106 +109,88 @@
             max-width: 85%;
             animation: fadeIn 0.3s ease;
         }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            to   { opacity: 1; transform: translateY(0); }
         }
-
         .message.user { align-self: flex-end; justify-content: flex-end; }
-        .message.bot { align-self: flex-start; }
+        .message.bot  { align-self: flex-start; }
 
         .message-content {
             padding: 12px 16px;
             border-radius: 20px;
             font-size: 14px;
-            line-height: 1.4;
+            line-height: 1.5;
         }
-
         .message.user .message-content {
             background: #1b5e20;
             color: white;
             border-bottom-right-radius: 4px;
         }
-
         .message.bot .message-content {
             background: white;
             color: #1e293b;
             border-bottom-left-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
-        .diagnostic-card {
-            background: #fef3c7;
-            border-left: 4px solid #f59e0b;
-            padding: 12px;
+        /* BOUTONS D'ACTION */
+        .action-buttons { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+        .btn-primary {
+            background: #1b5e20; color: white; border: none;
+            padding: 8px 16px; border-radius: 25px; cursor: pointer; font-size: 12px;
+        }
+        .btn-primary:hover { background: #2e7d32; }
+        .btn-secondary {
+            background: #e2e8f0; color: #475569; border: none;
+            padding: 8px 16px; border-radius: 25px; cursor: pointer; font-size: 12px;
+        }
+        .btn-secondary:hover { background: #cbd5e1; }
+        .btn-danger {
+            background: #dc2626; color: white; border: none;
+            padding: 8px 16px; border-radius: 25px; cursor: pointer; font-size: 12px;
+        }
+        .btn-danger:hover { background: #b91c1c; }
+
+        /* FORMULAIRE DE SIGNALEMENT INLINE */
+        .signalement-form {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
             border-radius: 12px;
-            margin-top: 8px;
-        }
-
-        .diagnostic-proba { font-size: 20px; font-weight: bold; color: #f59e0b; }
-        .procedure-step { background: #f1f5f9; padding: 8px 12px; border-radius: 8px; margin: 8px 0; font-size: 13px; }
-        .piece-badge { background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 12px; font-size: 11px; display: inline-block; margin-top: 8px; }
-
-        .symptom-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+            padding: 14px;
             margin-top: 10px;
         }
+        .signalement-form textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 70px;
+            font-family: inherit;
+            outline: none;
+        }
+        .signalement-form textarea:focus { border-color: #1b5e20; }
+        .signalement-form-title { font-weight: bold; font-size: 13px; margin-bottom: 8px; color: #92400e; }
 
-        .symptom-btn {
-            background: #e2e8f0;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 25px;
-            font-size: 12px;
-            cursor: pointer;
+        /* TYPING */
+        .typing-dots span {
+            display: inline-block;
+            width: 7px; height: 7px;
+            background: #94a3b8;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: bounce 1.2s infinite;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40%           { transform: translateY(-6px); }
         }
 
-        .symptom-btn:hover { background: #1b5e20; color: white; }
-
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 12px;
-            flex-wrap: wrap;
-        }
-
-        .btn-primary {
-            background: #1b5e20;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .btn-primary:hover { background: #2e7d32; }
-
-        .btn-secondary {
-            background: #e2e8f0;
-            color: #475569;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .btn-secondary:hover { background: #cbd5e1; }
-
-        .btn-success {
-            background: #22c55e;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
+        /* INPUT */
         .input-area {
             background: white;
             padding: 12px 16px;
@@ -260,7 +200,6 @@
             position: sticky;
             bottom: 0;
         }
-
         .input-area input {
             flex: 1;
             padding: 12px;
@@ -269,33 +208,14 @@
             outline: none;
             font-size: 14px;
         }
-
         .input-area input:focus { border-color: #1b5e20; }
-
         .input-area button {
-            background: #1b5e20;
-            color: white;
-            border: none;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 18px;
+            background: #1b5e20; color: white; border: none;
+            width: 45px; height: 45px; border-radius: 50%;
+            cursor: pointer; font-size: 18px;
         }
-
         .input-area button:hover { background: #2e7d32; }
-
-        .typing {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #e2e8f0;
-            border-radius: 50%;
-            border-top-color: #1b5e20;
-            animation: spin 0.6s linear infinite;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .input-area button:disabled { background: #94a3b8; cursor: not-allowed; }
 
         @media (max-width: 768px) {
             body { margin-left: 0; }
@@ -312,12 +232,12 @@
     <div class="header">
         <div>
             <div class="header-title">🤖 Diagnostic Expert</div>
-            <div class="header-subtitle">Assistant IA de diagnostic médical</div>
+            <div class="header-subtitle">Assistant de diagnostic — GMAO Sakété</div>
         </div>
         <button class="scan-btn" onclick="openScanner()">📷 Scanner QR</button>
     </div>
 
-    <div class="equipment-context" id="equipmentContext" style="display: none;">
+    <div class="equipment-context" id="equipmentContext" style="display:none;">
         <div class="equipment-context-icon">🔧</div>
         <div class="equipment-context-info">
             <div class="equipment-context-name" id="currentEquipName">-</div>
@@ -327,142 +247,289 @@
     </div>
 
     <div class="quick-actions">
-        <button class="quick-btn" onclick="quickSymptom('pas de mise sous tension')">⚡ Pas de tension</button>
-        <button class="quick-btn" onclick="quickSymptom('alarme pression')">⚠️ Alarme pression</button>
-        <button class="quick-btn" onclick="quickSymptom('écran noir')">🖥️ Écran noir</button>
-        <button class="quick-btn" onclick="quickSymptom('bruit anormal')">🔊 Bruit anormal</button>
-        <button class="quick-btn" onclick="quickSymptom('image pas claire')">📷 Image floue</button>
-        <button class="quick-btn" onclick="quickSymptom('satO2 inexacte')">💓 SpO2 inexacte</button>
+        <button class="quick-btn" onclick="quickSend('pas de mise sous tension')">⚡ Pas de tension</button>
+        <button class="quick-btn" onclick="quickSend('alarme pression')">⚠️ Alarme pression</button>
+        <button class="quick-btn" onclick="quickSend('écran noir')">🖥️ Écran noir</button>
+        <button class="quick-btn" onclick="quickSend('bruit anormal')">🔊 Bruit anormal</button>
+        <button class="quick-btn" onclick="quickSend('image pas claire')">📷 Image floue</button>
+        <button class="quick-btn" onclick="quickSend('satO2 inexacte')">💓 SpO2 inexacte</button>
+        <button class="quick-btn" onclick="quickSend('aide')">❓ Aide</button>
     </div>
 
     <div class="chat-container" id="chatContainer">
         <div class="message bot">
             <div class="message-content">
-                👋 <strong>Bonjour Technicien!</strong><br><br>
-                Je suis votre assistant de diagnostic expert.<br><br>
-                🔍 Scannez un QR code ou décrivez le problème.
+                👋 <strong>Bonjour !</strong><br><br>
+                Je suis votre assistant de diagnostic — GMAO Sakété.<br><br>
+                🔍 Scannez un QR code ou décrivez le problème rencontré.
             </div>
         </div>
     </div>
 
     <div class="input-area">
-        <input type="text" id="messageInput" placeholder="Décrivez le problème..." onkeypress="if(event.key==='Enter') sendMessage()">
-        <button onclick="sendMessage()">➤</button>
+        <input type="text" id="messageInput"
+               placeholder="Décrivez le problème..."
+               onkeypress="if(event.key==='Enter') sendMessage()">
+        <button id="sendBtn" onclick="sendMessage()">➤</button>
     </div>
 </div>
 
 <script>
- const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
-    let currentEquipment = null;
-    let currentStep = 'identify';
-    let conversationId = null;
+    // ─── CONFIG ────────────────────────────────────────────
+    const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
 
+    // ─── ÉTAT ──────────────────────────────────────────────
+    let currentEquipment = null;
+    let conversationId    = null;
+    let waitingForDetails = false; // true quand on attend la description de panne
+    let pendingEquipmentId = null; // équipement en attente de description
+
+    // ─── AUTH ──────────────────────────────────────────────
     function getToken() { return localStorage.getItem('token'); }
     if (!getToken()) window.location.href = '/login.html';
 
+    // ─── SIDEBAR ───────────────────────────────────────────
     function loadSidebar() {
         fetch('/components/sidebar.html')
-            .then(response => response.text())
-            .then(data => document.getElementById('sidebar-container').innerHTML = data)
-            .catch(error => console.error('Erreur sidebar:', error));
+            .then(r => r.text())
+            .then(html => document.getElementById('sidebar-container').innerHTML = html)
+            .catch(() => {});
     }
+    loadSidebar();
 
+    // ─── ENVOI MESSAGE ─────────────────────────────────────
     async function sendMessage() {
         const input = document.getElementById('messageInput');
         const message = input.value.trim();
         if (!message) return;
-        addMessage(message, 'user');
+
         input.value = '';
+        setSendDisabled(true);
+        addMessage(message, 'user');
+
+        // Si on attendait une description de panne → créer le signalement
+        if (waitingForDetails && pendingEquipmentId) {
+            waitingForDetails = false;
+            await createSignalement(pendingEquipmentId, message);
+            pendingEquipmentId = null;
+            setSendDisabled(false);
+            return;
+        }
+
         showTyping();
+
         try {
-            const response = await fetch(`${API_URL}/diagnostic/message`, {
+            const response = await fetch(`${API_URL}/chatbot/message`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
-                body: JSON.stringify({ message, equipmentId: currentEquipment?.id, conversationId, etape: currentStep })
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}`
+                },
+                body: JSON.stringify({
+                    message,
+                    equipmentId: currentEquipment?.id || null,
+                    conversationId
+                })
             });
-            const data = await response.json();
+
             hideTyping();
-            if (data.equipmentId) {
-                currentEquipment = await getEquipmentById(data.equipmentId);
-                updateEquipmentContext(currentEquipment);
-                currentStep = 'symptome';
+
+            if (!response.ok) {
+                const err = await response.json().catch(() => ({}));
+                addMessage(err.reply || '❌ Erreur serveur. Veuillez réessayer.', 'bot');
+                setSendDisabled(false);
+                return;
             }
-            if (data.action === 'show_diagnostic') { addDiagnosticMessage(data.reply, data); currentStep = 'diagnostic'; }
-            else addMessage(data.reply, 'bot');
+
+            const data = await response.json();
+
+            // Mettre à jour l'ID de conversation
             if (data.conversationId) conversationId = data.conversationId;
-        } catch (error) { hideTyping(); addMessage("❌ Erreur", 'bot'); }
+
+            // Mettre à jour l'équipement détecté
+            if (data.data?.equipmentId && !currentEquipment) {
+                await loadAndSetEquipment(data.data.equipmentId);
+            }
+
+            // Gérer les actions
+            switch (data.action) {
+                case 'ask_panne_details':
+                    addMessage(data.reply, 'bot');
+                    // Afficher un formulaire pour la description
+                    if (data.data?.equipmentId) {
+                        showSignalementForm(data.data.equipmentId, data.data.equipmentNom);
+                    } else {
+                        waitingForDetails = false;
+                    }
+                    break;
+
+                case 'open_scanner':
+                    addMessage(data.reply, 'bot');
+                    setTimeout(() => openScanner(), 1000);
+                    break;
+
+                case 'urgence_created':
+                    addMessage(data.reply, 'bot');
+                    addMessage('🚨 Alerte créée et équipe prévenue.', 'bot');
+                    break;
+
+                default:
+                    addMessage(data.reply, 'bot');
+            }
+
+        } catch (error) {
+            hideTyping();
+            console.error('Erreur chatbot:', error);
+            addMessage('❌ Connexion impossible. Vérifiez votre connexion et réessayez.', 'bot');
+        }
+
+        setSendDisabled(false);
     }
 
-    function addMessage(text, sender) {
+    // ─── FORMULAIRE DE SIGNALEMENT INLINE ──────────────────
+    function showSignalementForm(equipmentId, equipmentNom) {
+        pendingEquipmentId = equipmentId;
         const container = document.getElementById('chatContainer');
-        const div = document.createElement('div');
-        div.className = `message ${sender}`;
-        div.innerHTML = `<div class="message-content">${text.replace(/\n/g, '<br>')}</div>`;
-        container.appendChild(div);
-        container.scrollTop = container.scrollHeight;
-    }
 
-    function addDiagnosticMessage(text, data) {
-        const container = document.getElementById('chatContainer');
         const div = document.createElement('div');
         div.className = 'message bot';
-        let actionsHtml = '';
-        if (data.pieceSuggestion) actionsHtml = `<div class="action-buttons"><button class="btn-primary" onclick="createTicketWithPiece('${data.pieceSuggestion}')">🛠️ Ticket + pièce</button><button class="btn-secondary" onclick="createTicket()">📋 Ticket</button></div>`;
-        div.innerHTML = `<div class="message-content">${text.replace(/\n/g, '<br>')}${actionsHtml}</div>`;
+        div.id = 'signalementFormMsg';
+        div.innerHTML = `
+            <div class="message-content">
+                <div class="signalement-form">
+                    <div class="signalement-form-title">📝 Décrivez le problème sur ${equipmentNom || 'cet équipement'}</div>
+                    <textarea id="panneDescription" placeholder="Ex : L'écran reste noir au démarrage, aucune alarme sonore..."></textarea>
+                    <div class="action-buttons" style="margin-top:8px;">
+                        <button class="btn-primary" onclick="submitSignalement(${equipmentId})">📨 Signaler</button>
+                        <button class="btn-secondary" onclick="cancelSignalement()">Annuler</button>
+                    </div>
+                </div>
+            </div>`;
         container.appendChild(div);
         container.scrollTop = container.scrollHeight;
+        document.getElementById('panneDescription').focus();
     }
 
-    async function getEquipmentById(id) {
-        const res = await fetch(`${API_URL}/equipements/${id}`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
-        return res.json();
+    function submitSignalement(equipmentId) {
+        const desc = document.getElementById('panneDescription')?.value?.trim();
+        if (!desc) {
+            alert('Veuillez décrire le problème.');
+            return;
+        }
+        // Supprimer le formulaire
+        document.getElementById('signalementFormMsg')?.remove();
+        pendingEquipmentId = null;
+        waitingForDetails = false;
+        createSignalement(equipmentId, desc);
+    }
+
+    function cancelSignalement() {
+        document.getElementById('signalementFormMsg')?.remove();
+        pendingEquipmentId = null;
+        waitingForDetails = false;
+        addMessage('❎ Signalement annulé.', 'bot');
+    }
+
+    // ─── CRÉER UN SIGNALEMENT ──────────────────────────────
+    async function createSignalement(equipmentId, description) {
+        showTyping();
+        try {
+            const response = await fetch(`${API_URL}/chatbot/signaler`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}`
+                },
+                body: JSON.stringify({ equipmentId, description, conversationId })
+            });
+
+            hideTyping();
+            const data = await response.json();
+
+            if (data.success) {
+                addMessage(data.message, 'bot');
+                addMessage(`📋 N° Signalement : **#${data.signalementId}** | Intervention **#${data.interventionId}** créée.`, 'bot');
+            } else {
+                addMessage(data.message || '❌ Erreur lors du signalement.', 'bot');
+            }
+        } catch {
+            hideTyping();
+            addMessage('❌ Erreur réseau. Contactez le service maintenance.', 'bot');
+        }
+    }
+
+    // ─── CHARGEMENT ÉQUIPEMENT ─────────────────────────────
+    async function loadAndSetEquipment(id) {
+        try {
+            const res = await fetch(`${API_URL}/equipements/${id}`, {
+                headers: { 'Authorization': `Bearer ${getToken()}` }
+            });
+            if (res.ok) {
+                const equipment = await res.json();
+                currentEquipment = equipment;
+                updateEquipmentContext(equipment);
+            }
+        } catch {}
     }
 
     function updateEquipmentContext(equipment) {
         document.getElementById('equipmentContext').style.display = 'flex';
-        document.getElementById('currentEquipName').innerHTML = `${equipment.nom} (${equipment.marque})`;
-        document.getElementById('currentEquipService').innerHTML = `${equipment.service} • ${equipment.codeInventaire}`;
+        document.getElementById('currentEquipName').textContent =
+            `${equipment.nom}${equipment.marque ? ' (' + equipment.marque + ')' : ''}`;
+        document.getElementById('currentEquipService').textContent =
+            `${equipment.service || ''}${equipment.codeInventaire ? ' • ' + equipment.codeInventaire : ''}`;
     }
 
     function clearEquipment() {
         currentEquipment = null;
-        currentStep = 'identify';
         document.getElementById('equipmentContext').style.display = 'none';
-        addMessage("🔍 Équipement désélectionné", 'bot');
+        addMessage('🔄 Équipement désélectionné. Décrivez un nouveau problème.', 'bot');
     }
 
-    function quickSymptom(symptom) { document.getElementById('messageInput').value = symptom; sendMessage(); }
-
-    async function createTicket() {
-        if (!currentEquipment) { addMessage("❌ Aucun équipement", 'bot'); return; }
-        const res = await fetch(`${API_URL}/maintenances/signaler`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` }, body: JSON.stringify({ equipementId: currentEquipment.id, description: `Diagnostic: intervention requise`, priorite: 'MOYENNE' }) });
-        if (res.ok) addMessage("✅ Ticket créé", 'bot');
-        else addMessage("❌ Erreur", 'bot');
-    }
-
-    async function createTicketWithPiece(pieceRef) {
-        if (!currentEquipment) return;
-        const res = await fetch(`${API_URL}/stock/check/${pieceRef}`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
-        const stock = await res.json();
-        addMessage(stock.quantite > 0 ? `✅ Pièce disponible (${stock.quantite})` : `⚠️ ${pieceRef} en rupture`, 'bot');
-        await createTicket();
+    // ─── UTILITAIRES UI ────────────────────────────────────
+    function addMessage(text, sender) {
+        const container = document.getElementById('chatContainer');
+        const div = document.createElement('div');
+        div.className = `message ${sender}`;
+        // Convertir **gras** en <strong> et \n en <br>
+        const formatted = text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n/g, '<br>');
+        div.innerHTML = `<div class="message-content">${formatted}</div>`;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
     }
 
     function showTyping() {
         const container = document.getElementById('chatContainer');
-        const typingDiv = document.createElement('div');
-        typingDiv.id = 'typingIndicator';
-        typingDiv.className = 'message bot';
-        typingDiv.innerHTML = '<div class="message-content"><span class="typing"></span> L\'IA analyse...</div>';
-        container.appendChild(typingDiv);
+        if (document.getElementById('typingIndicator')) return;
+        const div = document.createElement('div');
+        div.id = 'typingIndicator';
+        div.className = 'message bot';
+        div.innerHTML = `<div class="message-content">
+            <div class="typing-dots"><span></span><span></span><span></span></div>
+        </div>`;
+        container.appendChild(div);
         container.scrollTop = container.scrollHeight;
     }
 
-    function hideTyping() { const typing = document.getElementById('typingIndicator'); if (typing) typing.remove(); }
+    function hideTyping() {
+        document.getElementById('typingIndicator')?.remove();
+    }
 
-    function openScanner() { window.location.href = 'inventaire.html?scan=true'; }
+    function setSendDisabled(disabled) {
+        document.getElementById('sendBtn').disabled = disabled;
+        document.getElementById('messageInput').disabled = disabled;
+    }
 
-    loadSidebar();
+    function quickSend(text) {
+        document.getElementById('messageInput').value = text;
+        sendMessage();
+    }
+
+    function openScanner() {
+        window.location.href = 'inventaire.html?scan=true';
+    }
 </script>
 </body>
 </html>
