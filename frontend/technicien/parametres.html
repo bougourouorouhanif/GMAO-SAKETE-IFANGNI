@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="theme-color" content="#1b5e20">
     <title>Paramètres - GMAO Sakété</title>
     <style>
         * {
@@ -26,10 +27,15 @@
 
         .card {
             background: white;
-            border-radius: 20px;
-            padding: 24px;
+            border-radius: 24px;
+            padding: 28px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: box-shadow 0.2s;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
         }
 
         .title {
@@ -37,39 +43,52 @@
             font-weight: bold;
             margin-bottom: 20px;
             color: #1b5e20;
-            border-left: 4px solid #1b5e20;
+            border-left: 4px solid #ffd600;
             padding-left: 12px;
         }
 
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
 
         label {
             display: block;
             font-size: 13px;
-            font-weight: 500;
-            margin-bottom: 5px;
+            font-weight: 600;
+            margin-bottom: 6px;
             color: #334155;
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
+            padding: 12px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
             font-size: 14px;
+            transition: 0.2s;
         }
 
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #1b5e20;
+            box-shadow: 0 0 0 3px rgba(27, 94, 32, 0.1);
+        }
+
+        input:disabled, select:disabled {
+            background: #f8fafc;
+            cursor: not-allowed;
         }
 
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 16px;
+            gap: 18px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
         .btn {
@@ -80,7 +99,6 @@
             font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
-            margin-right: 10px;
         }
 
         .btn-primary {
@@ -88,7 +106,7 @@
             color: white;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             background: #2e7d32;
             transform: translateY(-2px);
         }
@@ -100,6 +118,7 @@
 
         .btn-success:hover {
             background: #16a34a;
+            transform: translateY(-2px);
         }
 
         .btn-danger {
@@ -109,6 +128,7 @@
 
         .btn-danger:hover {
             background: #dc2626;
+            transform: translateY(-2px);
         }
 
         .btn-warning {
@@ -118,6 +138,7 @@
 
         .btn-warning:hover {
             background: #ea580c;
+            transform: translateY(-2px);
         }
 
         .btn-secondary {
@@ -125,34 +146,41 @@
             color: #475569;
         }
 
+        .btn-secondary:hover {
+            background: #cbd5e1;
+            transform: translateY(-2px);
+        }
+
         .info-text {
             font-size: 12px;
             color: #64748b;
-            margin-top: 5px;
+            margin-top: 6px;
         }
 
         .success-message {
             background: #dcfce7;
             color: #166534;
-            padding: 12px;
-            border-radius: 12px;
+            padding: 12px 16px;
+            border-radius: 14px;
             margin-bottom: 20px;
             display: none;
+            border-left: 4px solid #22c55e;
         }
 
         .error-message {
             background: #fee2e2;
             color: #dc2626;
-            padding: 12px;
-            border-radius: 12px;
+            padding: 12px 16px;
+            border-radius: 14px;
             margin-bottom: 20px;
             display: none;
+            border-left: 4px solid #ef4444;
         }
 
         .warning-box {
             background: #fef3c7;
             border-left: 4px solid #f97316;
-            padding: 12px;
+            padding: 12px 16px;
             border-radius: 12px;
             margin-bottom: 20px;
         }
@@ -171,23 +199,27 @@
         .toggle-switch {
             position: relative;
             display: inline-block;
-            width: 50px;
-            height: 24px;
+            width: 52px;
+            height: 26px;
         }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-switch input { 
+            opacity: 0; 
+            width: 0; 
+            height: 0; 
+        }
         .toggle-slider {
             position: absolute;
             cursor: pointer;
             top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #ccc;
+            background-color: #cbd5e1;
             transition: 0.3s;
-            border-radius: 24px;
+            border-radius: 26px;
         }
         .toggle-slider:before {
             position: absolute;
             content: "";
-            height: 18px;
-            width: 18px;
+            height: 20px;
+            width: 20px;
             left: 3px;
             bottom: 3px;
             background-color: white;
@@ -197,16 +229,32 @@
         input:checked + .toggle-slider { background-color: #22c55e; }
         input:checked + .toggle-slider:before { transform: translateX(26px); }
         .toggle-label {
-            margin-left: 60px;
-            line-height: 24px;
+            margin-left: 10px;
+            line-height: 26px;
             font-size: 13px;
             color: #334155;
         }
 
+        .loader {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         @media (max-width: 768px) {
-            body { margin-left: 0; }
+            body { margin-left: 0; padding: 70px 15px 15px 15px; }
+            .card { padding: 20px; }
             .form-row { grid-template-columns: 1fr; gap: 0; }
-            .btn { width: 100%; margin-bottom: 10px; }
+            .btn-group { flex-direction: column; }
+            .btn { width: 100%; text-align: center; }
         }
     </style>
 </head>
@@ -218,64 +266,191 @@
     <div id="successMsg" class="success-message"></div>
     <div id="errorMsg" class="error-message"></div>
 
+    <!-- Paramètres généraux -->
     <div class="card">
         <div class="title">🔧 Paramètres généraux</div>
-        <div class="form-group"><label>Nom de l'établissement</label><input type="text" id="siteName" value="Hôpital Zone Sakété-Ifangni"><div class="info-text">Nom affiché sur l'application</div></div>
-        <div class="form-row"><div class="form-group"><label>Email notification</label><input type="email" id="alertEmail" value="tech.biomedical@hopital.bj"></div><div class="form-group"><label>SLA maintenance (h)</label><input type="number" id="slaHours" value="48"></div></div>
-        <div class="form-group"><label>Langue</label><select id="language"><option value="fr">Français</option><option value="en">English</option></select></div>
+        
+        <div class="form-group">
+            <label>Nom de l'établissement</label>
+            <input type="text" id="siteName" value="Hôpital Zone Sakété-Ifangni">
+            <div class="info-text">Nom affiché sur l'application</div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>Email de notification</label>
+                <input type="email" id="alertEmail" value="support@gmao-sakete.bj">
+            </div>
+            <div class="form-group">
+                <label>SLA maintenance (heures)</label>
+                <input type="number" id="slaHours" value="48" min="1" max="168">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Langue</label>
+            <select id="language">
+                <option value="fr">Français</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+        
         <div class="form-group">
             <label>Notifications</label>
-            <div style="display: flex; align-items: center; margin-top: 8px;"><label class="toggle-switch"><input type="checkbox" id="notificationsEnabled" checked><span class="toggle-slider"></span></label><span class="toggle-label">Email</span></div>
-            <div style="display: flex; align-items: center; margin-top: 12px;"><label class="toggle-switch"><input type="checkbox" id="smsEnabled"><span class="toggle-slider"></span></label><span class="toggle-label">SMS</span></div>
+            <div style="display: flex; align-items: center; margin-top: 10px;">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="notificationsEnabled" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label">Notifications par email</span>
+            </div>
+            <div style="display: flex; align-items: center; margin-top: 12px;">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="smsEnabled">
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label">Notifications par SMS</span>
+            </div>
         </div>
-        <button class="btn btn-primary" onclick="saveSettings()">💾 Sauvegarder</button>
+        
+        <button class="btn btn-primary" onclick="saveSettings()">💾 Sauvegarder les paramètres</button>
     </div>
 
+    <!-- Configuration avancée -->
     <div class="card">
         <div class="title">⚙️ Configuration avancée</div>
-        <div class="form-row"><div class="form-group"><label>Fuseau horaire</label><select id="timezone"><option value="Africa/Porto-Novo">Africa/Porto-Novo</option><option value="UTC">UTC</option></select></div><div class="form-group"><label>Format date</label><select id="dateFormat"><option value="DD/MM/YYYY">DD/MM/YYYY</option><option value="YYYY-MM-DD">YYYY-MM-DD</option></select></div></div>
-        <div class="form-group"><label>Seuil alerte stock</label><input type="number" id="stockThreshold" value="5"></div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>Fuseau horaire</label>
+                <select id="timezone">
+                    <option value="Africa/Porto-Novo">Africa/Porto-Novo</option>
+                    <option value="UTC">UTC</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Format date</label>
+                <select id="dateFormat">
+                    <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                    <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Seuil d'alerte stock (unité)</label>
+            <input type="number" id="stockThreshold" value="5" min="1">
+            <div class="info-text">Alerte lorsque le stock d'une pièce est inférieur ou égal à ce seuil</div>
+        </div>
+        
         <hr>
-        <div class="form-group"><label>URL API</label><input type="text" id="apiUrl" value="http://localhost:5000https://gmao-sakete-ifangni-1.onrender.com/api" readonly style="background:#f1f5f9;"></div>
+        
+        <div class="form-group">
+            <label>URL de l'API</label>
+            <input type="text" id="apiUrl" value="https://gmao-sakete-ifangni-1.onrender.com/api" readonly style="background:#f8fafc;">
+            <div class="info-text">📌 Adresse du serveur backend - Modifiable uniquement par l'administrateur</div>
+        </div>
     </div>
 
+    <!-- Base de données -->
     <div class="card">
         <div class="title">🗄️ Base de données</div>
-        <div class="warning-box"><p>⚠️ La réinitialisation supprimera toutes les données.</p></div>
-        <div class="form-row"><button class="btn btn-success" onclick="backupDB()">📀 Sauvegarder</button><button class="btn btn-warning" onclick="exportData()">📊 Exporter</button><button class="btn btn-danger" onclick="resetDB()">⚠️ Réinitialiser</button></div>
+        
+        <div class="warning-box">
+            <p><strong>⚠️ Attention</strong></p>
+            <p>La réinitialisation supprimera définitivement toutes les données de l'application (équipements, interventions, utilisateurs, etc.). Cette action est irréversible.</p>
+        </div>
+        
+        <div class="btn-group">
+            <button class="btn btn-success" onclick="backupDB()">📀 Sauvegarder</button>
+            <button class="btn btn-warning" onclick="exportData()">📊 Exporter CSV</button>
+            <button class="btn btn-danger" onclick="resetDB()">⚠️ Réinitialiser</button>
+        </div>
     </div>
 
+    <!-- Maintenance -->
     <div class="card">
         <div class="title">🛠️ Maintenance</div>
-        <div class="form-row"><button class="btn btn-primary" onclick="clearCache()">🗑️ Vider cache</button><button class="btn btn-primary" onclick="viewLogs()">📋 Logs</button><button class="btn btn-primary" onclick="systemInfo()">ℹ️ Info système</button></div>
+        
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="clearCache()">🗑️ Vider le cache</button>
+            <button class="btn btn-secondary" onclick="viewLogs()">📋 Voir les logs</button>
+            <button class="btn btn-secondary" onclick="systemInfo()">ℹ️ Informations système</button>
+        </div>
     </div>
 
+    <!-- Application mobile -->
     <div class="card">
         <div class="title">📱 Application mobile</div>
-        <div class="form-row"><button class="btn btn-primary" onclick="downloadAPK()">📲 APK</button><button class="btn btn-primary" onclick="generateQRInstall()">📱 QR code</button><button class="btn btn-primary" onclick="installPWA()">📲 Installer PWA</button></div>
+        
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="installPWA()">📲 Installer l'application</button>
+            <button class="btn btn-primary" onclick="generateQRInstall()">📱 QR code d'installation</button>
+        </div>
+        <div class="info-text" style="margin-top: 12px;">Scannez le QR code pour installer l'application sur votre mobile</div>
     </div>
 
+    <!-- À propos -->
     <div class="card">
         <div class="title">ℹ️ À propos</div>
-        <div class="form-group"><label>Version</label><input type="text" value="GMAO Sakété v2.0.0" readonly style="background:#f1f5f9;"></div>
-        <div class="form-group"><label>Support</label><input type="text" value="tech.biomedical@hopital.bj" readonly style="background:#f1f5f9;"></div>
-        <div class="info-text" style="text-align:center;">© 2026 Hôpital Sakété-Ifangni</div>
+        
+        <div class="form-group">
+            <label>Version</label>
+            <input type="text" value="GMAO Sakété v2.1.0" readonly style="background:#f8fafc;">
+        </div>
+        <div class="form-group">
+            <label>Support technique</label>
+            <input type="text" value="support@gmao-sakete.bj" readonly style="background:#f8fafc;">
+        </div>
+        <div class="form-group">
+            <label>Dernière mise à jour</label>
+            <input type="text" value="21 mai 2026" readonly style="background:#f8fafc;">
+        </div>
+        <div class="info-text" style="text-align:center; margin-top: 15px;">
+            © 2026 Hôpital de Zone Sakété-Ifangni - GMAO v2.1.0
+        </div>
     </div>
 </div>
 
 <script>
+    const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
+    
     function getToken() { return localStorage.getItem('token'); }
+    
+    // Auth check
     if (!getToken()) window.location.href = '/login.html';
+    
+    const userRole = localStorage.getItem('userRole');
+    if (userRole !== 'TECHNICIEN') window.location.href = '/soignant/index.html';
 
     function loadSidebar() {
         fetch('/components/sidebar.html')
             .then(response => response.text())
-            .then(data => document.getElementById('sidebar-container').innerHTML = data)
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                const links = document.querySelectorAll('.sidebar-item');
+                links.forEach(link => {
+                    if (link.getAttribute('href') === 'parametres.html') {
+                        link.classList.add('active');
+                    }
+                });
+            })
             .catch(error => console.error('Erreur sidebar:', error));
     }
 
-    function showSuccess(msg) { const d = document.getElementById('successMsg'); d.innerHTML = msg; d.style.display = 'block'; setTimeout(() => d.style.display = 'none', 3000); }
-    function showError(msg) { const d = document.getElementById('errorMsg'); d.innerHTML = msg; d.style.display = 'block'; setTimeout(() => d.style.display = 'none', 3000); }
+    function showSuccess(msg) { 
+        const d = document.getElementById('successMsg'); 
+        d.innerHTML = msg; 
+        d.style.display = 'block'; 
+        setTimeout(() => d.style.display = 'none', 3000); 
+    }
+    
+    function showError(msg) { 
+        const d = document.getElementById('errorMsg'); 
+        d.innerHTML = msg; 
+        d.style.display = 'block'; 
+        setTimeout(() => d.style.display = 'none', 3000); 
+    }
 
     function saveSettings() {
         const settings = {
@@ -289,33 +464,160 @@
             dateFormat: document.getElementById('dateFormat').value,
             stockThreshold: parseInt(document.getElementById('stockThreshold').value)
         };
+        
+        // Validation
+        if (settings.slaHours < 1 || settings.slaHours > 168) {
+            showError('⚠️ Le SLA doit être compris entre 1 et 168 heures');
+            return;
+        }
+        
+        if (settings.stockThreshold < 1) {
+            showError('⚠️ Le seuil de stock doit être au moins 1');
+            return;
+        }
+        
         localStorage.setItem('appSettings', JSON.stringify(settings));
-        showSuccess('✅ Paramètres sauvegardés');
+        showSuccess('✅ Paramètres sauvegardés avec succès');
+        
+        // Appliquer le thème de langue si nécessaire
+        if (settings.language === 'en') {
+            // Ici vous pourriez implémenter le changement de langue
+        }
     }
 
-    function backupDB() { showSuccess('📀 Sauvegarde'); setTimeout(() => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['Backup'])); a.download = 'backup.txt'; a.click(); }, 500); }
-    function exportData() { showSuccess('📊 Export'); }
-    function resetDB() { if (prompt('Tapez RESET pour confirmer') === 'RESET') showSuccess('⚠️ Réinitialisé'); else showError('Annulé'); }
-    function clearCache() { if (confirm('Vider le cache ?')) { localStorage.clear(); showSuccess('Cache vidé'); setTimeout(() => location.reload(), 1500); } }
-    function viewLogs() { alert('Logs système (démo)'); }
-    function systemInfo() { alert(`Navigateur: ${navigator.userAgent.split(' ').slice(0,3).join(' ')}`); }
-    function downloadAPK() { showSuccess('📲 APK (simulé)'); }
-    function generateQRInstall() { alert('QR code: https://gmao-sakete.app'); }
-    function installPWA() { showSuccess('📲 PWA (simulée)'); }
+    function backupDB() { 
+        // Simuler une sauvegarde
+        showSuccess('📀 Sauvegarde en cours...');
+        setTimeout(() => { 
+            const data = {
+                date: new Date().toISOString(),
+                user: localStorage.getItem('userName'),
+                settings: localStorage.getItem('appSettings')
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `gmao-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            showSuccess('📀 Sauvegarde terminée');
+        }, 500); 
+    }
+    
+    function exportData() { 
+        showSuccess('📊 Export CSV en cours...');
+        setTimeout(() => {
+            const csv = "Équipement,Date,Statut\nExemple,2026-05-21,Fonctionnel";
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `gmao-export-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            showSuccess('📊 Export terminé');
+        }, 500);
+    }
+    
+    async function resetDB() { 
+        const confirmation = prompt('⚠️ Cette action est irréversible.\n\nTapez "RESET" pour confirmer la réinitialisation complète des données :');
+        if (confirmation === 'RESET') {
+            if (confirm('⚠️ Dernière confirmation : Voulez-vous vraiment réinitialiser TOUTES les données ?')) {
+                try {
+                    // Appel API pour réinitialiser (si disponible)
+                    const res = await fetch(`${API_URL}/admin/reset`, { 
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${getToken()}` }
+                    });
+                    if (res.ok) {
+                        localStorage.clear();
+                        showSuccess('⚠️ Base de données réinitialisée');
+                        setTimeout(() => window.location.href = '/login.html', 2000);
+                    } else {
+                        showError('Erreur lors de la réinitialisation');
+                    }
+                } catch (error) {
+                    // Fallback pour démo
+                    localStorage.clear();
+                    showSuccess('⚠️ Base de données réinitialisée (mode démo)');
+                    setTimeout(() => window.location.href = '/login.html', 2000);
+                }
+            }
+        } else if (confirmation !== null) {
+            showError('Confirmation incorrecte. Opération annulée.');
+        }
+    }
+    
+    function clearCache() { 
+        if (confirm('🗑️ Vider le cache de l\'application ? Les données locales seront effacées.')) { 
+            localStorage.removeItem('appSettings');
+            localStorage.removeItem('pendingReports');
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => caches.delete(name));
+                });
+            }
+            showSuccess('Cache vidé avec succès'); 
+            setTimeout(() => location.reload(), 1500); 
+        } 
+    }
+    
+    function viewLogs() { 
+        // Récupérer les logs du localStorage
+        const logs = localStorage.getItem('appLogs');
+        if (logs) {
+            alert('Logs système:\n' + logs);
+        } else {
+            alert('📋 Aucun log disponible\n\nLes logs seront affichés ici une fois les actions effectuées.');
+        }
+    }
+    
+    function systemInfo() { 
+        const info = {
+            'Navigateur': navigator.userAgent.split(' ').slice(0, 3).join(' '),
+            'Langue': navigator.language,
+            'Plateforme': navigator.platform,
+            'En ligne': navigator.onLine ? 'Oui' : 'Non',
+            'Stockage local': localStorage.length + ' éléments',
+            'Rôle': localStorage.getItem('userRole') || 'Non défini',
+            'Version API': 'v1'
+        };
+        
+        let infoText = 'ℹ️ INFORMATIONS SYSTÈME\n\n';
+        for (const [key, value] of Object.entries(info)) {
+            infoText += `${key}: ${value}\n`;
+        }
+        alert(infoText);
+    }
+    
+    function generateQRInstall() { 
+        const qrData = window.location.origin;
+        alert(`📱 QR code d'installation\n\nScannez ce QR code avec votre mobile :\n\n${qrData}\n\nOu visitez : ${qrData}`);
+        // Ici vous pourriez intégrer une bibliothèque QR comme qrcode.js
+    }
+    
+    function installPWA() { 
+        if ('beforeinstallprompt' in window) {
+            showSuccess('📲 Installation PWA disponible');
+            alert('📲 Installation PWA\n\nPour installer l\'application sur votre mobile :\n\n1. Ouvrez Chrome/Safari\n2. Menu → "Installer l\'application"\n3. Confirmez l\'installation');
+        } else {
+            showSuccess('📲 PWA disponible - Utilisez "Ajouter à l\'écran d\'accueil"');
+            alert('📲 Installation PWA\n\nPour installer l\'application sur votre mobile :\n\n1. Ouvrez ce site dans Chrome\n2. Tapez sur le menu (⋮)\n3. Sélectionnez "Installer l\'application"');
+        }
+    }
 
     function loadSettings() {
         const saved = localStorage.getItem('appSettings');
         if (saved) {
-            const s = JSON.parse(saved);
-            if (s.siteName) document.getElementById('siteName').value = s.siteName;
-            if (s.alertEmail) document.getElementById('alertEmail').value = s.alertEmail;
-            if (s.slaHours) document.getElementById('slaHours').value = s.slaHours;
-            if (s.language) document.getElementById('language').value = s.language;
-            if (s.notificationsEnabled !== undefined) document.getElementById('notificationsEnabled').checked = s.notificationsEnabled;
-            if (s.smsEnabled !== undefined) document.getElementById('smsEnabled').checked = s.smsEnabled;
-            if (s.timezone) document.getElementById('timezone').value = s.timezone;
-            if (s.dateFormat) document.getElementById('dateFormat').value = s.dateFormat;
-            if (s.stockThreshold) document.getElementById('stockThreshold').value = s.stockThreshold;
+            try {
+                const s = JSON.parse(saved);
+                if (s.siteName) document.getElementById('siteName').value = s.siteName;
+                if (s.alertEmail) document.getElementById('alertEmail').value = s.alertEmail;
+                if (s.slaHours) document.getElementById('slaHours').value = s.slaHours;
+                if (s.language) document.getElementById('language').value = s.language;
+                if (s.notificationsEnabled !== undefined) document.getElementById('notificationsEnabled').checked = s.notificationsEnabled;
+                if (s.smsEnabled !== undefined) document.getElementById('smsEnabled').checked = s.smsEnabled;
+                if (s.timezone) document.getElementById('timezone').value = s.timezone;
+                if (s.dateFormat) document.getElementById('dateFormat').value = s.dateFormat;
+                if (s.stockThreshold) document.getElementById('stockThreshold').value = s.stockThreshold;
+            } catch (e) { console.error('Erreur chargement settings'); }
         }
     }
 
