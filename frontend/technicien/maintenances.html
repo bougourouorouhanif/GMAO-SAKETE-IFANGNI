@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="theme-color" content="#1b5e20">
     <title>Maintenances - GMAO Sakété</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -32,6 +33,8 @@
 
         h1 { color: #1b5e20; font-size: 24px; }
 
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+
         .btn-add {
             background: #1b5e20;
             color: white;
@@ -58,23 +61,37 @@
 
         .btn-planifier:hover { background: #ffeb3b; transform: translateY(-2px); }
 
+        .btn-refresh {
+            background: #f0fdf4;
+            border: 1px solid #1b5e20;
+            color: #1b5e20;
+            padding: 10px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-refresh:hover { background: #1b5e20; color: white; }
+
         .tabs {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
             background: white;
-            padding: 10px;
+            padding: 8px;
             border-radius: 60px;
             display: inline-flex;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
         .tab {
-            padding: 10px 24px;
+            padding: 10px 28px;
             border: none;
             background: transparent;
             border-radius: 40px;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
+            transition: 0.2s;
         }
 
         .tab.active { background: #1b5e20; color: white; }
@@ -87,6 +104,7 @@
             background: white;
             padding: 16px;
             border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
         .filter-bar select, .filter-bar input {
@@ -94,6 +112,7 @@
             border: 1px solid #e2e8f0;
             border-radius: 40px;
             font-size: 14px;
+            min-width: 150px;
         }
 
         .table-container {
@@ -104,26 +123,82 @@
         }
 
         table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e2e8f0; }
-        th { background: #f8fafc; font-weight: 600; }
+        th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f8fafc; font-weight: 600; color: #1e293b; font-size: 13px; }
 
-        .status-EN_ATTENTE { background: #fef3c7; color: #d97706; padding: 4px 12px; border-radius: 20px; display: inline-block; font-size: 12px; }
-        .status-EN_COURS { background: #dbeafe; color: #2563eb; padding: 4px 12px; border-radius: 20px; display: inline-block; font-size: 12px; }
-        .status-TERMINE { background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; display: inline-block; font-size: 12px; }
-        .status-PREVU { background: #dbeafe; color: #2563eb; padding: 4px 12px; border-radius: 20px; display: inline-block; font-size: 12px; }
-        .status-REALISE { background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; display: inline-block; font-size: 12px; }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-EN_ATTENTE { background: #fef3c7; color: #d97706; }
+        .status-EN_COURS { background: #dbeafe; color: #2563eb; }
+        .status-TERMINE, .status-REALISE { background: #dcfce7; color: #166534; }
+        .status-PREVU { background: #dbeafe; color: #2563eb; }
 
-        .btn { padding: 6px 16px; border-radius: 20px; border: none; cursor: pointer; font-size: 12px; margin-right: 5px; }
+        .priority-URGENTE { color: #dc2626; font-weight: bold; }
+        .priority-ELEVEE { color: #f97316; font-weight: bold; }
+        .priority-NORMALE { color: #3b82f6; }
+
+        .btn { 
+            padding: 5px 12px; 
+            border-radius: 20px; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 12px; 
+            margin-right: 5px;
+            transition: 0.2s;
+        }
         .btn-primary { background: #3b82f6; color: white; }
+        .btn-primary:hover { background: #2563eb; }
         .btn-success { background: #22c55e; color: white; }
+        .btn-success:hover { background: #16a34a; }
         .btn-secondary { background: #e2e8f0; color: #475569; }
+        .btn-secondary:hover { background: #cbd5e1; }
         .btn-danger { background: #ef4444; color: white; }
+        .btn-danger:hover { background: #dc2626; }
 
-        .empty-state { text-align: center; padding: 40px; color: #94a3b8; }
+        .empty-state { text-align: center; padding: 50px; color: #94a3b8; }
+
+        .loader {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .stats-summary {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-pill {
+            background: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 13px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .stat-pill strong { color: #1b5e20; font-size: 18px; margin-right: 5px; }
 
         @media (max-width: 768px) {
-            body { margin-left: 0; }
-            th, td { padding: 8px; font-size: 12px; }
+            body { margin-left: 0; padding: 70px 15px 15px 15px; }
+            th, td { padding: 10px 8px; font-size: 12px; }
+            .btn-group { flex-direction: column; width: 100%; }
+            .btn-group button { width: 100%; }
+            .filter-bar select, .filter-bar input { min-width: 100%; }
         }
     </style>
 </head>
@@ -134,38 +209,56 @@
 <div class="main-content">
     <div class="header">
         <h1>🔧 GESTION DES MAINTENANCES</h1>
-        <div>
+        <div class="btn-group">
+            <button class="btn-refresh" onclick="refreshData()" title="Rafraîchir">🔄 Rafraîchir</button>
             <button class="btn-planifier" onclick="window.location.href='preventive-form.html'">📅 Planifier préventive</button>
             <button class="btn-add" onclick="window.location.href='intervention-form.html'">➕ Nouvelle intervention</button>
         </div>
     </div>
 
+    <div class="stats-summary" id="statsSummary">
+        <div class="stat-pill">📊 <strong id="statTotal">-</strong> Total</div>
+        <div class="stat-pill">⏳ <strong id="statAttente">-</strong> En attente</div>
+        <div class="stat-pill">🔧 <strong id="statEnCours">-</strong> En cours</div>
+        <div class="stat-pill">✅ <strong id="statTermine">-</strong> Terminées</div>
+    </div>
+
     <div class="tabs">
-        <button class="tab active" onclick="switchTab('correctif')">🛠️ Correctives (Pannes)</button>
-        <button class="tab" onclick="switchTab('preventif')">📅 Préventives (Planifiées)</button>
+        <button class="tab active" data-tab="correctif">🛠️ Correctives (Pannes)</button>
+        <button class="tab" data-tab="preventif">📅 Préventives (Planifiées)</button>
     </div>
 
     <div class="filter-bar">
-        <input type="text" id="searchInput" placeholder="🔍 Rechercher..." onkeyup="loadData()">
+        <input type="text" id="searchInput" placeholder="🔍 Rechercher (équipement, description)..." onkeyup="debouncedSearch()">
         <select id="statutFilter" onchange="loadData()">
             <option value="">📊 Tous statuts</option>
             <option value="EN_ATTENTE">⏳ En attente</option>
             <option value="EN_COURS">🔧 En cours</option>
             <option value="TERMINE">✅ Terminé</option>
+            <option value="PREVU">📅 Prévu</option>
+            <option value="REALISE">✅ Réalisé</option>
         </select>
         <select id="serviceFilter" onchange="loadData()">
             <option value="">🏥 Tous services</option>
-            <option value="URGENCES">Urgences</option>
-            <option value="RADIOLOGIE">Radiologie</option>
-            <option value="BLOC_OPERATOIRE">Bloc</option>
-            <option value="PEDIATRIE">Pédiatrie</option>
+            <option value="URGENCES">🚨 Urgences</option>
+            <option value="RADIOLOGIE">🩻 Radiologie</option>
+            <option value="BLOC_OPERATOIRE">🏥 Bloc</option>
+            <option value="PEDIATRIE">👶 Pédiatrie</option>
+            <option value="MEDECINE_INTERNE">💊 Médecine interne</option>
+            <option value="LABORATOIRE">🔬 Laboratoire</option>
         </select>
     </div>
 
     <div class="table-container">
         <table id="dataTable">
-            <thead id="tableHeader"><tr><th>ID</th><th>Équipement</th><th>Service</th><th>Description</th><th>Priorité</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>
-            <tbody id="tableBody"><tr><td colspan="8" class="empty-state">Chargement...</td></tr></tbody>
+            <thead id="tableHeader">
+                <tr>
+                    <th>ID</th><th>Équipement</th><th>Service</th><th>Description</th><th>Priorité</th><th>Statut</th><th>Date</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr><td colspan="8" class="empty-state">⏳ Chargement...</td></tr>
+            </tbody>
         </table>
     </div>
 </div>
@@ -173,15 +266,42 @@
 <script>
     const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
     let currentTab = 'correctif';
+    let searchTimeout = null;
 
     function getToken() { return localStorage.getItem('token'); }
+    
+    // Auth check
     if (!getToken()) window.location.href = '/login.html';
+    
+    const userRole = localStorage.getItem('userRole');
+    if (userRole !== 'TECHNICIEN') window.location.href = '/soignant/index.html';
 
     function loadSidebar() {
         fetch('/components/sidebar.html')
             .then(response => response.text())
-            .then(data => document.getElementById('sidebar-container').innerHTML = data)
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                const links = document.querySelectorAll('.sidebar-item');
+                links.forEach(link => {
+                    if (link.getAttribute('href') === 'maintenances.html') {
+                        link.classList.add('active');
+                    }
+                });
+            })
             .catch(error => console.error('Erreur sidebar:', error));
+    }
+
+    async function loadStats(interventions) {
+        if (!interventions) return;
+        const total = interventions.length;
+        const attente = interventions.filter(i => i.statut === 'EN_ATTENTE').length;
+        const enCours = interventions.filter(i => i.statut === 'EN_COURS').length;
+        const termine = interventions.filter(i => i.statut === 'TERMINE').length;
+        
+        document.getElementById('statTotal').innerText = total;
+        document.getElementById('statAttente').innerText = attente;
+        document.getElementById('statEnCours').innerText = enCours;
+        document.getElementById('statTermine').innerText = termine;
     }
 
     async function loadData() {
@@ -191,78 +311,189 @@
         
         let url;
         if (currentTab === 'correctif') {
-            url = `${API_URL}/maintenances/correctives?search=${search}&statut=${statut}&service=${service}`;
+            url = `${API_URL}/maintenances/correctives?search=${encodeURIComponent(search)}&statut=${statut}&service=${service}`;
         } else {
-            url = `${API_URL}/preventif?search=${search}&statut=${statut}&service=${service}`;
+            url = `${API_URL}/preventif?search=${encodeURIComponent(search)}&statut=${statut}&service=${service}`;
         }
         
         try {
             const res = await fetch(url, { headers: { 'Authorization': `Bearer ${getToken()}` } });
+            if (!res.ok) throw new Error('Erreur chargement');
             const data = await res.json();
-            const items = data.interventions || data;
+            
+            let items = [];
+            if (Array.isArray(data)) {
+                items = data;
+            } else if (data.interventions) {
+                items = data.interventions;
+            } else if (data.data) {
+                items = data.data;
+            } else {
+                items = [];
+            }
             
             if (items.length === 0) {
                 document.getElementById('tableBody').innerHTML = '<tr><td colspan="8" class="empty-state">📭 Aucune donnée</td></tr>';
+                loadStats([]);
                 return;
             }
             
+            loadStats(items);
+            
             if (currentTab === 'correctif') {
-                document.getElementById('tableHeader').innerHTML = '<tr><th>ID</th><th>Équipement</th><th>Service</th><th>Description</th><th>Priorité</th><th>Statut</th><th>Date</th><th>Actions</th></tr>';
-                document.getElementById('tableBody').innerHTML = items.map(i => `
+                document.getElementById('tableHeader').innerHTML = `
                     <tr>
-                        <td>#${i.id}</td>
-                        <td><strong>${i.equipement?.nom}</strong><br><small>${i.equipement?.codeInventaire}</small></td>
-                        <td>${i.equipement?.service || '-'}</td>
-                        <td>${(i.signalement?.description || i.diagnostic || '').substring(0, 50)}</td>
-                        <td>${i.signalement?.priorite || 'NORMALE'}</td>
-                        <td><span class="status-${i.statut}">${i.statut === 'EN_ATTENTE' ? '⏳ Attente' : i.statut === 'EN_COURS' ? '🔧 En cours' : '✅ Terminé'}</span></td>
-                        <td>${new Date(i.dateDebut).toLocaleDateString()}</td>
-                        <td>
-                            ${i.statut === 'EN_ATTENTE' ? `<button class="btn btn-primary" onclick="prendreEnCharge(${i.id})">Prendre</button>` : ''}
-                            ${i.statut === 'EN_COURS' ? `<button class="btn btn-success" onclick="terminer(${i.id})">Terminer</button>` : ''}
-                            <button class="btn btn-secondary" onclick="voirDetail(${i.id})">Voir</button>
-                        </td>
+                        <th>ID</th><th>Équipement</th><th>Service</th><th>Description</th><th>Priorité</th><th>Statut</th><th>Date</th><th>Actions</th>
                     </tr>
-                `).join('');
+                `;
+                document.getElementById('tableBody').innerHTML = items.map(i => {
+                    const equipement = i.equipement || {};
+                    const priorite = i.signalement?.priorite || i.priorite || 'NORMALE';
+                    const description = i.signalement?.description || i.diagnostic || i.description || '-';
+                    return `
+                        <tr>
+                            <td>#${i.id}</td>
+                            <td><strong>${escapeHtml(equipement.nom || '-')}</strong><br><small style="color:#64748b">${escapeHtml(equipement.codeInventaire || '-')}</small></td>
+                            <td>${escapeHtml(equipement.service || i.service || '-')}</td>
+                            <td style="max-width: 250px;">${escapeHtml(description.substring(0, 60))}${description.length > 60 ? '...' : ''}</td>
+                            <td><span class="priority-${priorite}">${priorite}</span></td>
+                            <td><span class="status-badge status-${i.statut}">${getStatusText(i.statut)}</span></td>
+                            <td>${formatDate(i.dateDebut || i.createdAt || i.date)}</td>
+                            <td>
+                                ${i.statut === 'EN_ATTENTE' ? `<button class="btn btn-primary" onclick="prendreEnCharge(${i.id})">📋 Prendre</button>` : ''}
+                                ${i.statut === 'EN_COURS' ? `<button class="btn btn-success" onclick="terminer(${i.id})">✅ Terminer</button>` : ''}
+                                <button class="btn btn-secondary" onclick="voirDetail(${i.id})">👁️ Voir</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
             } else {
-                document.getElementById('tableHeader').innerHTML = '<tr><th>ID</th><th>Équipement</th><th>Service</th><th>Type</th><th>Périodicité</th><th>Prochaine date</th><th>Statut</th><th>Actions</th></tr>';
-                document.getElementById('tableBody').innerHTML = items.map(i => `
+                document.getElementById('tableHeader').innerHTML = `
                     <tr>
-                        <td>#${i.id}</td>
-                        <td><strong>${i.equipement?.nom}</strong><br><small>${i.equipement?.codeInventaire}</small></td>
-                        <td>${i.equipement?.service || '-'}</td>
-                        <td>${i.type}</td>
-                        <td>Tous les ${i.periodicite} jours</td>
-                        <td><strong>${new Date(i.prochaineRealisation).toLocaleDateString()}</strong></td>
-                        <td><span class="status-${i.statut}">${i.statut === 'PREVU' ? '📅 Prévu' : '✅ Réalisé'}</span></td>
-                        <td>
-                            ${i.statut === 'PREVU' ? `<button class="btn btn-success" onclick="realiserPreventive(${i.id})">Réaliser</button>` : ''}
-                            <button class="btn btn-secondary" onclick="voirPreventive(${i.id})">Voir</button>
-                        </td>
+                        <th>ID</th><th>Équipement</th><th>Service</th><th>Type</th><th>Périodicité</th><th>Prochaine date</th><th>Statut</th><th>Actions</th>
                     </tr>
-                `).join('');
+                `;
+                document.getElementById('tableBody').innerHTML = items.map(i => {
+                    const equipement = i.equipement || {};
+                    return `
+                        <tr>
+                            <td>#${i.id}</td>
+                            <td><strong>${escapeHtml(equipement.nom || '-')}</strong><br><small style="color:#64748b">${escapeHtml(equipement.codeInventaire || '-')}</small></td>
+                            <td>${escapeHtml(equipement.service || i.service || '-')}</td>
+                            <td>${escapeHtml(i.type || 'Préventive')}</td>
+                            <td>Tous les ${i.periodicite || '-'} jours</td>
+                            <td><strong>${formatDate(i.prochaineRealisation || i.datePrevue)}</strong></td>
+                            <td><span class="status-badge status-${i.statut}">${i.statut === 'PREVU' ? '📅 Prévu' : '✅ Réalisé'}</span></td>
+                            <td>
+                                ${i.statut === 'PREVU' ? `<button class="btn btn-success" onclick="realiserPreventive(${i.id})">✅ Réaliser</button>` : ''}
+                                <button class="btn btn-secondary" onclick="voirPreventive(${i.id})">👁️ Voir</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
             }
         } catch (error) {
             console.error('Erreur:', error);
-            document.getElementById('tableBody').innerHTML = '<tr><td colspan="8" class="empty-state">❌ Erreur</td></tr>';
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="8" class="empty-state">❌ Erreur de chargement</td></tr>';
         }
     }
 
-    async function prendreEnCharge(id) {
-        await fetch(`${API_URL}/maintenances/${id}/prendre`, { method: 'PUT', headers: { 'Authorization': `Bearer ${getToken()}` } });
-        loadData();
+    function getStatusText(statut) {
+        const map = {
+            'EN_ATTENTE': '⏳ En attente',
+            'EN_COURS': '🔧 En cours',
+            'TERMINE': '✅ Terminé',
+            'PREVU': '📅 Prévu',
+            'REALISE': '✅ Réalisé'
+        };
+        return map[statut] || statut;
     }
 
-    function terminer(id) { window.location.href = `intervention-form.html?id=${id}`; }
-    function voirDetail(id) { window.location.href = `intervention-form.html?id=${id}`; }
-    function voirPreventive(id) { window.location.href = `preventive.html?id=${id}`; }
-    function realiserPreventive(id) { window.location.href = `preventive.html?id=${id}`; }
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        try {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return '-';
+            return date.toLocaleDateString('fr-FR');
+        } catch { return '-'; }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function debouncedSearch() {
+        if (searchTimeout) clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => loadData(), 500);
+    }
+
+    async function prendreEnCharge(id) {
+        try {
+            const btn = event?.target;
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="loader"></span>';
+            }
+            const response = await fetch(`${API_URL}/maintenances/${id}/prendre`, { 
+                method: 'PUT', 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            if (response.ok) {
+                loadData();
+            } else {
+                alert('Erreur lors de la prise en charge');
+                if (btn) btn.disabled = false;
+            }
+        } catch (error) {
+            alert('Erreur de connexion');
+        }
+    }
+
+    function terminer(id) { 
+        window.location.href = `intervention-form.html?id=${id}&action=terminer`; 
+    }
+    
+    function voirDetail(id) { 
+        window.location.href = `intervention-form.html?id=${id}`; 
+    }
+    
+    function voirPreventive(id) { 
+        window.location.href = `preventive.html?id=${id}`; 
+    }
+    
+    function realiserPreventive(id) { 
+        window.location.href = `preventive.html?id=${id}&action=realiser`; 
+    }
 
     function switchTab(tab) {
         currentTab = tab;
-        document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', (tab === 'correctif' && i === 0) || (tab === 'preventif' && i === 1)));
+        document.querySelectorAll('.tab').forEach(t => {
+            if (t.getAttribute('data-tab') === tab) {
+                t.classList.add('active');
+            } else {
+                t.classList.remove('active');
+            }
+        });
+        document.getElementById('statutFilter').value = '';
         loadData();
     }
+
+    function refreshData() {
+        loadData();
+    }
+
+    // Initialisation des événements
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            switchTab(tab.getAttribute('data-tab'));
+        });
+    });
 
     loadSidebar();
     loadData();
