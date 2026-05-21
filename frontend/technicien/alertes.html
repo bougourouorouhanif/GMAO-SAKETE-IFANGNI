@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="theme-color" content="#1b5e20">
     <title>Alertes - GMAO Sakété</title>
     <style>
         * {
@@ -42,6 +43,18 @@
             font-size: 24px;
         }
 
+        .btn-refresh {
+            background: #f0fdf4;
+            border: 1px solid #1b5e20;
+            color: #1b5e20;
+            padding: 10px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-refresh:hover { background: #1b5e20; color: white; }
+
         .stats {
             display: flex;
             gap: 20px;
@@ -57,6 +70,12 @@
             flex: 1;
             min-width: 120px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
         }
 
         .stat-number {
@@ -88,24 +107,31 @@
             border-radius: 40px;
             font-size: 14px;
             background: white;
+            cursor: pointer;
+        }
+
+        .filter-bar select:focus {
+            outline: none;
+            border-color: #1b5e20;
         }
 
         .alert-card {
             background: white;
             border-radius: 16px;
-            padding: 16px;
+            padding: 18px;
             margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 15px;
             border-left: 4px solid;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.2s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
         .alert-card:hover {
             transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .alert-critical {
@@ -123,46 +149,81 @@
             background: #eff6ff;
         }
 
-        .alert-icon { font-size: 28px; }
+        .alert-resolved {
+            opacity: 0.7;
+            background: #f8fafc;
+            border-left-color: #94a3b8;
+        }
+
+        .alert-icon { font-size: 32px; }
         .alert-content { flex: 1; }
         .alert-title { font-weight: bold; margin-bottom: 5px; font-size: 15px; }
-        .alert-message { font-size: 13px; color: #64748b; }
+        .alert-message { font-size: 13px; color: #475569; }
         .alert-date { font-size: 11px; color: #94a3b8; margin-top: 5px; }
+        .alert-equipement { font-size: 11px; color: #1b5e20; margin-top: 3px; }
 
         .btn-resolve {
             background: #22c55e;
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 8px 20px;
             border-radius: 20px;
             cursor: pointer;
             font-size: 12px;
+            font-weight: 500;
+            transition: 0.2s;
         }
 
         .btn-resolve:hover {
             background: #16a34a;
+            transform: scale(1.02);
         }
 
         .resolved-badge {
             background: #dcfce7;
             color: #166534;
-            padding: 6px 12px;
+            padding: 6px 14px;
             border-radius: 20px;
             font-size: 12px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .empty-state {
             text-align: center;
             padding: 50px;
             background: white;
-            border-radius: 16px;
+            border-radius: 20px;
             color: #94a3b8;
         }
 
+        .loader {
+            text-align: center;
+            padding: 50px;
+            color: #94a3b8;
+        }
+
+        .loader-spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #1b5e20;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         @media (max-width: 768px) {
-            body { margin-left: 0; }
+            body { margin-left: 0; padding: 70px 15px 15px 15px; }
             .stats { flex-direction: column; }
             .alert-card { flex-direction: column; text-align: center; }
+            .filter-bar { flex-direction: column; }
+            .filter-bar select { width: 100%; }
         }
     </style>
 </head>
@@ -173,12 +234,26 @@
 <div class="main-content">
     <div class="header">
         <h1>⚠️ CENTRE D'ALERTES</h1>
+        <button class="btn-refresh" onclick="refreshAllData()">🔄 Rafraîchir</button>
     </div>
 
     <div class="stats" id="statsContainer">
-        <div class="stat-card"><div class="stat-number" id="criticalCount">0</div><div class="stat-label">🔴 Critiques</div></div>
-        <div class="stat-card"><div class="stat-number" id="attentionCount">0</div><div class="stat-label">🟠 Attention</div></div>
-        <div class="stat-card"><div class="stat-number" id="infoCount">0</div><div class="stat-label">🔵 Information</div></div>
+        <div class="stat-card" onclick="filterByNiveau('CRITIQUE')">
+            <div class="stat-number" id="criticalCount">0</div>
+            <div class="stat-label">🔴 Critiques</div>
+        </div>
+        <div class="stat-card" onclick="filterByNiveau('ATTENTION')">
+            <div class="stat-number" id="attentionCount">0</div>
+            <div class="stat-label">🟠 Attention</div>
+        </div>
+        <div class="stat-card" onclick="filterByNiveau('INFO')">
+            <div class="stat-number" id="infoCount">0</div>
+            <div class="stat-label">🔵 Information</div>
+        </div>
+        <div class="stat-card" onclick="filterByNiveau('')">
+            <div class="stat-number" id="totalCount">0</div>
+            <div class="stat-label">📊 Total</div>
+        </div>
     </div>
 
     <div class="filter-bar">
@@ -193,77 +268,237 @@
             <option value="true">✅ Résolues</option>
             <option value="">📋 Toutes</option>
         </select>
+        <select id="equipementFilter" onchange="loadAlertes()">
+            <option value="">🏥 Tous équipements</option>
+        </select>
     </div>
 
-    <div id="alertesList"><div class="empty-state">Chargement...</div></div>
+    <div id="alertesList">
+        <div class="loader">
+            <div class="loader-spinner"></div>
+            <div>Chargement des alertes...</div>
+        </div>
+    </div>
 </div>
 
 <script>
-   const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
+    const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
+    
     function getToken() { return localStorage.getItem('token'); }
+    
+    // Auth check
     if (!getToken()) window.location.href = '/login.html';
+    
+    const userRole = localStorage.getItem('userRole');
+    if (userRole !== 'TECHNICIEN') window.location.href = '/soignant/index.html';
+
+    let allAlertes = [];
 
     function loadSidebar() {
         fetch('/components/sidebar.html')
             .then(response => response.text())
-            .then(data => document.getElementById('sidebar-container').innerHTML = data)
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                const links = document.querySelectorAll('.sidebar-item');
+                links.forEach(link => {
+                    if (link.getAttribute('href') === 'alertes.html') {
+                        link.classList.add('active');
+                    }
+                });
+            })
             .catch(error => console.error('Erreur sidebar:', error));
+    }
+
+    async function loadEquipementsForFilter() {
+        try {
+            const res = await fetch(`${API_URL}/equipements?limit=100`, {
+                headers: { 'Authorization': `Bearer ${getToken()}` }
+            });
+            if (!res.ok) throw new Error('Erreur');
+            const data = await res.json();
+            const equipements = Array.isArray(data) ? data : (data.equipements || []);
+            
+            const select = document.getElementById('equipementFilter');
+            select.innerHTML = '<option value="">🏥 Tous équipements</option>' + 
+                equipements.map(e => `<option value="${e.id}">${escapeHtml(e.nom)} (${escapeHtml(e.codeInventaire)})</option>`).join('');
+        } catch (error) {
+            console.error('Erreur chargement équipements:', error);
+        }
     }
 
     async function loadStats() {
         try {
-            const res = await fetch(`${API_URL}/alertes/stats`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
+            const res = await fetch(`${API_URL}/alertes/stats`, {
+                headers: { 'Authorization': `Bearer ${getToken()}` }
+            });
+            if (!res.ok) throw new Error('Erreur stats');
+            
             const stats = await res.json();
-            document.getElementById('criticalCount').innerText = stats.parNiveau?.find(n => n.niveau === 'CRITIQUE')?._count || 0;
-            document.getElementById('attentionCount').innerText = stats.parNiveau?.find(n => n.niveau === 'ATTENTION')?._count || 0;
-            document.getElementById('infoCount').innerText = stats.parNiveau?.find(n => n.niveau === 'INFO')?._count || 0;
-        } catch (error) { console.error('Erreur stats:', error); }
+            const parNiveau = stats.parNiveau || [];
+            
+            const critical = parNiveau.find(n => n.niveau === 'CRITIQUE')?._count || 0;
+            const attention = parNiveau.find(n => n.niveau === 'ATTENTION')?._count || 0;
+            const info = parNiveau.find(n => n.niveau === 'INFO')?._count || 0;
+            
+            document.getElementById('criticalCount').innerText = critical;
+            document.getElementById('attentionCount').innerText = attention;
+            document.getElementById('infoCount').innerText = info;
+            document.getElementById('totalCount').innerText = stats.total || (critical + attention + info);
+        } catch (error) { 
+            console.error('Erreur stats:', error);
+        }
     }
 
     async function loadAlertes() {
         const niveau = document.getElementById('niveauFilter').value;
         const resolue = document.getElementById('resoluFilter').value;
+        const equipementId = document.getElementById('equipementFilter').value;
+        
         let url = `${API_URL}/alertes?`;
-        if (niveau) url += `niveau=${niveau}&`;
-        if (resolue !== '') url += `resolue=${resolue}&`;
+        const params = [];
+        if (niveau) params.push(`niveau=${niveau}`);
+        if (resolue !== '') params.push(`resolue=${resolue}`);
+        if (equipementId) params.push(`equipementId=${equipementId}`);
+        url += params.join('&');
         
         try {
-            const res = await fetch(url, { headers: { 'Authorization': `Bearer ${getToken()}` } });
-            const alertes = await res.json();
-            if (alertes.length === 0) {
-                document.getElementById('alertesList').innerHTML = '<div class="empty-state">✅ Aucune alerte</div>';
+            const res = await fetch(url, {
+                headers: { 'Authorization': `Bearer ${getToken()}` }
+            });
+            if (!res.ok) throw new Error('Erreur chargement');
+            
+            const data = await res.json();
+            allAlertes = Array.isArray(data) ? data : (data.alertes || []);
+            
+            if (allAlertes.length === 0) {
+                document.getElementById('alertesList').innerHTML = '<div class="empty-state">✅ Aucune alerte trouvée</div>';
                 return;
             }
-            document.getElementById('alertesList').innerHTML = alertes.map(a => {
+            
+            document.getElementById('alertesList').innerHTML = allAlertes.map(a => {
                 let icon = '', niveauClass = '';
-                if (a.niveau === 'CRITIQUE') { icon = '🔴'; niveauClass = 'alert-critical'; }
-                else if (a.niveau === 'ATTENTION') { icon = '🟠'; niveauClass = 'alert-attention'; }
-                else { icon = '🔵'; niveauClass = 'alert-info'; }
+                if (a.niveau === 'CRITIQUE') { 
+                    icon = '🔴'; 
+                    niveauClass = 'alert-critical'; 
+                } else if (a.niveau === 'ATTENTION') { 
+                    icon = '🟠'; 
+                    niveauClass = 'alert-attention'; 
+                } else { 
+                    icon = '🔵'; 
+                    niveauClass = 'alert-info'; 
+                }
+                
+                if (a.resolue) niveauClass += ' alert-resolved';
+                
+                const typeAffiche = (a.type || 'ALERTE').replace(/_/g, ' ').toLowerCase();
+                const typeFormatted = typeAffiche.charAt(0).toUpperCase() + typeAffiche.slice(1);
+                
                 return `
-                    <div class="alert-card ${niveauClass}">
+                    <div class="alert-card ${niveauClass}" onclick="voirDetail(${a.id})">
                         <div class="alert-icon">${icon}</div>
                         <div class="alert-content">
-                            <div class="alert-title">${a.type?.replace(/_/g, ' ') || 'Alerte'}</div>
-                            <div class="alert-message">${a.message}</div>
-                            <div class="alert-date">📅 ${new Date(a.dateCreation).toLocaleString()} ${a.equipement?.nom ? `· 🏥 ${a.equipement.nom}` : ''}</div>
+                            <div class="alert-title">${escapeHtml(typeFormatted)}</div>
+                            <div class="alert-message">${escapeHtml(a.message || 'Aucun message')}</div>
+                            <div class="alert-date">📅 ${formatDate(a.dateCreation || a.createdAt)}</div>
+                            ${a.equipement?.nom ? `<div class="alert-equipement">🔧 ${escapeHtml(a.equipement.nom)} (${escapeHtml(a.equipement.codeInventaire || '-')})</div>` : ''}
+                            ${a.resolue && a.dateResolution ? `<div class="alert-date">✅ Résolue le ${formatDate(a.dateResolution)}</div>` : ''}
                         </div>
-                        ${!a.resolue ? `<button class="btn-resolve" onclick="event.stopPropagation();resoudreAlerte(${a.id})">✅ Marquer résolue</button>` : `<span class="resolved-badge">✓ Résolue</span>`}
+                        ${!a.resolue ? 
+                            `<button class="btn-resolve" onclick="event.stopPropagation();resoudreAlerte(${a.id})">✅ Marquer résolue</button>` : 
+                            `<span class="resolved-badge">✓ Résolue</span>`
+                        }
                     </div>
                 `;
             }).join('');
-        } catch (error) { document.getElementById('alertesList').innerHTML = '<div class="empty-state">❌ Erreur</div>'; }
+        } catch (error) { 
+            console.error('Erreur:', error);
+            document.getElementById('alertesList').innerHTML = '<div class="empty-state">❌ Erreur de chargement des alertes</div>';
+        }
     }
 
     async function resoudreAlerte(id) {
-        const commentaire = prompt("Commentaire :");
-        await fetch(`${API_URL}/alertes/${id}/resoudre`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` }, body: JSON.stringify({ commentaire: commentaire || null }) });
-        loadStats(); loadAlertes();
+        const commentaire = prompt("📝 Commentaire (optionnel) :", "");
+        
+        try {
+            const res = await fetch(`${API_URL}/alertes/${id}/resoudre`, { 
+                method: 'PUT', 
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${getToken()}` 
+                }, 
+                body: JSON.stringify({ commentaire: commentaire || null }) 
+            });
+            
+            if (res.ok) {
+                alert('✅ Alerte marquée comme résolue');
+                loadStats();
+                loadAlertes();
+            } else {
+                alert('❌ Erreur lors de la résolution');
+            }
+        } catch (error) {
+            alert('❌ Erreur de connexion');
+        }
     }
 
+    function voirDetail(id) {
+        window.location.href = `alerte-detail.html?id=${id}`;
+    }
+
+    function filterByNiveau(niveau) {
+        const select = document.getElementById('niveauFilter');
+        select.value = niveau;
+        loadAlertes();
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        try {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return '-';
+            return date.toLocaleString('fr-FR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch { return '-'; }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function refreshAllData() {
+        loadStats();
+        loadAlertes();
+    }
+
+    // Rafraîchissement automatique toutes les 30 secondes
+    let refreshInterval = setInterval(() => {
+        if (document.visibilityState === 'visible') {
+            loadStats();
+            loadAlertes();
+        }
+    }, 30000);
+
+    // Nettoyer l'intervalle à la fermeture
+    window.addEventListener('beforeunload', () => {
+        if (refreshInterval) clearInterval(refreshInterval);
+    });
+
+    // Initialisation
     loadSidebar();
+    loadEquipementsForFilter();
     loadStats();
     loadAlertes();
-    setInterval(() => { loadStats(); loadAlertes(); }, 30000);
 </script>
 </body>
 </html>
