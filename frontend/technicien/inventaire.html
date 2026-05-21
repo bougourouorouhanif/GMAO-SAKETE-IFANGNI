@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="theme-color" content="#1b5e20">
     <title>Inventaire - GMAO Sakété</title>
     <style>
         * {
@@ -178,9 +179,9 @@
             font-weight: bold;
         }
 
-        .status-FONCTIONNEL { background: #22c55e; }
-        .status-EN_PANNE { background: #ef4444; }
-        .status-EN_MAINTENANCE { background: #f97316; }
+        .status-FONCTIONNEL { background: #22c55e; color: white; }
+        .status-EN_PANNE { background: #ef4444; color: white; }
+        .status-EN_MAINTENANCE { background: #f97316; color: white; }
 
         .card-body {
             padding: 16px;
@@ -312,6 +313,11 @@
             background: white;
             border-radius: 8px;
             cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .page-btn:hover {
+            background: #e8f5e9;
         }
 
         .page-btn.active {
@@ -320,11 +326,43 @@
             border-color: #1b5e20;
         }
 
+        .refresh-btn {
+            background: #f0fdf4;
+            border: 1px solid #1b5e20;
+            color: #1b5e20;
+            padding: 8px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: #1b5e20;
+            color: white;
+        }
+
+        .loader {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         @media (max-width: 768px) {
-            body { margin-left: 0; }
+            body { margin-left: 0; padding: 70px 15px 15px 15px; }
             .equipment-grid { grid-template-columns: 1fr; }
             .form-row { grid-template-columns: 1fr; gap: 0; }
             .stats-row { flex-direction: column; }
+            .header { flex-direction: column; text-align: center; }
         }
     </style>
 </head>
@@ -335,7 +373,8 @@
 <div class="main-content">
     <div class="header">
         <h1>📦 GESTION DE L'INVENTAIRE</h1>
-        <div>
+        <div style="display: flex; gap: 10px;">
+            <button class="refresh-btn" onclick="refreshAllData()" title="Rafraîchir">🔄</button>
             <button class="btn-export" onclick="exportToExcel()">📊 Exporter Excel</button>
             <button class="btn-add" onclick="openAddModal()">➕ Nouvel équipement</button>
         </div>
@@ -349,38 +388,44 @@
     </div>
 
     <div class="filter-bar">
-        <input type="text" id="searchInput" placeholder="🔍 Rechercher..." onkeyup="loadEquipements()">
+        <input type="text" id="searchInput" placeholder="🔍 Rechercher par nom, code, marque..." onkeyup="debouncedSearch()">
         <select id="serviceFilter" onchange="loadEquipements()">
             <option value="">📋 Tous services</option>
-            <option value="URGENCES">Urgences</option>
-            <option value="RADIOLOGIE">Radiologie</option>
-            <option value="BLOC_OPERATOIRE">Bloc</option>
-            <option value="PEDIATRIE">Pédiatrie</option>
-            <option value="LABORATOIRE">Laboratoire</option>
+            <option value="URGENCES">🚨 Urgences</option>
+            <option value="RADIOLOGIE">🩻 Radiologie</option>
+            <option value="BLOC_OPERATOIRE">🏥 Bloc opératoire</option>
+            <option value="PEDIATRIE">👶 Pédiatrie</option>
+            <option value="MEDECINE_INTERNE">💊 Médecine interne</option>
+            <option value="CHIRURGIE">🔪 Chirurgie</option>
+            <option value="LABORATOIRE">🔬 Laboratoire</option>
+            <option value="USI">💓 USI</option>
+            <option value="REANIMATION">🫀 Réanimation</option>
+            <option value="MAINTENANCE">🔧 Maintenance</option>
         </select>
         <select id="statutFilter" onchange="loadEquipements()">
             <option value="">📊 Tous statuts</option>
-            <option value="FONCTIONNEL">Fonctionnel</option>
-            <option value="EN_PANNE">En panne</option>
-            <option value="EN_MAINTENANCE">Maintenance</option>
+            <option value="FONCTIONNEL">✅ Fonctionnel</option>
+            <option value="EN_PANNE">❌ En panne</option>
+            <option value="EN_MAINTENANCE">🔧 Maintenance</option>
         </select>
         <select id="typeFilter" onchange="loadEquipements()">
             <option value="">📌 Tous types</option>
-            <option value="IMAGERIE">Imagerie</option>
-            <option value="MONITORING">Monitoring</option>
-            <option value="RESPIRATION">Respiration</option>
-            <option value="LABORATOIRE">Laboratoire</option>
+            <option value="IMAGERIE">🩻 Imagerie</option>
+            <option value="MONITORING">📊 Monitoring</option>
+            <option value="RESPIRATION">💨 Respiration</option>
+            <option value="LABORATOIRE">🔬 Laboratoire</option>
+            <option value="CHIRURGIE">🔪 Chirurgie</option>
         </select>
     </div>
 
     <div id="equipmentGrid" class="equipment-grid">
-        <div class="empty-state">Chargement des équipements...</div>
+        <div class="empty-state">⏳ Chargement des équipements...</div>
     </div>
 
     <div class="pagination" id="pagination"></div>
 </div>
 
-<div id="equipmentModal" class="modal">
+<div id="equipmentModal" class="modal" onclick="if(event.target===this) closeModal()">
     <div class="modal-content">
         <h2 id="modalTitle">Ajouter un équipement</h2>
         <form id="equipmentForm">
@@ -394,20 +439,50 @@
             </div>
             <div class="form-group"><label>Numéro de série</label><input type="text" id="numeroSerie"></div>
             <div class="form-row">
-                <div class="form-group"><label>Type médical *</label><select id="typeMedical"><option value="IMAGERIE">Imagerie</option><option value="MONITORING">Monitoring</option><option value="RESPIRATION">Respiration</option><option value="LABORATOIRE">Laboratoire</option></select></div>
-                <div class="form-group"><label>Service *</label><select id="service"><option value="URGENCES">Urgences</option><option value="RADIOLOGIE">Radiologie</option><option value="BLOC_OPERATOIRE">Bloc</option><option value="PEDIATRIE">Pédiatrie</option><option value="LABORATOIRE">Laboratoire</option></select></div>
+                <div class="form-group"><label>Type médical *</label>
+                    <select id="typeMedical">
+                        <option value="IMAGERIE">🩻 Imagerie</option>
+                        <option value="MONITORING">📊 Monitoring</option>
+                        <option value="RESPIRATION">💨 Respiration</option>
+                        <option value="LABORATOIRE">🔬 Laboratoire</option>
+                        <option value="CHIRURGIE">🔪 Chirurgie</option>
+                        <option value="AUTRE">📌 Autre</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Service *</label>
+                    <select id="service">
+                        <option value="URGENCES">🚨 Urgences</option>
+                        <option value="RADIOLOGIE">🩻 Radiologie</option>
+                        <option value="BLOC_OPERATOIRE">🏥 Bloc opératoire</option>
+                        <option value="PEDIATRIE">👶 Pédiatrie</option>
+                        <option value="MEDECINE_INTERNE">💊 Médecine interne</option>
+                        <option value="CHIRURGIE">🔪 Chirurgie</option>
+                        <option value="LABORATOIRE">🔬 Laboratoire</option>
+                        <option value="USI">💓 USI</option>
+                        <option value="REANIMATION">🫀 Réanimation</option>
+                        <option value="MAINTENANCE">🔧 Maintenance</option>
+                    </select>
+                </div>
             </div>
             <div class="form-row">
-                <div class="form-group"><label>Bâtiment</label><input type="text" id="batiment"></div>
-                <div class="form-group"><label>Salle</label><input type="text" id="salle"></div>
+                <div class="form-group"><label>Bâtiment</label><input type="text" id="batiment" placeholder="ex: Bâtiment A"></div>
+                <div class="form-group"><label>Salle</label><input type="text" id="salle" placeholder="ex: Salle 101"></div>
             </div>
             <div class="form-row">
                 <div class="form-group"><label>Date mise en service</label><input type="date" id="dateMiseService"></div>
                 <div class="form-group"><label>Fin de garantie</label><input type="date" id="garantieFin"></div>
             </div>
-            <div class="form-group"><label>Statut</label><select id="statut"><option value="FONCTIONNEL">Fonctionnel</option><option value="EN_PANNE">En panne</option><option value="EN_MAINTENANCE">Maintenance</option></select></div>
-            <button type="button" class="btn-add" onclick="saveEquipment()">💾 Enregistrer</button>
-            <button type="button" class="btn-sm" style="margin-top:10px; background:#e2e8f0;" onclick="closeModal()">Annuler</button>
+            <div class="form-group"><label>Statut</label>
+                <select id="statut">
+                    <option value="FONCTIONNEL">✅ Fonctionnel</option>
+                    <option value="EN_PANNE">❌ En panne</option>
+                    <option value="EN_MAINTENANCE">🔧 En maintenance</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button type="button" class="btn-add" onclick="saveEquipment()">💾 Enregistrer</button>
+                <button type="button" class="btn-sm" style="background:#e2e8f0;" onclick="closeModal()">Annuler</button>
+            </div>
         </form>
     </div>
 </div>
@@ -416,29 +491,53 @@
     const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
     let currentPage = 1;
     let currentEditId = null;
+    let searchTimeout = null;
     const limit = 12;
 
+    // Auth
     function getToken() { return localStorage.getItem('token'); }
     if (!getToken()) window.location.href = '/login.html';
 
+    // Vérification rôle technicien
+    const userRole = localStorage.getItem('userRole');
+    if (userRole !== 'TECHNICIEN') window.location.href = '/soignant/index.html';
+
+    // Sidebar
     function loadSidebar() {
         fetch('/components/sidebar.html')
             .then(response => response.text())
-            .then(data => document.getElementById('sidebar-container').innerHTML = data)
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                // Marquer l'élément actif
+                const links = document.querySelectorAll('.sidebar-item');
+                links.forEach(link => {
+                    if (link.getAttribute('href') === 'inventaire.html') {
+                        link.classList.add('active');
+                    }
+                });
+            })
             .catch(error => console.error('Erreur sidebar:', error));
     }
 
+    // Statistiques
     async function loadStats() {
         try {
-            const res = await fetch(`${API_URL}/equipements/stats`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
+            const res = await fetch(`${API_URL}/equipements/stats`, { 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            if (!res.ok) throw new Error('Erreur stats');
             const data = await res.json();
             document.getElementById('totalEquip').innerText = data.total || 0;
             document.getElementById('fonctionnelEquip').innerText = data.fonctionnel || 0;
             document.getElementById('panneEquip').innerText = data.panne || 0;
             document.getElementById('maintenanceEquip').innerText = data.maintenance || 0;
-        } catch (error) { console.error('Erreur stats:', error); }
+        } catch (error) { 
+            console.error('Erreur stats:', error);
+            // Fallback: calcul à partir de la liste
+        }
     }
 
+    // Chargement équipements
     async function loadEquipements() {
         const search = document.getElementById('searchInput').value;
         const service = document.getElementById('serviceFilter').value;
@@ -452,95 +551,240 @@
         if (type) url += `&type=${type}`;
         
         try {
-            const res = await fetch(url, { headers: { 'Authorization': `Bearer ${getToken()}` } });
+            const res = await fetch(url, { 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            if (!res.ok) throw new Error('Erreur chargement');
             const data = await res.json();
-            const equipements = data.equipements || data;
-            const total = data.total || equipements.length;
+            
+            // Gestion des différents formats de réponse
+            let equipements = [];
+            let total = 0;
+            if (Array.isArray(data)) {
+                equipements = data;
+                total = data.length;
+            } else if (data.equipements) {
+                equipements = data.equipements;
+                total = data.total || equipements.length;
+            } else {
+                equipements = [];
+                total = 0;
+            }
             
             if (equipements.length === 0) {
                 document.getElementById('equipmentGrid').innerHTML = '<div class="empty-state">📭 Aucun équipement trouvé</div>';
+                document.getElementById('pagination').innerHTML = '';
                 return;
             }
             
+            // Génération des cartes
             document.getElementById('equipmentGrid').innerHTML = equipements.map(e => `
                 <div class="equipment-card" onclick="viewEquipment(${e.id})">
-                    <div class="card-header"><h3>${e.nom}</h3><div class="card-code">${e.codeInventaire}</div><div class="status-badge status-${e.statut}">${e.statut === 'FONCTIONNEL' ? '✅ Fonctionnel' : e.statut === 'EN_PANNE' ? '❌ Panne' : '🔧 Maintenance'}</div></div>
-                    <div class="card-body"><div class="info-row"><span class="info-label">Marque</span><span class="info-value">${e.marque || '-'}</span></div><div class="info-row"><span class="info-label">Modèle</span><span class="info-value">${e.modele || '-'}</span></div><div class="info-row"><span class="info-label">Service</span><span class="info-value">${e.service}</span></div></div>
-                    <div class="card-actions"><button class="btn-sm btn-edit" onclick="event.stopPropagation();openEditModal(${e.id})">✏️ Modifier</button><button class="btn-sm btn-qr" onclick="event.stopPropagation();showQR(${e.id})">📱 QR Code</button><button class="btn-sm btn-history" onclick="event.stopPropagation();window.location.href='maintenances.html?equipement=${e.id}'">🔧 Historique</button></div>
+                    <div class="card-header">
+                        <h3>${escapeHtml(e.nom)}</h3>
+                        <div class="card-code">${escapeHtml(e.codeInventaire)}</div>
+                        <div class="status-badge status-${e.statut}">${getStatusText(e.statut)}</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-row"><span class="info-label">Marque</span><span class="info-value">${escapeHtml(e.marque || '-')}</span></div>
+                        <div class="info-row"><span class="info-label">Modèle</span><span class="info-value">${escapeHtml(e.modele || '-')}</span></div>
+                        <div class="info-row"><span class="info-label">Service</span><span class="info-value">${escapeHtml(e.service || '-')}</span></div>
+                        <div class="info-row"><span class="info-label">Type</span><span class="info-value">${getTypeText(e.typeMedical)}</span></div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-sm btn-edit" onclick="event.stopPropagation();openEditModal(${e.id})">✏️ Modifier</button>
+                        <button class="btn-sm btn-qr" onclick="event.stopPropagation();showQR(${e.id})">📱 QR Code</button>
+                        <button class="btn-sm btn-history" onclick="event.stopPropagation();window.location.href='maintenances.html?equipement=${e.id}'">🔧 Historique</button>
+                    </div>
                 </div>
             `).join('');
             
+            // Pagination
             const totalPages = Math.ceil(total / limit);
-            let paginationHtml = '';
-            for (let i = 1; i <= Math.min(totalPages, 10); i++) {
-                paginationHtml += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            if (totalPages > 1) {
+                let paginationHtml = '';
+                const startPage = Math.max(1, currentPage - 2);
+                const endPage = Math.min(totalPages, currentPage + 2);
+                
+                if (startPage > 1) {
+                    paginationHtml += `<button class="page-btn" onclick="goToPage(1)">1</button>`;
+                    if (startPage > 2) paginationHtml += `<span class="page-btn">...</span>`;
+                }
+                for (let i = startPage; i <= endPage; i++) {
+                    paginationHtml += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                }
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) paginationHtml += `<span class="page-btn">...</span>`;
+                    paginationHtml += `<button class="page-btn" onclick="goToPage(${totalPages})">${totalPages}</button>`;
+                }
+                document.getElementById('pagination').innerHTML = paginationHtml;
+            } else {
+                document.getElementById('pagination').innerHTML = '';
             }
-            document.getElementById('pagination').innerHTML = paginationHtml;
         } catch (error) {
-            console.error('Erreur:', error);
-            document.getElementById('equipmentGrid').innerHTML = '<div class="empty-state">❌ Erreur de chargement</div>';
+            console.error('Erreur chargement:', error);
+            document.getElementById('equipmentGrid').innerHTML = '<div class="empty-state">❌ Erreur de chargement. Vérifiez votre connexion.</div>';
         }
     }
 
-    function goToPage(page) { currentPage = page; loadEquipements(); }
-    function viewEquipment(id) { window.location.href = `equipement-detail.html?id=${id}`; }
-    function openAddModal() { currentEditId = null; document.getElementById('modalTitle').innerText = '➕ Ajouter un équipement'; document.getElementById('equipmentForm').reset(); document.getElementById('equipmentModal').style.display = 'flex'; }
+    function getStatusText(statut) {
+        const map = { 'FONCTIONNEL': '✅ Fonctionnel', 'EN_PANNE': '❌ Panne', 'EN_MAINTENANCE': '🔧 Maintenance' };
+        return map[statut] || statut;
+    }
+
+    function getTypeText(type) {
+        const map = { 'IMAGERIE': '🩻 Imagerie', 'MONITORING': '📊 Monitoring', 'RESPIRATION': '💨 Respiration', 'LABORATOIRE': '🔬 Laboratoire', 'CHIRURGIE': '🔪 Chirurgie' };
+        return map[type] || type || '-';
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function debouncedSearch() {
+        if (searchTimeout) clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            currentPage = 1;
+            loadEquipements();
+        }, 500);
+    }
+
+    function goToPage(page) { 
+        currentPage = page; 
+        loadEquipements(); 
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function viewEquipment(id) { 
+        window.location.href = `equipement-detail.html?id=${id}`; 
+    }
+
+    function openAddModal() { 
+        currentEditId = null; 
+        document.getElementById('modalTitle').innerText = '➕ Ajouter un équipement'; 
+        document.getElementById('equipmentForm').reset(); 
+        document.getElementById('equipmentModal').style.display = 'flex'; 
+    }
     
     async function openEditModal(id) {
-        const res = await fetch(`${API_URL}/equipements/${id}`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
-        const e = await res.json();
-        currentEditId = id;
-        document.getElementById('modalTitle').innerText = '✏️ Modifier équipement';
-        document.getElementById('nom').value = e.nom;
-        document.getElementById('codeInventaire').value = e.codeInventaire;
-        document.getElementById('marque').value = e.marque || '';
-        document.getElementById('modele').value = e.modele || '';
-        document.getElementById('numeroSerie').value = e.numeroSerie || '';
-        document.getElementById('typeMedical').value = e.typeMedical;
-        document.getElementById('service').value = e.service;
-        document.getElementById('batiment').value = e.batiment || '';
-        document.getElementById('salle').value = e.salle || '';
-        document.getElementById('dateMiseService').value = e.dateMiseService?.split('T')[0] || '';
-        document.getElementById('garantieFin').value = e.garantieFin?.split('T')[0] || '';
-        document.getElementById('statut').value = e.statut;
-        document.getElementById('equipmentModal').style.display = 'flex';
+        try {
+            const res = await fetch(`${API_URL}/equipements/${id}`, { 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            if (!res.ok) throw new Error('Erreur chargement');
+            const e = await res.json();
+            currentEditId = id;
+            document.getElementById('modalTitle').innerText = '✏️ Modifier équipement';
+            document.getElementById('nom').value = e.nom || '';
+            document.getElementById('codeInventaire').value = e.codeInventaire || '';
+            document.getElementById('marque').value = e.marque || '';
+            document.getElementById('modele').value = e.modele || '';
+            document.getElementById('numeroSerie').value = e.numeroSerie || '';
+            document.getElementById('typeMedical').value = e.typeMedical || 'IMAGERIE';
+            document.getElementById('service').value = e.service || 'URGENCES';
+            document.getElementById('batiment').value = e.batiment || '';
+            document.getElementById('salle').value = e.salle || '';
+            document.getElementById('dateMiseService').value = e.dateMiseService?.split('T')[0] || '';
+            document.getElementById('garantieFin').value = e.garantieFin?.split('T')[0] || '';
+            document.getElementById('statut').value = e.statut || 'FONCTIONNEL';
+            document.getElementById('equipmentModal').style.display = 'flex';
+        } catch (error) {
+            alert('Erreur lors du chargement de l\'équipement');
+        }
     }
 
     async function saveEquipment() {
         const data = {
-            nom: document.getElementById('nom').value,
-            codeInventaire: document.getElementById('codeInventaire').value,
-            marque: document.getElementById('marque').value,
-            modele: document.getElementById('modele').value,
-            numeroSerie: document.getElementById('numeroSerie').value,
+            nom: document.getElementById('nom').value.trim(),
+            codeInventaire: document.getElementById('codeInventaire').value.trim(),
+            marque: document.getElementById('marque').value.trim(),
+            modele: document.getElementById('modele').value.trim(),
+            numeroSerie: document.getElementById('numeroSerie').value.trim(),
             typeMedical: document.getElementById('typeMedical').value,
             service: document.getElementById('service').value,
-            batiment: document.getElementById('batiment').value,
-            salle: document.getElementById('salle').value,
-            dateMiseService: document.getElementById('dateMiseService').value,
-            garantieFin: document.getElementById('garantieFin').value,
+            batiment: document.getElementById('batiment').value.trim(),
+            salle: document.getElementById('salle').value.trim(),
+            dateMiseService: document.getElementById('dateMiseService').value || null,
+            garantieFin: document.getElementById('garantieFin').value || null,
             statut: document.getElementById('statut').value
         };
         
+        if (!data.nom || !data.codeInventaire) {
+            alert('Veuillez remplir le nom et le code inventaire');
+            return;
+        }
+        
         const url = currentEditId ? `${API_URL}/equipements/${currentEditId}` : `${API_URL}/equipements`;
         const method = currentEditId ? 'PUT' : 'POST';
-        const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` }, body: JSON.stringify(data) });
-        if (res.ok) { alert(currentEditId ? '✅ Équipement modifié' : '✅ Équipement ajouté'); closeModal(); loadEquipements(); loadStats(); }
-        else alert('❌ Erreur');
+        
+        const btn = document.querySelector('#equipmentModal .btn-add');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loader"></span> Enregistrement...';
+        btn.disabled = true;
+        
+        try {
+            const res = await fetch(url, { 
+                method, 
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${getToken()}` 
+                }, 
+                body: JSON.stringify(data) 
+            });
+            
+            if (res.ok) { 
+                alert(currentEditId ? '✅ Équipement modifié avec succès' : '✅ Équipement ajouté avec succès'); 
+                closeModal(); 
+                loadEquipements(); 
+                loadStats(); 
+            } else {
+                const error = await res.json();
+                alert('❌ Erreur: ' + (error.message || 'Une erreur est survenue'));
+            }
+        } catch (error) {
+            alert('❌ Erreur de connexion au serveur');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
     }
 
     function showQR(id) {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         if (!token) {
             alert('Veuillez vous reconnecter');
             return;
         }
-        window.open(`${API_URL}/equipements/${id}/qr?token=${token}`, 'QRCode', 'width=500,height=700,toolbar=no,menubar=no,scrollbars=yes');
+        // Ouvrir le QR code dans une nouvelle fenêtre
+        const qrUrl = `${API_URL}/equipements/${id}/qr?token=${encodeURIComponent(token)}`;
+        window.open(qrUrl, 'QRCode', 'width=500,height=700,toolbar=no,menubar=no,scrollbars=yes');
     }
     
-    function closeModal() { document.getElementById('equipmentModal').style.display = 'none'; }
-    async function exportToExcel() { window.location.href = `${API_URL}/equipements/export-excel`; }
+    function closeModal() { 
+        document.getElementById('equipmentModal').style.display = 'none'; 
+    }
 
+    async function exportToExcel() {
+        try {
+            const url = `${API_URL}/equipements/export-excel?token=${encodeURIComponent(getToken())}`;
+            window.open(url, '_blank');
+        } catch (error) {
+            alert('Erreur lors de l\'export');
+        }
+    }
+
+    function refreshAllData() {
+        loadStats();
+        loadEquipements();
+    }
+
+    // Initialisation
     loadSidebar();
     loadStats();
     loadEquipements();
