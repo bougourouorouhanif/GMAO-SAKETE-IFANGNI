@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="theme-color" content="#1b5e20">
     <title>Documents - GMAO Sakété</title>
     <style>
         * {
@@ -20,7 +21,7 @@
         }
 
         .main-content {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
@@ -42,6 +43,8 @@
             font-size: 24px;
         }
 
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+
         .btn-add {
             background: #1b5e20;
             color: white;
@@ -53,10 +56,19 @@
             font-weight: bold;
         }
 
-        .btn-add:hover {
-            background: #2e7d32;
-            transform: translateY(-2px);
+        .btn-add:hover { background: #2e7d32; transform: translateY(-2px); }
+
+        .btn-refresh {
+            background: #f0fdf4;
+            border: 1px solid #1b5e20;
+            color: #1b5e20;
+            padding: 10px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.2s;
         }
+
+        .btn-refresh:hover { background: #1b5e20; color: white; }
 
         .filter-bar {
             display: flex;
@@ -80,42 +92,108 @@
             min-width: 150px;
         }
 
+        .filter-bar input:focus,
+        .filter-bar select:focus {
+            outline: none;
+            border-color: #1b5e20;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 12px 20px;
+            flex: 1;
+            min-width: 100px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1b5e20;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #64748b;
+        }
+
         .document-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
         }
 
         .document-card {
             background: white;
             border-radius: 16px;
-            padding: 16px;
+            padding: 18px;
             display: flex;
             align-items: center;
             gap: 15px;
             cursor: pointer;
             transition: 0.2s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: relative;
         }
 
         .document-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         }
 
-        .document-icon { font-size: 40px; }
+        .document-icon { font-size: 45px; }
         .document-info { flex: 1; }
-        .document-title { font-weight: bold; margin-bottom: 5px; }
+        .document-title { font-weight: bold; margin-bottom: 5px; color: #1e293b; }
         .document-meta { font-size: 11px; color: #94a3b8; }
-        .document-type { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; margin-top: 5px; }
-        .type-manuel { background: #dbeafe; color: #2563eb; }
-        .type-notice { background: #fef3c7; color: #d97706; }
-        .type-schema { background: #dcfce7; color: #166534; }
-        .type-certificat { background: #e2e8f0; color: #475569; }
+        .document-type { 
+            display: inline-block; 
+            padding: 2px 10px; 
+            border-radius: 20px; 
+            font-size: 10px; 
+            margin-top: 6px;
+            font-weight: 500;
+        }
+        .type-MANUEL { background: #dbeafe; color: #2563eb; }
+        .type-NOTICE { background: #fef3c7; color: #d97706; }
+        .type-SCHEMA { background: #dcfce7; color: #166534; }
+        .type-CERTIFICAT { background: #e2e8f0; color: #475569; }
+
+        .btn-delete-doc {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #fee2e2;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-delete-doc:hover {
+            background: #fecaca;
+            transform: scale(1.1);
+        }
 
         .empty-state {
             text-align: center;
             padding: 50px;
+            background: white;
+            border-radius: 20px;
             color: #94a3b8;
         }
 
@@ -135,9 +213,11 @@
         .modal-content {
             background: white;
             border-radius: 24px;
-            padding: 24px;
+            padding: 28px;
             max-width: 500px;
             width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
         }
 
         .modal h3 {
@@ -156,33 +236,68 @@
             margin-bottom: 5px;
             font-weight: 500;
             font-size: 13px;
+            color: #334155;
         }
 
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 10px;
+            padding: 10px 12px;
             border: 1px solid #e2e8f0;
             border-radius: 12px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1b5e20;
         }
 
         .btn-primary {
             background: #1b5e20;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border-radius: 30px;
             cursor: pointer;
             width: 100%;
             font-weight: bold;
+            transition: 0.2s;
         }
 
-        .btn-primary:hover {
-            background: #2e7d32;
+        .btn-primary:hover { background: #2e7d32; }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #475569;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: 0.2s;
         }
+
+        .btn-secondary:hover { background: #cbd5e1; }
+
+        .loader {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         @media (max-width: 768px) {
-            body { margin-left: 0; }
+            body { margin-left: 0; padding: 70px 15px 15px 15px; }
             .document-grid { grid-template-columns: 1fr; }
         }
     </style>
@@ -194,11 +309,21 @@
 <div class="main-content">
     <div class="header">
         <h1>📚 BIBLIOTHÈQUE DE DOCUMENTS</h1>
-        <button class="btn-add" onclick="openAddModal()">📤 Upload document</button>
+        <div class="btn-group">
+            <button class="btn-refresh" onclick="refreshAllData()">🔄 Rafraîchir</button>
+            <button class="btn-add" onclick="openAddModal()">📤 Upload document</button>
+        </div>
+    </div>
+
+    <div class="stats-row" id="statsRow">
+        <div class="stat-card"><div class="stat-number" id="statTotal">-</div><div class="stat-label">Total documents</div></div>
+        <div class="stat-card"><div class="stat-number" id="statManuels">-</div><div class="stat-label">📖 Manuels</div></div>
+        <div class="stat-card"><div class="stat-number" id="statNotices">-</div><div class="stat-label">📄 Notices</div></div>
+        <div class="stat-card"><div class="stat-number" id="statSchemas">-</div><div class="stat-label">📐 Schémas</div></div>
     </div>
 
     <div class="filter-bar">
-        <input type="text" id="search" placeholder="🔍 Rechercher..." onkeyup="loadDocuments()">
+        <input type="text" id="searchInput" placeholder="🔍 Rechercher un document..." onkeyup="debouncedSearch()">
         <select id="typeFilter" onchange="loadDocuments()">
             <option value="">📋 Tous les types</option>
             <option value="MANUEL">📖 Manuels</option>
@@ -209,83 +334,289 @@
     </div>
 
     <div id="documentsList" class="document-grid">
-        <div class="empty-state">Chargement des documents...</div>
+        <div class="empty-state">⏳ Chargement des documents...</div>
     </div>
 </div>
 
-<div id="addModal" class="modal">
+<!-- Modal Upload -->
+<div id="addModal" class="modal" onclick="if(event.target===this) closeModal()">
     <div class="modal-content">
         <h3>📤 Uploader un document</h3>
-        <div class="form-group"><label>Titre</label><input type="text" id="titre"></div>
-        <div class="form-group"><label>Type</label><select id="type"><option value="MANUEL">📖 Manuel</option><option value="NOTICE">📄 Notice</option><option value="SCHEMA">📐 Schéma</option><option value="CERTIFICAT">📜 Certificat</option></select></div>
-        <div class="form-group"><label>Équipement lié</label><select id="equipementId"><option value="">Aucun</option></select></div>
-        <div class="form-group"><label>Fichier (PDF, DOC)</label><input type="file" id="fichier" accept=".pdf,.doc,.docx"></div>
+        <div class="form-group">
+            <label>Titre *</label>
+            <input type="text" id="titre" placeholder="Ex: Manuel d'utilisation IRM">
+        </div>
+        <div class="form-group">
+            <label>Type *</label>
+            <select id="type">
+                <option value="MANUEL">📖 Manuel</option>
+                <option value="NOTICE">📄 Notice</option>
+                <option value="SCHEMA">📐 Schéma</option>
+                <option value="CERTIFICAT">📜 Certificat</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Équipement lié (optionnel)</label>
+            <select id="equipementId">
+                <option value="">Aucun</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Fichier * (PDF, DOC, DOCX)</label>
+            <input type="file" id="fichier" accept=".pdf,.doc,.docx,.jpg,.png">
+        </div>
         <button class="btn-primary" onclick="uploadDocument()">📤 Uploader</button>
-        <button onclick="closeModal()" style="margin-top:10px; background:#e2e8f0; border:none; padding:10px; border-radius:30px;">Annuler</button>
+        <button class="btn-secondary" onclick="closeModal()">Annuler</button>
     </div>
 </div>
 
 <script>
-   const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
+    const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
+    let searchTimeout = null;
 
     function getToken() { return localStorage.getItem('token'); }
+    
+    // Auth check
     if (!getToken()) window.location.href = '/login.html';
+    
+    const userRole = localStorage.getItem('userRole');
+    if (userRole !== 'TECHNICIEN') window.location.href = '/soignant/index.html';
 
     function loadSidebar() {
         fetch('/components/sidebar.html')
             .then(response => response.text())
-            .then(data => document.getElementById('sidebar-container').innerHTML = data)
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                const links = document.querySelectorAll('.sidebar-item');
+                links.forEach(link => {
+                    if (link.getAttribute('href') === 'documents.html') {
+                        link.classList.add('active');
+                    }
+                });
+            })
             .catch(error => console.error('Erreur sidebar:', error));
     }
 
+    function updateStats(documents) {
+        if (!documents || !Array.isArray(documents)) return;
+        
+        const total = documents.length;
+        const manuels = documents.filter(d => d.type === 'MANUEL').length;
+        const notices = documents.filter(d => d.type === 'NOTICE').length;
+        const schemas = documents.filter(d => d.type === 'SCHEMA').length;
+        
+        document.getElementById('statTotal').innerText = total;
+        document.getElementById('statManuels').innerText = manuels;
+        document.getElementById('statNotices').innerText = notices;
+        document.getElementById('statSchemas').innerText = schemas;
+    }
+
     async function loadDocuments() {
-        const search = document.getElementById('search').value;
+        const search = document.getElementById('searchInput').value;
         const type = document.getElementById('typeFilter').value;
+        
         let url = `${API_URL}/documents?search=${encodeURIComponent(search)}`;
         if (type) url += `&type=${type}`;
         
         try {
-            const res = await fetch(url, { headers: { 'Authorization': `Bearer ${getToken()}` } });
-            const docs = await res.json();
-            if (docs.length === 0) {
-                document.getElementById('documentsList').innerHTML = '<div class="empty-state">📭 Aucun document</div>';
+            const res = await fetch(url, { 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            
+            if (!res.ok) throw new Error('Erreur chargement');
+            
+            const data = await res.json();
+            let documents = Array.isArray(data) ? data : (data.documents || []);
+            
+            updateStats(documents);
+            
+            if (documents.length === 0) {
+                document.getElementById('documentsList').innerHTML = 
+                    '<div class="empty-state">📭 Aucun document trouvé</div>';
                 return;
             }
-            document.getElementById('documentsList').innerHTML = docs.map(d => {
-                let typeClass = '', icon = '📄';
-                if (d.type === 'MANUEL') { typeClass = 'type-manuel'; icon = '📖'; }
-                else if (d.type === 'NOTICE') { typeClass = 'type-notice'; icon = '📄'; }
-                else if (d.type === 'SCHEMA') { typeClass = 'type-schema'; icon = '📐'; }
-                else { typeClass = 'type-certificat'; icon = '📜'; }
-                return `<div class="document-card" onclick="window.open('${d.url}', '_blank')"><div class="document-icon">${icon}</div><div class="document-info"><div class="document-title">${d.titre}</div><div class="document-meta">Ajouté le ${new Date(d.dateUpload).toLocaleDateString()}</div><span class="document-type ${typeClass}">${d.type}</span></div></div>`;
+            
+            document.getElementById('documentsList').innerHTML = documents.map(d => {
+                const typeInfo = getTypeInfo(d.type);
+                return `
+                    <div class="document-card" data-id="${d.id}">
+                        <div class="document-icon">${typeInfo.icon}</div>
+                        <div class="document-info" onclick="openDocument(${d.id}, '${escapeHtml(d.url)}')">
+                            <div class="document-title">${escapeHtml(d.titre)}</div>
+                            <div class="document-meta">
+                                Ajouté le ${formatDate(d.dateUpload || d.createdAt)} 
+                                ${d.equipementNom ? `• ${escapeHtml(d.equipementNom)}` : ''}
+                            </div>
+                            <span class="document-type type-${d.type}">${typeInfo.label}</span>
+                        </div>
+                        <button class="btn-delete-doc" onclick="event.stopPropagation();deleteDocument(${d.id})" title="Supprimer">🗑️</button>
+                    </div>
+                `;
             }).join('');
-        } catch (error) { document.getElementById('documentsList').innerHTML = '<div class="empty-state">❌ Erreur</div>'; }
+        } catch (error) { 
+            console.error('Erreur:', error);
+            document.getElementById('documentsList').innerHTML = 
+                '<div class="empty-state">❌ Erreur de chargement</div>';
+        }
+    }
+
+    function getTypeInfo(type) {
+        const map = {
+            'MANUEL': { icon: '📖', label: 'Manuel' },
+            'NOTICE': { icon: '📄', label: 'Notice' },
+            'SCHEMA': { icon: '📐', label: 'Schéma' },
+            'CERTIFICAT': { icon: '📜', label: 'Certificat' }
+        };
+        return map[type] || { icon: '📄', label: type || 'Document' };
     }
 
     async function loadEquipements() {
-        const res = await fetch(`${API_URL}/equipements`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
-        const equipements = await res.json();
-        const select = document.getElementById('equipementId');
-        select.innerHTML = '<option value="">Aucun</option>' + equipements.map(e => `<option value="${e.id}">${e.nom} (${e.codeInventaire})</option>`).join('');
+        try {
+            const res = await fetch(`${API_URL}/equipements?limit=100`, { 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            if (!res.ok) throw new Error('Erreur');
+            
+            const data = await res.json();
+            let equipements = Array.isArray(data) ? data : (data.equipements || []);
+            
+            const select = document.getElementById('equipementId');
+            if (equipements.length === 0) {
+                select.innerHTML = '<option value="">Aucun équipement disponible</option>';
+                return;
+            }
+            
+            select.innerHTML = '<option value="">Aucun (document général)</option>' + 
+                equipements.map(e => `<option value="${e.id}">${escapeHtml(e.nom)} (${escapeHtml(e.codeInventaire)})</option>`).join('');
+        } catch (error) {
+            console.error('Erreur chargement équipements:', error);
+        }
     }
-
-    function openAddModal() { document.getElementById('addModal').style.display = 'flex'; }
-    function closeModal() { document.getElementById('addModal').style.display = 'none'; }
 
     async function uploadDocument() {
-        const titre = document.getElementById('titre').value;
+        const titre = document.getElementById('titre').value.trim();
+        const type = document.getElementById('type').value;
+        const equipementId = document.getElementById('equipementId').value;
         const fichier = document.getElementById('fichier').files[0];
-        if (!titre || !fichier) { alert('Titre et fichier requis'); return; }
+        
+        if (!titre) {
+            alert('Veuillez entrer un titre');
+            return;
+        }
+        if (!fichier) {
+            alert('Veuillez sélectionner un fichier');
+            return;
+        }
+        
         const formData = new FormData();
         formData.append('titre', titre);
-        formData.append('type', document.getElementById('type').value);
-        formData.append('equipementId', document.getElementById('equipementId').value);
+        formData.append('type', type);
+        if (equipementId) formData.append('equipementId', equipementId);
         formData.append('fichier', fichier);
-        const res = await fetch(`${API_URL}/documents/upload`, { method: 'POST', headers: { 'Authorization': `Bearer ${getToken()}` }, body: formData });
-        if (res.ok) { alert('✅ Document uploadé'); closeModal(); document.getElementById('titre').value = ''; document.getElementById('fichier').value = ''; loadDocuments(); }
-        else alert('❌ Erreur');
+        
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loader"></span> Upload...';
+        btn.disabled = true;
+        
+        try {
+            const res = await fetch(`${API_URL}/documents/upload`, { 
+                method: 'POST', 
+                headers: { 'Authorization': `Bearer ${getToken()}` }, 
+                body: formData 
+            });
+            
+            if (res.ok) { 
+                alert('✅ Document uploadé avec succès'); 
+                closeModal(); 
+                resetUploadForm();
+                loadDocuments(); 
+            } else {
+                const error = await res.json();
+                alert('❌ Erreur: ' + (error.message || 'Upload impossible'));
+            }
+        } catch (error) {
+            alert('❌ Erreur de connexion');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
     }
 
+    async function deleteDocument(id) {
+        if (confirm('⚠️ Supprimer définitivement ce document ?')) {
+            try {
+                const res = await fetch(`${API_URL}/documents/${id}`, { 
+                    method: 'DELETE', 
+                    headers: { 'Authorization': `Bearer ${getToken()}` } 
+                });
+                
+                if (res.ok) { 
+                    alert('✅ Document supprimé'); 
+                    loadDocuments(); 
+                } else {
+                    alert('❌ Erreur lors de la suppression');
+                }
+            } catch (error) {
+                alert('❌ Erreur de connexion');
+            }
+        }
+    }
+
+    function openDocument(id, url) {
+        if (url) {
+            window.open(url, '_blank');
+        } else {
+            window.open(`${API_URL}/documents/${id}/download?token=${encodeURIComponent(getToken())}`, '_blank');
+        }
+    }
+
+    function resetUploadForm() {
+        document.getElementById('titre').value = '';
+        document.getElementById('type').value = 'MANUEL';
+        document.getElementById('equipementId').value = '';
+        document.getElementById('fichier').value = '';
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        try {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return '-';
+            return date.toLocaleDateString('fr-FR');
+        } catch { return '-'; }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function debouncedSearch() {
+        if (searchTimeout) clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => loadDocuments(), 500);
+    }
+
+    function refreshAllData() {
+        loadDocuments();
+        loadEquipements();
+    }
+
+    function openAddModal() { 
+        resetUploadForm();
+        document.getElementById('addModal').style.display = 'flex'; 
+    }
+    
+    function closeModal() { 
+        document.getElementById('addModal').style.display = 'none'; 
+    }
+
+    // Initialisation
     loadSidebar();
     loadDocuments();
     loadEquipements();
