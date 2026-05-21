@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <meta name="theme-color" content="#1a2a4f">
+    <meta name="theme-color" content="#0066FF">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>GMAO Soignant - Hôpital Sakété</title>
@@ -11,14 +11,14 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: #f5f7fb;
+            background: #e8f5e9;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
             padding-bottom: 75px;
         }
 
         /* ── HEADER ── */
         .header {
-            background: linear-gradient(135deg, #1a2a4f 0%, #1e3a5f 100%);
+            background: linear-gradient(135deg, #0066FF 0%, #0052CC 100%);
             padding: 25px 20px;
             border-radius: 0 0 30px 30px;
             color: white;
@@ -42,7 +42,9 @@
             font-size: 13px;
             cursor: pointer;
             backdrop-filter: blur(10px);
+            transition: 0.2s;
         }
+        .logout-btn:hover { background: rgba(255,255,255,0.3); }
 
         .stats-cards { display: flex; gap: 12px; margin-top: 20px; }
         .stat-card {
@@ -82,9 +84,7 @@
 
         /* Badge urgence */
         .menu-item.urgent { border: 2px solid #ef4444; }
-        .menu-item.urgent .menu-icon::after {
-            content: '';
-        }
+        .menu-item.urgent .menu-icon::after { content: ''; }
 
         /* ── INFO CARD ── */
         .info-card {
@@ -101,7 +101,7 @@
             align-items: center;
             gap: 8px;
             font-size: 14px;
-            color: #1a2a4f;
+            color: #0066FF;
         }
         .info-text { font-size: 13px; color: #475569; line-height: 1.6; }
 
@@ -112,12 +112,12 @@
             right: 20px;
             width: 56px;
             height: 56px;
-            background: #3b82f6;
+            background: #0066FF;
             border-radius: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(59,130,246,0.4);
+            box-shadow: 0 4px 12px rgba(0,102,255,0.4);
             cursor: pointer;
             border: none;
             z-index: 100;
@@ -157,7 +157,7 @@
         }
 
         .chatbot-header {
-            background: #1a2a4f;
+            background: #0066FF;
             color: white;
             padding: 16px 18px;
             display: flex;
@@ -179,7 +179,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: 0.2s;
         }
+        .close-chatbot:hover { background: rgba(255,255,255,0.3); }
 
         /* Actions rapides dans le chatbot */
         .chatbot-quick {
@@ -201,8 +203,9 @@
             white-space: nowrap;
             cursor: pointer;
             color: #374151;
+            transition: 0.2s;
         }
-        .chatbot-quick-btn:hover { background: #1a2a4f; color: white; border-color: #1a2a4f; }
+        .chatbot-quick-btn:hover { background: #0066FF; color: white; border-color: #0066FF; }
 
         .chatbot-messages {
             flex: 1;
@@ -226,7 +229,7 @@
             line-height: 1.5;
         }
         .message.user .message-content {
-            background: #1a2a4f;
+            background: #0066FF;
             color: white;
             border-bottom-right-radius: 4px;
         }
@@ -257,7 +260,7 @@
             font-family: inherit;
             outline: none;
         }
-        .signalement-form textarea:focus { border-color: #1a2a4f; }
+        .signalement-form textarea:focus { border-color: #0066FF; }
 
         .priorite-selector { display: flex; gap: 6px; margin: 8px 0; flex-wrap: wrap; }
         .priorite-btn {
@@ -267,22 +270,37 @@
             font-size: 11px;
             cursor: pointer;
             font-weight: bold;
+            transition: 0.2s;
         }
         .priorite-btn.basse   { background: #dcfce7; color: #166534; }
         .priorite-btn.moyenne { background: #fef9c3; color: #854d0e; }
         .priorite-btn.haute   { background: #fee2e2; color: #991b1b; }
-        .priorite-btn.selected { border-color: #1a2a4f; }
+        .priorite-btn.selected { border-color: #0066FF; }
 
         .form-actions { display: flex; gap: 6px; margin-top: 8px; }
         .btn-primary {
-            background: #1a2a4f; color: white; border: none;
-            padding: 7px 14px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: bold;
+            background: #0066FF;
+            color: white;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: 0.2s;
         }
-        .btn-primary:hover { background: #1e3a5f; }
+        .btn-primary:hover { background: #0052CC; }
         .btn-secondary {
-            background: #e2e8f0; color: #475569; border: none;
-            padding: 7px 14px; border-radius: 20px; cursor: pointer; font-size: 12px;
+            background: #e2e8f0;
+            color: #475569;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: 0.2s;
         }
+        .btn-secondary:hover { background: #cbd5e1; }
 
         /* Carte confirmation */
         .confirm-card {
@@ -326,12 +344,20 @@
             outline: none;
             font-size: 13px;
         }
-        .chatbot-input:focus { border-color: #1a2a4f; }
+        .chatbot-input:focus { border-color: #0066FF; }
         .chatbot-send {
-            background: #1a2a4f; color: white; border: none;
-            width: 42px; height: 42px; border-radius: 50%;
-            cursor: pointer; font-size: 16px; flex-shrink: 0;
+            background: #0066FF;
+            color: white;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            flex-shrink: 0;
+            transition: 0.2s;
         }
+        .chatbot-send:hover:not(:disabled) { background: #0052CC; }
         .chatbot-send:disabled { background: #94a3b8; cursor: not-allowed; }
 
         /* ── BOTTOM NAV ── */
@@ -350,8 +376,9 @@
             text-decoration: none;
             color: #94a3b8;
             font-size: 12px;
+            transition: 0.2s;
         }
-        .nav-item.active { color: #1a2a4f; font-weight: 600; }
+        .nav-item.active { color: #0066FF; font-weight: 600; }
         .nav-icon { font-size: 22px; display: block; margin-bottom: 4px; }
 
         @media (max-width: 450px) {
@@ -405,11 +432,6 @@
         <div class="menu-icon">📋</div>
         <div class="menu-title">Historique</div>
         <div class="menu-desc">Mes signalements</div>
-    </a>
-    <a href="statistiques.html" class="menu-item">
-        <div class="menu-icon">📊</div>
-        <div class="menu-title">Statistiques</div>
-        <div class="menu-desc">Suivi & performances</div>
     </a>
     <a href="profil.html" class="menu-item">
         <div class="menu-icon">👤</div>
@@ -504,28 +526,29 @@
     // ─── AUTH & RÔLE ──────────────────────────────────────
     function getToken() { return localStorage.getItem('token'); }
 
-    if (!getToken()) window.location.href = '/connexion.html';
+    if (!getToken()) window.location.href = '/login.html';
 
     // Rediriger les techniciens vers leur dashboard
     const userRole = localStorage.getItem('userRole');
-    if (userRole === 'TECHNICIEN' || userRole === 'ADMIN') {
+    if (userRole === 'TECHNICIEN') {
         window.location.href = '/technicien/dashboard.html';
     }
 
     // ─── DÉCONNEXION ──────────────────────────────────────
     function logout() {
-        localStorage.clear();
-        window.location.replace('/connexion.html');
+        if (confirm('🚪 Voulez-vous vraiment vous déconnecter ?')) {
+            localStorage.clear();
+            window.location.replace('/login.html');
+        }
     }
 
     // ─── STATS ────────────────────────────────────────────
     async function chargerStats() {
         try {
-            // Afficher le nom depuis localStorage immédiatement
-            document.getElementById('userName').textContent =
-                localStorage.getItem('userName') || 'Personnel Soignant';
-            document.getElementById('userService').textContent =
-                localStorage.getItem('userService') || 'Service';
+            const userName = localStorage.getItem('userName') || 'Personnel Soignant';
+            const userService = localStorage.getItem('userService') || 'Service';
+            document.getElementById('userName').textContent = userName;
+            document.getElementById('userService').textContent = userService;
 
             const res = await fetch(`${API_URL}/signalements/mes-signalements`, {
                 headers: { 'Authorization': `Bearer ${getToken()}` }
@@ -533,20 +556,18 @@
 
             if (!res.ok) return;
             const signalements = await res.json();
+            const list = Array.isArray(signalements) ? signalements : (signalements.data || []);
 
-            const total   = Array.isArray(signalements) ? signalements.length : 0;
-            const enCours = Array.isArray(signalements)
-                ? signalements.filter(s => s.statut !== 'TERMINE' && s.statut !== 'RESOLU').length : 0;
-            const resolus = Array.isArray(signalements)
-                ? signalements.filter(s => s.statut === 'TERMINE' || s.statut === 'RESOLU').length : 0;
+            const total = list.length;
+            const enCours = list.filter(s => s.statut !== 'TERMINE' && s.statut !== 'RESOLU' && s.statut !== 'TERMINEE').length;
+            const resolus = list.filter(s => s.statut === 'TERMINE' || s.statut === 'RESOLU' || s.statut === 'TERMINEE').length;
 
             document.getElementById('totalDemandes').textContent = total;
-            document.getElementById('enCours').textContent       = enCours;
-            document.getElementById('resolus').textContent       = resolus;
+            document.getElementById('enCours').textContent = enCours;
+            document.getElementById('resolus').textContent = resolus;
 
-        } catch {
-            document.getElementById('userName').textContent =
-                localStorage.getItem('userName') || 'Personnel Soignant';
+        } catch (error) {
+            console.error('Erreur chargement stats:', error);
         }
     }
 
@@ -651,7 +672,8 @@
                     addChatbotMessage(data.reply || 'Désolé, je n\'ai pas compris.', 'bot');
             }
 
-        } catch {
+        } catch (error) {
+            console.error('Erreur chatbot:', error);
             hideChatbotTyping();
             addChatbotMessage('❌ Connexion impossible. Vérifiez votre réseau.', 'bot');
         }
@@ -672,7 +694,7 @@
             <div class="message-content">
                 <div class="signalement-form">
                     <div class="signalement-form-title">
-                        📝 Problème sur <strong>${equipmentNom || 'cet équipement'}</strong>
+                        📝 Problème sur <strong>${escapeHtml(equipmentNom || 'cet équipement')}</strong>
                     </div>
                     <textarea id="chatbotPanneDesc"
                         placeholder="Décrivez ce que vous observez..."></textarea>
@@ -738,10 +760,12 @@
 
             if (data.success) {
                 showChatbotConfirmation(data);
+                chargerStats(); // Rafraîchir les stats
             } else {
                 addChatbotMessage(data.message || '❌ Erreur lors du signalement.', 'bot');
             }
-        } catch {
+        } catch (error) {
+            console.error('Erreur signalement:', error);
             hideChatbotTyping();
             addChatbotMessage('❌ Erreur réseau. Contactez directement le service maintenance.', 'bot');
         }
@@ -769,8 +793,6 @@
             </div>`;
         container.appendChild(div);
         container.scrollTop = container.scrollHeight;
-        // Rafraîchir les stats
-        chargerStats();
     }
 
     // ─── RACCOURCIS CHATBOT ───────────────────────────────
@@ -779,9 +801,19 @@
         sendChatbotMessage();
     }
 
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
     // ─── INIT ─────────────────────────────────────────────
     chargerStats();
-    // Rafraîchir les stats toutes les 60s (au lieu de 30s pour ménager le serveur Render)
+    // Rafraîchir les stats toutes les 60 secondes
     setInterval(chargerStats, 60000);
 </script>
 </body>
