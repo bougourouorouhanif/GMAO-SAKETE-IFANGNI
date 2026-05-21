@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>GMAO Sakété - Tableau de bord</title>
+    <meta name="theme-color" content="#1b5e20">
+    <title>GMAO Sakété - Tableau de bord Technicien</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -86,6 +87,24 @@
         .sidebar-item.active { background: rgba(255,255,255,0.15); color: white; border-left-color: #ffd600; font-weight: 600; }
         .sidebar-icon { width: 22px; text-align: center; font-size: 17px; }
 
+        /* ── MENU MOBILE ── */
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1000;
+            background: #1b5e20;
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
         /* ── MAIN ── */
         .main-content {
             margin-left: 280px;
@@ -133,9 +152,10 @@
             text-align: center;
             box-shadow: 0 2px 6px rgba(0,0,0,0.05);
             border-top: 3px solid #1b5e20;
-            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        .kpi-value { font-size: 26px; font-weight: bold; color: #1b5e20; }
+        .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
+        .kpi-value { font-size: 28px; font-weight: bold; color: #1b5e20; }
         .kpi-label { color: #64748b; font-size: 11px; margin-top: 4px; }
         .kpi-trend { font-size: 10px; margin-top: 4px; }
         .kpi-trend.up   { color: #16a34a; }
@@ -154,7 +174,9 @@
             border-radius: 16px;
             padding: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: box-shadow 0.2s;
         }
+        .card:hover { box-shadow: 0 6px 14px rgba(0,0,0,0.1); }
         .card-title {
             font-size: 14px;
             font-weight: bold;
@@ -194,9 +216,15 @@
             border-radius: 50%;
             flex-shrink: 0;
         }
-        .alert-dot.CRITIQUE { background: #dc2626; box-shadow: 0 0 6px rgba(220,38,38,0.4); }
-        .alert-dot.ATTENTION { background: #f59e0b; }
-        .alert-dot.INFO      { background: #3b82f6; }
+        .alert-dot.CRITIQUE { background: #dc2626; box-shadow: 0 0 6px rgba(220,38,38,0.4); animation: pulse 1.5s infinite; }
+        .alert-dot.ELEVEE { background: #f59e0b; }
+        .alert-dot.MOYENNE { background: #3b82f6; }
+        .alert-dot.FAIBLE { background: #10b981; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
 
         .alert-body { flex: 1; }
         .alert-nom   { font-size: 13px; font-weight: 600; color: #1e293b; }
@@ -214,7 +242,9 @@
             border-radius: 10px;
             padding: 10px;
             text-align: center;
+            transition: transform 0.2s;
         }
+        .equip-stat-item:hover { transform: scale(1.02); }
         .equip-stat-num   { font-size: 22px; font-weight: bold; }
         .equip-stat-label { font-size: 10px; color: #64748b; margin-top: 3px; }
         .equip-stat-item.fonctionnel .equip-stat-num { color: #16a34a; }
@@ -226,26 +256,53 @@
         .btn-sm {
             background: #1b5e20; color: white; border: none;
             padding: 5px 13px; border-radius: 20px; cursor: pointer; font-size: 11px;
+            transition: background 0.2s;
         }
         .btn-sm:hover { background: #2e7d32; }
 
         .btn-print {
             background: #1b5e20; color: white; border: none;
             padding: 10px 24px; border-radius: 30px; cursor: pointer; font-size: 13px;
+            transition: background 0.2s;
         }
         .btn-print:hover { background: #2e7d32; }
 
+        /* ── REFRESH ── */
+        .refresh-btn {
+            background: #f0fdf4;
+            border: 1px solid #1b5e20;
+            color: #1b5e20;
+            padding: 6px 12px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        .refresh-btn:hover {
+            background: #1b5e20;
+            color: white;
+        }
+
         /* ── RESPONSIVE ── */
+        @media (max-width: 1024px) {
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
         @media (max-width: 768px) {
+            .mobile-menu-btn { display: block; }
             .sidebar { transform: translateX(-100%); width: 260px; transition: transform 0.3s; }
             .sidebar.open { transform: translateX(0); }
-            .main-content { margin-left: 0; width: 100%; }
-            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .main-content { margin-left: 0; width: 100%; padding-top: 70px; }
             .dashboard-grid { grid-template-columns: 1fr; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .header h1 { font-size: 16px; }
         }
     </style>
 </head>
 <body>
+
+<!-- BOUTON MENU MOBILE -->
+<button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
 
 <!-- LOADER -->
 <div class="loader-container" id="loaderContainer">
@@ -256,7 +313,7 @@
 </div>
 
 <!-- SIDEBAR -->
-<div class="sidebar">
+<div class="sidebar" id="sidebar">
     <div class="sidebar-header">
         <div class="sidebar-logo">🏥 <span>GMAO</span> Sakété</div>
         <div class="sidebar-subtitle">Hôpital de Zone Sakété-Ifangni</div>
@@ -266,7 +323,7 @@
         <a href="dashboard.html"            class="sidebar-item active"><span class="sidebar-icon">📊</span>Accueil</a>
         <a href="inventaire.html"           class="sidebar-item"><span class="sidebar-icon">📦</span>Inventaire</a>
         <a href="maintenances.html"         class="sidebar-item"><span class="sidebar-icon">🔧</span>Maintenance</a>
-        <a href="stock.html"                class="sidebar-item"><span class="sidebar-icon">⚙️</span>Pièces</a>
+        <a href="stock.html"                class="sidebar-item"><span class="sidebar-icon">⚙️</span>Pièces détachées</a>
 
         <div class="sidebar-section">Équipe</div>
         <a href="gestion-techniciens.html"  class="sidebar-item"><span class="sidebar-icon">👥</span>Techniciens</a>
@@ -284,7 +341,6 @@
         <a href="profil.html"               class="sidebar-item"><span class="sidebar-icon">👤</span>Mon profil</a>
 
         <div class="sidebar-section">Outils</div>
-        <!-- ✅ Lien corrigé vers chatbot.html -->
         <a href="chatbot.html"              class="sidebar-item"><span class="sidebar-icon">🤖</span>Diagnostic expert</a>
     </div>
 </div>
@@ -294,9 +350,10 @@
 
     <!-- HEADER -->
     <div class="header">
-        <h1>📊 TABLEAU DE BORD GLOBAL</h1>
+        <h1>📊 TABLEAU DE BORD TECHNICIEN</h1>
         <div class="user-info">
             <span class="user-name" id="userName">Chargement...</span>
+            <button class="refresh-btn" onclick="refreshAllData()" title="Rafraîchir">🔄</button>
             <button class="logout-btn" onclick="logout()">Déconnexion</button>
         </div>
     </div>
@@ -314,11 +371,11 @@
         </div>
         <div class="kpi-card">
             <div class="kpi-value" id="kpiMtbf">—</div>
-            <div class="kpi-label">MTBF</div>
+            <div class="kpi-label">MTBF (jours)</div>
         </div>
         <div class="kpi-card">
             <div class="kpi-value" id="kpiMttr">—</div>
-            <div class="kpi-label">MTTR</div>
+            <div class="kpi-label">MTTR (heures)</div>
         </div>
     </div>
 
@@ -341,7 +398,7 @@
 
             <!-- Équipements par statut -->
             <div style="margin-top: 16px;">
-                <div style="font-size:12px; font-weight:600; color:#64748b; margin-bottom:8px;">ÉTAT DU PARC</div>
+                <div style="font-size:12px; font-weight:600; color:#64748b; margin-bottom:8px;">📊 ÉTAT DU PARC</div>
                 <div class="equip-stats">
                     <div class="equip-stat-item total">
                         <div class="equip-stat-num" id="totalEquip">—</div>
@@ -367,7 +424,7 @@
     <!-- ALERTES TEMPS RÉEL -->
     <div class="card" style="margin-bottom: 20px;">
         <div class="card-title">
-            🚨 FLUX D'ALERTES DIRECT
+            🚨 ALERTES ACTIVES
             <button class="btn-sm" onclick="window.location.href='alertes.html'">Voir tout</button>
         </div>
         <div id="alertesList">
@@ -376,69 +433,86 @@
     </div>
 
     <!-- BOUTON BILAN -->
-    <div style="text-align: right; margin-bottom: 20px;">
+    <div style="text-align: right;">
         <button class="btn-print" onclick="imprimerBilan()">🖨️ IMPRIMER BILAN</button>
     </div>
 
 </div>
 
 <script>
+    // Configuration
     const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
     let map = null;
     let performanceChart = null;
+    let refreshInterval = null;
 
-    // ─── AUTH ──────────────────────────────────────────────
+    // ─── AUTHENTIFICATION ─────────────────────────────────
     function getToken() { return localStorage.getItem('token'); }
 
-    if (!getToken()) window.location.href = '/connexion.html';
-
-    const userRole = localStorage.getItem('userRole');
-    if (userRole !== 'TECHNICIEN') window.location.href = '/soignant/index.html';
-
-    // Afficher le nom depuis localStorage immédiatement
-    document.getElementById('userName').textContent =
-        localStorage.getItem('userName') || 'Technicien';
-
-    // ─── LOGOUT ───────────────────────────────────────────
-    function logout() {
-        localStorage.clear();
-        window.location.replace('/login.html'); 
+    function checkAuth() {
+        if (!getToken()) {
+            window.location.href = '/login.html';
+            return false;
+        }
+        const userRole = localStorage.getItem('userRole');
+        if (userRole !== 'TECHNICIEN') {
+            window.location.href = '/soignant/index.html';
+            return false;
+        }
+        return true;
     }
 
-    // ─── LOADER ───────────────────────────────────────────
+    if (!checkAuth()) throw new Error('Redirection');
+
+    // Afficher le nom
+    document.getElementById('userName').textContent = 
+        localStorage.getItem('userName') || 'Technicien';
+
+    // ─── LOGOUT ──────────────────────────────────────────
+    function logout() {
+        localStorage.clear();
+        window.location.replace('/login.html');
+    }
+
+    // ─── LOADER ──────────────────────────────────────────
     function hideLoader() {
         const loader = document.getElementById('loaderContainer');
-        const main   = document.getElementById('mainContent');
-        loader.style.opacity = '0';
-        setTimeout(() => { loader.style.display = 'none'; }, 500);
+        const main = document.getElementById('mainContent');
+        if (loader) {
+            loader.style.opacity = '0';
+            setTimeout(() => { loader.style.display = 'none'; }, 500);
+        }
         main.classList.add('visible');
     }
 
-    // ─── CARTE LEAFLET ────────────────────────────────────
+    // ─── CARTE LEAFLET ───────────────────────────────────
     function initMap() {
         const coords = [6.7367, 2.6586];
+        if (map) map.remove();
         map = L.map('hospitalMap').setView(coords, 14);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-            attribution: '© OpenStreetMap',
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
             subdomains: 'abcd'
         }).addTo(map);
         L.marker(coords).addTo(map)
-            .bindPopup('🏥 Hôpital de Zone Sakété-Ifangni')
+            .bindPopup('<b>🏥 Hôpital de Zone Sakété-Ifangni</b><br>Sakété, Bénin')
             .openPopup();
         L.circle(coords, {
-            color: '#1b5e20', fillColor: '#4caf50',
-            fillOpacity: 0.1, radius: 600
+            color: '#1b5e20',
+            fillColor: '#4caf50',
+            fillOpacity: 0.1,
+            radius: 600
         }).addTo(map);
     }
 
-    // ─── GRAPHIQUE ────────────────────────────────────────
-    function initChart(labels = ['Jan','Fév','Mar','Avr','Mai','Juin'], values = [92,93,94,95,94,96]) {
+    // ─── GRAPHIQUE ───────────────────────────────────────
+    function initChart(labels = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'], values = [92, 93, 94, 95, 94, 96]) {
         const ctx = document.getElementById('performanceChart').getContext('2d');
         if (performanceChart) performanceChart.destroy();
         performanceChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels,
+                labels: labels,
                 datasets: [{
                     label: 'Disponibilité (%)',
                     data: values,
@@ -447,144 +521,235 @@
                     fill: true,
                     tension: 0.4,
                     pointBackgroundColor: '#1b5e20',
-                    pointRadius: 4
+                    pointBorderColor: 'white',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
-                plugins: { legend: { display: true, position: 'top' } },
-                scales: {
-                    y: { min: 85, max: 100, ticks: { callback: v => v + '%' } }
-                }
+                plugins: { 
+                    legend: { display: true, position: 'top' },
+                    tooltip: { callbacks: { label: (ctx) => `${ctx.raw}%` } }
+                },
+                scales: { y: { min: 85, max: 100, ticks: { callback: v => v + '%' } } }
             }
         });
     }
 
-    // ─── KPIs DEPUIS API ──────────────────────────────────
+    // ─── API APPELS ──────────────────────────────────────
+    async function fetchWithAuth(url, options = {}) {
+        const response = await fetch(url, {
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getToken()}`,
+                ...options.headers
+            }
+        });
+        if (response.status === 401) {
+            localStorage.clear();
+            window.location.href = '/login.html';
+            throw new Error('Non authentifié');
+        }
+        return response;
+    }
+
+    // KPIs
     async function chargerKPIs() {
         try {
-            const res = await fetch(`${API_URL}/statistiques/kpis`, {
-                headers: { 'Authorization': `Bearer ${getToken()}` }
-            });
-            if (!res.ok) return; // Garder les valeurs par défaut
-            const data = await res.json();
+            const response = await fetchWithAuth(`${API_URL}/statistiques/kpis`);
+            if (!response.ok) return;
+            const data = await response.json();
 
             if (data.disponibilite !== undefined)
                 document.getElementById('kpiDispo').textContent = data.disponibilite.toFixed(1) + '%';
             if (data.tauxPannes !== undefined)
                 document.getElementById('kpiPannes').textContent = data.tauxPannes.toFixed(1) + '%';
             if (data.mtbf !== undefined)
-                document.getElementById('kpiMtbf').textContent = Math.round(data.mtbf) + 'j';
+                document.getElementById('kpiMtbf').textContent = Math.round(data.mtbf) + ' j';
             if (data.mttr !== undefined)
-                document.getElementById('kpiMttr').textContent = data.mttr.toFixed(1) + 'h';
+                document.getElementById('kpiMttr').textContent = data.mttr.toFixed(1) + ' h';
 
-        } catch { /* Garder les valeurs par défaut */ }
+        } catch (error) {
+            console.error('Erreur KPIs:', error);
+        }
     }
 
-    // ─── ÉQUIPEMENTS ──────────────────────────────────────
+    // Équipements
     async function chargerEquipements() {
         try {
-            const res = await fetch(`${API_URL}/equipements`, {
-                headers: { 'Authorization': `Bearer ${getToken()}` }
-            });
-            if (!res.ok) return;
-            const equips = await res.json();
-
+            const response = await fetchWithAuth(`${API_URL}/equipements`);
+            if (!response.ok) return;
+            const equips = await response.json();
             if (!Array.isArray(equips)) return;
 
-            const total     = equips.length;
-            const fonct     = equips.filter(e => e.statut === 'FONCTIONNEL').length;
-            const panne     = equips.filter(e => e.statut === 'EN_PANNE').length;
-            const maint     = equips.filter(e => e.statut === 'MAINTENANCE').length;
-            const dispoCalc = total > 0 ? ((fonct / total) * 100).toFixed(1) : 0;
+            const total = equips.length;
+            const fonct = equips.filter(e => e.statut === 'FONCTIONNEL' || e.statut === 'OPERATIONNEL').length;
+            const panne = equips.filter(e => e.statut === 'EN_PANNE' || e.statut === 'PANNE').length;
+            const maint = equips.filter(e => e.statut === 'MAINTENANCE' || e.statut === 'EN_MAINTENANCE').length;
 
             document.getElementById('totalEquip').textContent = total;
             document.getElementById('equipFonct').textContent = fonct;
             document.getElementById('equipPanne').textContent = panne;
             document.getElementById('equipMaint').textContent = maint;
 
-            // Mettre à jour KPI disponibilité si pas encore chargé depuis /kpis
-            if (document.getElementById('kpiDispo').textContent === '—') {
-                document.getElementById('kpiDispo').textContent = dispoCalc + '%';
+            // Mise à jour KPI si non chargés
+            if (document.getElementById('kpiDispo').textContent === '—' && total > 0) {
+                document.getElementById('kpiDispo').textContent = ((fonct / total) * 100).toFixed(1) + '%';
             }
             if (document.getElementById('kpiPannes').textContent === '—' && total > 0) {
                 document.getElementById('kpiPannes').textContent = ((panne / total) * 100).toFixed(1) + '%';
             }
 
-        } catch { /* silencieux */ }
+        } catch (error) {
+            console.error('Erreur équipements:', error);
+        }
     }
 
-    // ─── ALERTES ──────────────────────────────────────────
+    // Alertes
     async function chargerAlertes() {
         try {
-            // ✅ Route correcte : /api/alertes
-            const res = await fetch(`${API_URL}/alertes?limit=5&resolue=false`, {
-                headers: { 'Authorization': `Bearer ${getToken()}` }
-            });
-
-            if (!res.ok) {
-                document.getElementById('alertesList').innerHTML =
-                    '<div class="empty-state">Impossible de charger les alertes.</div>';
+            const response = await fetchWithAuth(`${API_URL}/alertes?limit=5&resolue=false`);
+            if (!response.ok) {
+                document.getElementById('alertesList').innerHTML = 
+                    '<div class="empty-state">❌ Impossible de charger les alertes</div>';
                 return;
             }
 
-            const alertes = await res.json();
-            const liste = Array.isArray(alertes) ? alertes : (alertes.data || []);
+            const data = await response.json();
+            const alertes = Array.isArray(data) ? data : (data.data || []);
 
-            if (liste.length === 0) {
-                document.getElementById('alertesList').innerHTML =
+            if (alertes.length === 0) {
+                document.getElementById('alertesList').innerHTML = 
                     '<div class="empty-state">✅ Aucune alerte active</div>';
                 return;
             }
 
-            document.getElementById('alertesList').innerHTML = liste.slice(0, 5).map(a => `
-                <div class="alert-item" onclick="window.location.href='alertes.html?id=${a.id}'">
-                    <div class="alert-dot ${a.niveau || 'ATTENTION'}"></div>
-                    <div class="alert-body">
-                        <div class="alert-nom">${a.equipement?.nom || 'Équipement'} — ${a.equipement?.service || ''}</div>
-                        <div class="alert-desc">${a.message || ''}</div>
+            document.getElementById('alertesList').innerHTML = alertes.slice(0, 5).map(a => {
+                let niveau = a.niveau || (a.criticite || 'MOYENNE');
+                niveau = niveau.toUpperCase();
+                return `
+                    <div class="alert-item" onclick="window.location.href='alertes.html?id=${a.id}'">
+                        <div class="alert-dot ${niveau}"></div>
+                        <div class="alert-body">
+                            <div class="alert-nom">${a.equipement?.nom || a.equipementNom || 'Équipement'} — ${a.equipement?.service || a.service || ''}</div>
+                            <div class="alert-desc">${a.message || a.description || 'Alerte en cours'}</div>
+                        </div>
+                        <div class="alert-time">${tempsRelatif(a.dateCreation || a.createdAt || a.date)}</div>
                     </div>
-                    <div class="alert-time">${tempsRelatif(a.dateCreation)}</div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
 
-        } catch {
-            document.getElementById('alertesList').innerHTML =
-                '<div class="empty-state">❌ Erreur de chargement des alertes.</div>';
+        } catch (error) {
+            console.error('Erreur alertes:', error);
+            document.getElementById('alertesList').innerHTML = 
+                '<div class="empty-state">❌ Erreur de chargement des alertes</div>';
         }
     }
 
-    // ─── UTILITAIRES ──────────────────────────────────────
+    // Tendance disponibilité (simulée ou depuis API)
+    async function chargerTendance() {
+        try {
+            const response = await fetchWithAuth(`${API_URL}/statistiques/tendance-disponibilite`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.labels && data.values) {
+                    initChart(data.labels, data.values);
+                    return;
+                }
+            }
+        } catch (error) {
+            console.log('Tendance non disponible, utilisation données par défaut');
+        }
+        initChart(); // Données par défaut
+    }
+
+    // ─── UTILITAIRES ─────────────────────────────────────
     function tempsRelatif(dateStr) {
         if (!dateStr) return '';
-        const diff = Math.floor((Date.now() - new Date(dateStr)) / 60000);
-        if (diff < 1)  return 'À l\'instant';
-        if (diff < 60) return `Il y a ${diff} min`;
-        const h = Math.floor(diff / 60);
-        if (h < 24)    return `Il y a ${h}h`;
-        return `Il y a ${Math.floor(h / 24)}j`;
+        try {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return '';
+            const diff = Math.floor((Date.now() - date) / 60000);
+            if (diff < 1) return 'À l\'instant';
+            if (diff < 60) return `Il y a ${diff} min`;
+            const h = Math.floor(diff / 60);
+            if (h < 24) return `Il y a ${h}h`;
+            const j = Math.floor(h / 24);
+            if (j < 7) return `Il y a ${j}j`;
+            return `Le ${date.toLocaleDateString('fr-FR')}`;
+        } catch { return ''; }
     }
 
     function imprimerBilan() { window.print(); }
 
-    // ─── INIT ─────────────────────────────────────────────
+    async function refreshAllData() {
+        // Afficher un indicateur de rafraîchissement
+        const refreshBtn = document.querySelector('.refresh-btn');
+        const originalText = refreshBtn.innerHTML;
+        refreshBtn.innerHTML = '⟳';
+        refreshBtn.disabled = true;
+        
+        await Promise.allSettled([
+            chargerKPIs(),
+            chargerEquipements(),
+            chargerAlertes(),
+            chargerTendance()
+        ]);
+        
+        refreshBtn.innerHTML = originalText;
+        refreshBtn.disabled = false;
+    }
+
+    // Menu mobile
+    function initMobileMenu() {
+        const menuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+        if (menuBtn && sidebar) {
+            menuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+            // Fermer au clic en dehors
+            document.addEventListener('click', (e) => {
+                if (sidebar.classList.contains('open') && 
+                    !sidebar.contains(e.target) && 
+                    !menuBtn.contains(e.target)) {
+                    sidebar.classList.remove('open');
+                }
+            });
+        }
+    }
+
+    // ─── INITIALISATION ──────────────────────────────────
     document.addEventListener('DOMContentLoaded', async () => {
         initMap();
-        initChart();
-
+        
         // Charger les données en parallèle
         await Promise.allSettled([
             chargerKPIs(),
             chargerEquipements(),
-            chargerAlertes()
+            chargerAlertes(),
+            chargerTendance()
         ]);
-
+        
         hideLoader();
+        initMobileMenu();
+        
+        // Rafraîchissement automatique toutes les 60 secondes
+        refreshInterval = setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                chargerAlertes(); // Rafraîchir seulement les alertes
+            }
+        }, 60000);
     });
 
-    // Rafraîchir les alertes toutes les 60s
-    setInterval(chargerAlertes, 60000);
+    // Nettoyer l'intervalle à la fermeture
+    window.addEventListener('beforeunload', () => {
+        if (refreshInterval) clearInterval(refreshInterval);
+    });
 </script>
 </body>
 </html>
