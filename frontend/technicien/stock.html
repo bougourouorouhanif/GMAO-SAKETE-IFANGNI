@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="theme-color" content="#1b5e20">
     <title>Stock pièces - GMAO Sakété</title>
     <style>
         * {
@@ -20,7 +21,7 @@
         }
 
         .main-content {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -42,6 +43,11 @@
             font-size: 24px;
         }
 
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
         .btn-add {
             background: #1b5e20;
             color: white;
@@ -56,6 +62,21 @@
         .btn-add:hover {
             background: #2e7d32;
             transform: translateY(-2px);
+        }
+
+        .btn-refresh {
+            background: #f0fdf4;
+            border: 1px solid #1b5e20;
+            color: #1b5e20;
+            padding: 10px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-refresh:hover {
+            background: #1b5e20;
+            color: white;
         }
 
         /* Statistiques */
@@ -125,11 +146,12 @@
         .alert-btn {
             background: #ef4444;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 24px;
             border-radius: 40px;
             color: white;
             cursor: pointer;
             transition: 0.2s;
+            font-weight: bold;
         }
 
         .alert-btn:hover {
@@ -151,7 +173,7 @@
         }
 
         th, td {
-            padding: 12px 15px;
+            padding: 14px 16px;
             text-align: left;
             border-bottom: 1px solid #e2e8f0;
         }
@@ -160,6 +182,11 @@
             background: #f8fafc;
             font-weight: 600;
             color: #1e293b;
+            font-size: 13px;
+        }
+
+        tr {
+            transition: background 0.2s;
         }
 
         tr:hover {
@@ -167,7 +194,7 @@
         }
 
         .stock-low {
-            color: #ef4444;
+            color: #dc2626;
             font-weight: bold;
             background: #fee2e2;
         }
@@ -178,39 +205,41 @@
         }
 
         .stock-normal {
-            color: #22c55e;
+            color: #16a34a;
         }
 
         .btn-mvt {
             background: #3b82f6;
             color: white;
             border: none;
-            padding: 4px 12px;
+            padding: 6px 14px;
             border-radius: 20px;
             cursor: pointer;
             margin-right: 5px;
             transition: 0.2s;
             font-size: 12px;
+            font-weight: 500;
         }
 
         .btn-mvt:hover {
             background: #2563eb;
+            transform: translateY(-1px);
         }
 
         .btn-edit {
             background: #e2e8f0;
             color: #475569;
             border: none;
-            padding: 4px 12px;
+            padding: 6px 14px;
             border-radius: 20px;
             cursor: pointer;
-            margin-right: 5px;
             font-size: 12px;
             transition: 0.2s;
         }
 
         .btn-edit:hover {
             background: #cbd5e1;
+            transform: translateY(-1px);
         }
 
         /* Modal */
@@ -230,8 +259,8 @@
         .modal-content {
             background: white;
             border-radius: 24px;
-            padding: 24px;
-            max-width: 400px;
+            padding: 28px;
+            max-width: 450px;
             width: 90%;
             animation: modalFadeIn 0.3s ease;
         }
@@ -255,14 +284,29 @@
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
+            margin-bottom: 6px;
+            font-weight: 600;
             font-size: 13px;
+            color: #334155;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #1b5e20;
         }
 
         .empty-state {
@@ -271,20 +315,48 @@
             color: #94a3b8;
         }
 
+        .loader {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         @media (max-width: 768px) {
             body {
                 margin-left: 0;
+                padding: 70px 15px 15px 15px;
             }
             th, td {
-                padding: 8px 10px;
+                padding: 10px 8px;
                 font-size: 12px;
             }
             .btn-mvt, .btn-edit {
-                padding: 3px 8px;
-                font-size: 10px;
+                padding: 4px 10px;
+                font-size: 11px;
             }
             .stats-row {
                 flex-direction: column;
+            }
+            .btn-group {
+                flex-direction: column;
+                width: 100%;
+            }
+            .btn-group button {
+                width: 100%;
+            }
+            .filter-bar {
+                flex-direction: column;
+            }
+            .filter-bar input, .filter-bar select, .alert-btn {
+                width: 100%;
             }
         }
     </style>
@@ -296,7 +368,10 @@
 <div class="main-content">
     <div class="header">
         <h1>⚙️ GESTION DU STOCK</h1>
-        <button class="btn-add" onclick="window.location.href='piece-form.html'">➕ Ajouter une pièce</button>
+        <div class="btn-group">
+            <button class="btn-refresh" onclick="refreshAllData()">🔄 Rafraîchir</button>
+            <button class="btn-add" onclick="window.location.href='piece-form.html'">➕ Ajouter une pièce</button>
+        </div>
     </div>
 
     <div class="stats-row">
@@ -312,11 +387,15 @@
             <div class="stat-number" id="stockFaible">-</div>
             <div class="stat-label">⚠️ Stock faible</div>
         </div>
+        <div class="stat-card">
+            <div class="stat-number" id="stockRupture">-</div>
+            <div class="stat-label">❌ En rupture</div>
+        </div>
     </div>
 
     <div class="filter-bar">
-        <input type="text" id="search" placeholder="🔍 Rechercher (code, désignation...)" onkeyup="loadPieces()">
-        <select id="categorie" onchange="loadPieces()">
+        <input type="text" id="searchInput" placeholder="🔍 Rechercher (code, désignation...)">
+        <select id="categorieFilter">
             <option value="">📋 Toutes catégories</option>
             <option value="ELECTRONIQUE">🖥️ Électronique</option>
             <option value="MECANIQUE">⚙️ Mécanique</option>
@@ -327,7 +406,7 @@
             <option value="CARTE_MERE">💻 Carte mère</option>
             <option value="AUTRE">📌 Autre</option>
         </select>
-        <button class="alert-btn" onclick="loadPieces(true)">⚠️ Alertes stock</button>
+        <button class="alert-btn" onclick="filterStockFaible()">⚠️ Alertes stock</button>
     </div>
 
     <div class="table-container">
@@ -345,26 +424,27 @@
                 </tr>
             </thead>
             <tbody id="tableBody">
-                <tr><td colspan="8" class="empty-state">Chargement des pièces...</td</tr>
+                <tr><td colspan="8" class="empty-state">⏳ Chargement des pièces...</td</tr>
             </tbody>
         </table>
     </div>
 </div>
 
-<div id="mvtModal" class="modal">
+<!-- Modal Mouvement -->
+<div id="mvtModal" class="modal" onclick="if(event.target===this) closeMvtModal()">
     <div class="modal-content">
         <h3 id="mvtTitle">Mouvement de stock</h3>
         <div class="form-group">
-            <label>Quantité</label>
-            <input type="number" id="mvtQuantite" placeholder="Quantité">
+            <label>Quantité *</label>
+            <input type="number" id="mvtQuantite" placeholder="Quantité" min="1">
         </div>
         <div class="form-group">
-            <label>Motif</label>
+            <label>Motif *</label>
             <input type="text" id="mvtMotif" placeholder="Ex: Réparation, Commande, Inventaire...">
         </div>
-        <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <button onclick="confirmerMouvement()" class="btn-mvt" style="flex:1; background:#1b5e20; border-radius:30px;">✅ Confirmer</button>
-            <button onclick="closeMvtModal()" class="btn-edit" style="flex:1; border-radius:30px;">Annuler</button>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button onclick="confirmerMouvement()" style="flex:1; background:#1b5e20; color:white; border:none; border-radius:30px; padding:10px; cursor:pointer; font-weight:bold;">✅ Confirmer</button>
+            <button onclick="closeMvtModal()" style="flex:1; background:#e2e8f0; border:none; border-radius:30px; padding:10px; cursor:pointer;">Annuler</button>
         </div>
     </div>
 </div>
@@ -373,30 +453,69 @@
     const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
     let currentPieceId = null;
     let currentMvtType = null;
+    let searchTimeout = null;
+    let onlyLowStock = false;
 
     function getToken() { return localStorage.getItem('token'); }
+    
+    // Auth check
     if (!getToken()) window.location.href = '/login.html';
+    
+    const userRole = localStorage.getItem('userRole');
+    if (userRole !== 'TECHNICIEN') window.location.href = '/soignant/index.html';
 
     function loadSidebar() {
         fetch('/components/sidebar.html')
             .then(response => response.text())
-            .then(data => document.getElementById('sidebar-container').innerHTML = data)
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                const links = document.querySelectorAll('.sidebar-item');
+                links.forEach(link => {
+                    if (link.getAttribute('href') === 'stock.html') {
+                        link.classList.add('active');
+                    }
+                });
+            })
             .catch(error => console.error('Erreur sidebar:', error));
     }
 
-    async function loadPieces(onlyLow = false) {
-        const search = document.getElementById('search').value;
-        const categorie = document.getElementById('categorie').value;
+    async function loadStats() {
+        try {
+            const res = await fetch(`${API_URL}/stock/stats`, { 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            if (!res.ok) throw new Error('Erreur stats');
+            
+            const stats = await res.json();
+            document.getElementById('totalPieces').innerText = stats.totalPieces || 0;
+            document.getElementById('valeurStock').innerText = (stats.valeurTotale || 0).toLocaleString();
+            document.getElementById('stockFaible').innerText = stats.piecesFaibles || 0;
+            document.getElementById('stockRupture').innerText = stats.piecesRupture || 0;
+        } catch (error) { 
+            console.error('Erreur stats:', error);
+        }
+    }
+
+    async function loadPieces() {
+        const search = document.getElementById('searchInput').value;
+        const categorie = document.getElementById('categorieFilter').value;
         
-        let url = `${API_URL}/stock?search=${encodeURIComponent(search)}&categorie=${categorie}`;
-        if (onlyLow) url += '&stockFaible=true';
+        let url = `${API_URL}/stock?search=${encodeURIComponent(search)}`;
+        if (categorie) url += `&categorie=${categorie}`;
+        if (onlyLowStock) url += `&stockFaible=true`;
         
         try {
-            const res = await fetch(url, { headers: { 'Authorization': `Bearer ${getToken()}` } });
-            const pieces = await res.json();
+            const res = await fetch(url, { 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            if (!res.ok) throw new Error('Erreur chargement');
+            
+            const data = await res.json();
+            let pieces = Array.isArray(data) ? data : (data.pieces || []);
             
             if (pieces.length === 0) {
-                document.getElementById('tableBody').innerHTML = '<tr><td colspan="8" class="empty-state">📭 Aucune pièce trouvée</td</tr>';
+                document.getElementById('tableBody').innerHTML = 
+                    '<tr><td colspan="8" class="empty-state">📭 Aucune pièce trouvée</td></tr>';
                 return;
             }
             
@@ -405,29 +524,29 @@
                 let stockIcon = '';
                 if (p.quantiteStock <= 0) {
                     stockClass = 'stock-low';
-                    stockIcon = '❌';
+                    stockIcon = '❌ Rupture';
                 } else if (p.quantiteStock <= p.seuilAlerte) {
                     stockClass = 'stock-warning';
-                    stockIcon = '⚠️';
+                    stockIcon = '⚠️ Faible';
                 } else {
                     stockClass = 'stock-normal';
-                    stockIcon = '✅';
+                    stockIcon = '✅ OK';
                 }
                 
                 return `
                     <tr>
                         <td><strong>${escapeHtml(p.code)}</strong></td>
-                        <td>${escapeHtml(p.designation)}</td
-                        <td>${getCategorieIcon(p.categorie)} ${escapeHtml(p.categorie)}</td
-                        <td class="${stockClass}">${stockIcon} ${p.quantiteStock}</td
-                        <td>${p.seuilAlerte}</td
-                        <td>${p.prixUnitaire.toLocaleString()} FCFA</td
-                        <td>${escapeHtml(p.emplacement) || '-'}</td
+                        <td>${escapeHtml(p.designation)}</td>
+                        <td>${getCategorieIcon(p.categorie)} ${escapeHtml(p.categorie)}</td>
+                        <td class="${stockClass}">${stockIcon} ${p.quantiteStock}</td>
+                        <td>${p.seuilAlerte}</td>
+                        <td>${Math.round(p.prixUnitaire || 0).toLocaleString()} FCFA</td>
+                        <td>${escapeHtml(p.emplacement) || '-'}</td>
                         <td>
                             <button class="btn-mvt" onclick="openMvt(${p.id}, 'ENTRER')">➕ Entrée</button>
                             <button class="btn-mvt" onclick="openMvt(${p.id}, 'SORTIR')">➖ Sortie</button>
                             <button class="btn-edit" onclick="editPiece(${p.id})">✏️</button>
-                         </td
+                        </td>
                     </tr>
                 `;
             }).join('');
@@ -435,28 +554,22 @@
             await loadStats();
         } catch (error) {
             console.error('Erreur:', error);
-            document.getElementById('tableBody').innerHTML = '<tr><td colspan="8" class="empty-state">❌ Erreur de chargement</td</tr>';
+            document.getElementById('tableBody').innerHTML = 
+                '<tr><td colspan="8" class="empty-state">❌ Erreur de chargement</td></tr>';
         }
     }
 
-    async function loadStats() {
-        try {
-            const res = await fetch(`${API_URL}/stock/stats`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
-            const stats = await res.json();
-            document.getElementById('totalPieces').innerText = stats.totalPieces || 0;
-            document.getElementById('valeurStock').innerText = (stats.valeurTotale || 0).toLocaleString();
-            document.getElementById('stockFaible').innerText = stats.piecesFaibles || 0;
-        } catch (error) { console.error('Erreur stats:', error); }
-    }
-
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
+    function filterStockFaible() {
+        onlyLowStock = !onlyLowStock;
+        const btn = document.querySelector('.alert-btn');
+        if (onlyLowStock) {
+            btn.style.background = '#dc2626';
+            btn.innerHTML = '📋 Voir tout';
+        } else {
+            btn.style.background = '#ef4444';
+            btn.innerHTML = '⚠️ Alertes stock';
+        }
+        loadPieces();
     }
 
     function getCategorieIcon(categorie) {
@@ -465,6 +578,21 @@
             'SONDE': '🔬', 'CABLE': '🔌', 'BATTERIE': '🔋', 'CARTE_MERE': '💻', 'AUTRE': '📌'
         };
         return icons[categorie] || '📦';
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function debouncedSearch() {
+        if (searchTimeout) clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => loadPieces(), 500);
     }
 
     function openMvt(id, type) {
@@ -484,21 +612,29 @@
 
     async function confirmerMouvement() {
         const quantite = document.getElementById('mvtQuantite').value;
-        const motif = document.getElementById('mvtMotif').value;
+        const motif = document.getElementById('mvtMotif').value.trim();
         
         if (!quantite || parseInt(quantite) <= 0) {
-            alert('Veuillez saisir une quantité valide');
+            alert('⚠️ Veuillez saisir une quantité valide');
             return;
         }
         if (!motif) {
-            alert('Veuillez saisir un motif');
+            alert('⚠️ Veuillez saisir un motif');
             return;
         }
+        
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loader"></span> Enregistrement...';
+        btn.disabled = true;
         
         try {
             const res = await fetch(`${API_URL}/stock/mouvement`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${getToken()}` 
+                },
                 body: JSON.stringify({
                     pieceId: currentPieceId,
                     type: currentMvtType,
@@ -512,16 +648,34 @@
                 closeMvtModal();
                 loadPieces();
             } else {
-                alert('❌ Erreur');
+                const error = await res.json();
+                alert('❌ Erreur: ' + (error.message || 'Opération impossible'));
             }
         } catch (error) {
             alert('❌ Erreur de connexion');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
         }
     }
 
     function editPiece(id) {
         window.location.href = `piece-form.html?id=${id}`;
     }
+
+    function refreshAllData() {
+        onlyLowStock = false;
+        const btn = document.querySelector('.alert-btn');
+        btn.style.background = '#ef4444';
+        btn.innerHTML = '⚠️ Alertes stock';
+        document.getElementById('searchInput').value = '';
+        document.getElementById('categorieFilter').value = '';
+        loadPieces();
+    }
+
+    // Événements
+    document.getElementById('searchInput').addEventListener('keyup', debouncedSearch);
+    document.getElementById('categorieFilter').addEventListener('change', loadPieces);
 
     loadSidebar();
     loadPieces();
