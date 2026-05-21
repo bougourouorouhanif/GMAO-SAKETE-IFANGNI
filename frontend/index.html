@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <meta name="theme-color" content="#1b5e20">
+    <meta name="theme-color" content="#0066FF">
+    <meta name="description" content="GMAO - Gestion de Maintenance Assistée par Ordinateur - Hôpital de Zone Sakété-Ifangni">
     <title>GMAO Sakété - Hôpital de Zone</title>
     <style>
     * {
@@ -15,7 +16,7 @@
     body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         min-height: 100vh;
-        background: #e8f5e9;
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
         background-image: url('/assets/images/FOND.png');
         background-size: cover;
         background-position: center;
@@ -34,7 +35,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(0, 0, 0, 0);
+        background: linear-gradient(135deg, rgba(0,102,255,0.05) 0%, rgba(27,94,32,0.1) 100%);
         z-index: 0;
     }
 
@@ -57,7 +58,7 @@
     }
 
     .logo {
-        background:  #0066FF;
+        background: #0066FF;
         width: 100px;
         height: 100px;
         border-radius: 50%;
@@ -66,52 +67,72 @@
         justify-content: center;
         margin: 0 auto 20px;
         font-size: 50px;
-        border: 2px solid ;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        box-shadow: 0 8px 20px rgba(0,102,255,0.3);
+        transition: transform 0.3s ease;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); box-shadow: 0 8px 20px rgba(0,102,255,0.3); }
+        50% { transform: scale(1.05); box-shadow: 0 12px 30px rgba(0,102,255,0.4); }
+        100% { transform: scale(1); box-shadow: 0 8px 20px rgba(0,102,255,0.3); }
     }
 
     h1 {
-        color:  #0066FF;
-        font-size: 28px;
-        font-weight: 600;
+        color: #0066FF;
+        font-size: 32px;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 5px;
     }
 
     .subtitle {
-        color:  #0066FF;
+        color: #0066FF;
         font-size: 14px;
         margin-top: 8px;
+        font-weight: 500;
+        opacity: 0.9;
     }
 
     .hospital-name {
         color: #0066FF;
         font-size: 13px;
         margin-top: 5px;
-        font-weight: 500;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        font-weight: 600;
+        background: rgba(255,255,255,0.2);
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        backdrop-filter: blur(4px);
     }
 
     .btn-access {
         display: block;
-        background: linear-gradient(135deg, #0066FF 0%, #0066FF 100%);
-        color: #0066FF;
+        background: linear-gradient(135deg, #0066FF 0%, #0052CC 100%);
+        color: white;
         text-align: center;
-        padding: 16px;
-        border-radius: 50px;
+        padding: 18px;
+        border-radius: 60px;
         font-size: 18px;
         font-weight: 700;
         text-decoration: none;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition: all 0.3s ease;
         margin-bottom: 30px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 8px 20px rgba(0,102,255,0.3);
+        border: none;
+        cursor: pointer;
+        letter-spacing: 1px;
     }
 
     .btn-access:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 28px rgba(0,102,255,0.4);
+        background: linear-gradient(135deg, #0052CC 0%, #004099 100%);
     }
 
     .btn-access:active {
-        transform: scale(0.97);
+        transform: translateY(1px);
+        box-shadow: 0 4px 12px rgba(0,102,255,0.3);
     }
 
     .footer {
@@ -120,50 +141,192 @@
     }
 
     .footer a {
-        color:  #79D3E2;
+        color: #0066FF;
         text-decoration: none;
-        font-size: 12px;
-        opacity: 0.7;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 8px 16px;
+        background: rgba(255,255,255,0.3);
+        border-radius: 30px;
+        backdrop-filter: blur(4px);
+        transition: all 0.3s ease;
+        display: inline-block;
     }
 
     .footer a:hover {
-        opacity: 1;
+        background: rgba(255,255,255,0.5);
+        transform: translateY(-2px);
     }
 
     .version {
-        color:  #0066FF;
-        font-size: 10px;
-        margin-top: 15px;
-        opacity: 0.6;
+        color: #0066FF;
+        font-size: 11px;
+        margin-top: 20px;
+        opacity: 0.7;
+        font-weight: 500;
     }
-</style>
+
+    /* Version mobile - petits écrans */
+    @media (max-width: 480px) {
+        .logo {
+            width: 80px;
+            height: 80px;
+            font-size: 40px;
+        }
+        
+        h1 {
+            font-size: 24px;
+        }
+        
+        .subtitle {
+            font-size: 12px;
+        }
+        
+        .btn-access {
+            padding: 14px;
+            font-size: 16px;
+        }
+        
+        .container {
+            max-width: 90%;
+        }
+    }
+
+    /* Animation de chargement */
+    .loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255,255,255,0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.5s ease;
+    }
+
+    .loading.hide {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #e8f5e9;
+        border-top-color: #0066FF;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    </style>
 </head>
 <body>
+
+<!-- Écran de chargement -->
+<div class="loading" id="loading">
+    <div class="spinner"></div>
+</div>
+
 <div class="container">
     <div class="logo-section">
         <div class="logo">🏥</div>
         <h1>GMAO Sakété</h1>
         <div class="subtitle">Gestion de Maintenance Assistée par Ordinateur</div>
-        <div class="hospital-name">Hôpital de Zone Sakété-Ifangni</div>
+        <div class="hospital-name">🏥 Hôpital de Zone Sakété-Ifangni</div>
     </div>
 
-    <a href="/login.html" class="btn-access">🔐 Accéder à la plateforme</a>
+    <a href="/login.html" class="btn-access" id="accessBtn">
+        🔐 Accéder à la plateforme
+    </a>
 
     <div class="footer">
-        <a href="/mobile/index.html">📱 Version mobile</a>
-        <div class="version">Version 2.0 | GMAO Sakété-Ifangni</div>
+        <a href="/mobile/index.html" id="mobileLink">📱 Version mobile</a>
+        <div class="version">Version 2.0 | © GMAO Sakété-Ifangni 2026</div>
     </div>
 </div>
 
 <script>
-    // Vérifier si déjà connecté
-    const token = localStorage.getItem('token');
-    const userRole = localStorage.getItem('userRole');
-    if(token && userRole) {
-        if(userRole === 'TECHNICIEN') {
-            window.location.href = '/technicien/dashboard.html';
-        } else if(userRole === 'SOIGNANT') {
-            window.location.href = '/soignant/index.html';
+    // Masquer l'écran de chargement après 0.5s
+    setTimeout(() => {
+        const loading = document.getElementById('loading');
+        if (loading) {
+            loading.classList.add('hide');
+            setTimeout(() => loading.remove(), 500);
+        }
+    }, 500);
+
+    // Vérifier si déjà connecté et rediriger
+    function checkExistingSession() {
+        try {
+            const token = localStorage.getItem('token');
+            const userRole = localStorage.getItem('userRole');
+            const tokenExpiry = localStorage.getItem('tokenExpiry');
+            
+            // Vérifier si le token existe et n'est pas expiré
+            if (token && userRole && tokenExpiry) {
+                const now = Date.now();
+                if (now < parseInt(tokenExpiry)) {
+                    // Token valide, rediriger selon le rôle
+                    if (userRole === 'TECHNICIEN') {
+                        window.location.replace('/technicien/dashboard.html');
+                    } else if (userRole === 'SOIGNANT') {
+                        window.location.replace('/soignant/index.html');
+                    }
+                    return true;
+                } else {
+                    // Token expiré, nettoyer localStorage
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userRole');
+                    localStorage.removeItem('userName');
+                    localStorage.removeItem('userId');
+                    localStorage.removeItem('userService');
+                    localStorage.removeItem('tokenExpiry');
+                }
+            }
+        } catch (error) {
+            console.warn('Erreur lors de la vérification de session:', error);
+        }
+        return false;
+    }
+
+    // Ajouter un effet de clic avec feedback
+    document.getElementById('accessBtn')?.addEventListener('click', function(e) {
+        // Ajouter un petit effet visuel avant la navigation
+        this.style.transform = 'scale(0.98)';
+        setTimeout(() => {
+            // Laisser le temps à l'animation de se produire
+        }, 100);
+    });
+
+    document.getElementById('mobileLink')?.addEventListener('click', function(e) {
+        // Stocker un flag pour la version mobile
+        localStorage.setItem('isMobile', 'true');
+    });
+
+    // Vérifier si l'utilisateur vient de se déconnecter
+    const urlParams = new URLSearchParams(window.location.search);
+    const logout = urlParams.get('logout');
+    if (logout === 'success') {
+        // Afficher un message de déconnexion réussie si nécessaire
+        console.log('Déconnexion réussie');
+    }
+
+    // Lancer la vérification de session
+    const isRedirecting = checkExistingSession();
+    
+    // Si redirection, on évite de charger d'autres scripts
+    if (!isRedirecting) {
+        // Précharger la page de login pour une navigation plus rapide
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => {
+                fetch('/login.html', { mode: 'no-cors' }).catch(() => {});
+            });
         }
     }
 </script>
