@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="theme-color" content="#1b5e20">
     <title>Mon profil - GMAO Sakété</title>
     <style>
         * {
@@ -20,22 +21,27 @@
         }
 
         .main-content {
-            max-width: 600px;
+            max-width: 650px;
             margin: 0 auto;
         }
 
         .card {
             background: white;
-            border-radius: 20px;
-            padding: 24px;
+            border-radius: 24px;
+            padding: 32px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: box-shadow 0.2s;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
         }
 
         .title {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             color: #1b5e20;
             text-align: center;
             padding-bottom: 10px;
@@ -50,23 +56,25 @@
 
         .info-row {
             display: flex;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
             border-bottom: 1px solid #e2e8f0;
             flex-wrap: wrap;
             gap: 8px;
         }
 
         .label {
-            width: 120px;
+            width: 130px;
             color: #64748b;
             font-size: 13px;
+            font-weight: 500;
         }
 
         .value {
             flex: 1;
             font-weight: 500;
             font-size: 14px;
+            color: #1e293b;
         }
 
         .badge-active {
@@ -75,14 +83,24 @@
             padding: 4px 12px;
             border-radius: 20px;
             display: inline-block;
-            font-size: 11px;
-            font-weight: bold;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-pending {
+            background: #fef3c7;
+            color: #d97706;
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 500;
         }
 
         .stats {
             display: flex;
             gap: 15px;
-            margin: 20px 0;
+            margin: 25px 0;
             flex-wrap: wrap;
         }
 
@@ -92,10 +110,15 @@
             padding: 15px;
             border-radius: 16px;
             text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
         }
 
         .stat-number {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
             color: #1b5e20;
         }
@@ -104,6 +127,12 @@
             font-size: 11px;
             color: #64748b;
             margin-top: 5px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .btn {
@@ -115,7 +144,6 @@
             cursor: pointer;
             width: 100%;
             transition: 0.2s;
-            margin-bottom: 10px;
         }
 
         .btn-primary {
@@ -133,9 +161,19 @@
             color: #475569;
         }
 
+        .btn-secondary:hover {
+            background: #cbd5e1;
+            transform: translateY(-2px);
+        }
+
         .btn-danger {
             background: #ef4444;
             color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
         }
 
         .modal {
@@ -154,9 +192,21 @@
         .modal-content {
             background: white;
             border-radius: 24px;
-            padding: 24px;
-            max-width: 400px;
+            padding: 28px;
+            max-width: 450px;
             width: 90%;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .modal h3 {
@@ -167,49 +217,71 @@
         }
 
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
+            margin-bottom: 6px;
+            font-weight: 600;
             font-size: 13px;
             color: #334155;
         }
 
         .form-group input {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #e2e8f0;
+            padding: 10px 14px;
+            border: 2px solid #e2e8f0;
             border-radius: 12px;
             font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #1b5e20;
         }
 
         .message {
-            padding: 10px;
-            border-radius: 12px;
-            margin-bottom: 16px;
+            padding: 12px;
+            border-radius: 14px;
+            margin-bottom: 20px;
             display: none;
             font-size: 13px;
+            font-weight: 500;
         }
 
         .message-success {
             background: #dcfce7;
             color: #166534;
-            border-left: 3px solid #22c55e;
+            border-left: 4px solid #22c55e;
         }
 
         .message-error {
             background: #fee2e2;
             color: #dc2626;
-            border-left: 3px solid #ef4444;
+            border-left: 4px solid #ef4444;
         }
 
+        .loader {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         @media (max-width: 768px) {
-            body { margin-left: 0; }
+            body { margin-left: 0; padding: 70px 15px 15px 15px; }
+            .card { padding: 20px; }
             .label { width: 100%; margin-bottom: 5px; }
-            .info-row { flex-direction: column; }
+            .info-row { flex-direction: column; gap: 4px; }
             .stats { flex-direction: column; }
         }
     </style>
@@ -224,46 +296,104 @@
         <div class="title" id="userName">Chargement...</div>
         <div id="message" class="message"></div>
         
-        <div class="info-row"><div class="label">Matricule</div><div class="value" id="userMatricule">-</div></div>
-        <div class="info-row"><div class="label">Email</div><div class="value" id="userEmail">-</div></div>
-        <div class="info-row"><div class="label">Téléphone</div><div class="value" id="userPhone">-</div></div>
-        <div class="info-row"><div class="label">Service</div><div class="value" id="userService">-</div></div>
-        <div class="info-row"><div class="label">Rôle</div><div class="value">🔧 Technicien</div></div>
-        <div class="info-row"><div class="label">Statut</div><div class="value"><span class="badge-active" id="userStatus">✅ Actif</span></div></div>
-        <div class="info-row"><div class="label">Membre depuis</div><div class="value" id="userSince">-</div></div>
-        <div class="info-row"><div class="label">Dernière connexion</div><div class="value" id="lastLogin">-</div></div>
+        <div class="info-row">
+            <div class="label">Matricule</div>
+            <div class="value" id="userMatricule">-</div>
+        </div>
+        <div class="info-row">
+            <div class="label">Email</div>
+            <div class="value" id="userEmail">-</div>
+        </div>
+        <div class="info-row">
+            <div class="label">Téléphone</div>
+            <div class="value" id="userPhone">-</div>
+        </div>
+        <div class="info-row">
+            <div class="label">Service</div>
+            <div class="value" id="userService">-</div>
+        </div>
+        <div class="info-row">
+            <div class="label">Rôle</div>
+            <div class="value" id="userRole">-</div>
+        </div>
+        <div class="info-row">
+            <div class="label">Statut</div>
+            <div class="value" id="userStatus">-</div>
+        </div>
+        <div class="info-row">
+            <div class="label">Membre depuis</div>
+            <div class="value" id="userSince">-</div>
+        </div>
+        <div class="info-row">
+            <div class="label">Dernière connexion</div>
+            <div class="value" id="lastLogin">-</div>
+        </div>
 
         <div class="stats" id="statsContainer">
-            <div class="stat-card"><div class="stat-number" id="totalInterventions">-</div><div class="stat-label">Interventions</div></div>
-            <div class="stat-card"><div class="stat-number" id="tauxSucces">-</div><div class="stat-label">Taux succès</div></div>
-            <div class="stat-card"><div class="stat-number" id="satisfaction">-</div><div class="stat-label">Satisfaction</div></div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalInterventions">-</div>
+                <div class="stat-label">Interventions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="tauxSucces">-</div>
+                <div class="stat-label">Taux succès</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="satisfaction">-</div>
+                <div class="stat-label">Satisfaction</div>
+            </div>
         </div>
         
-        <button class="btn btn-primary" onclick="openEditModal()">✏️ Modifier</button>
-        <button class="btn btn-secondary" onclick="openPasswordModal()">🔑 Mot de passe</button>
-        <button class="btn btn-danger" onclick="logout()">🚪 Déconnexion</button>
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="openEditModal()">✏️ Modifier mon profil</button>
+            <button class="btn btn-secondary" onclick="openPasswordModal()">🔑 Changer mot de passe</button>
+            <button class="btn btn-danger" onclick="logout()">🚪 Déconnexion</button>
+        </div>
     </div>
 </div>
 
-<div id="editModal" class="modal">
+<!-- Modal Modification profil -->
+<div id="editModal" class="modal" onclick="if(event.target===this) closeEditModal()">
     <div class="modal-content">
-        <h3>✏️ Modifier</h3>
-        <div class="form-group"><label>Nom</label><input type="text" id="editNom"></div>
-        <div class="form-group"><label>Prénom</label><input type="text" id="editPrenom"></div>
-        <div class="form-group"><label>Téléphone</label><input type="tel" id="editTelephone"></div>
-        <div class="form-group"><label>Service</label><input type="text" id="editService"></div>
+        <h3>✏️ Modifier mon profil</h3>
+        <div class="form-group">
+            <label>Nom</label>
+            <input type="text" id="editNom" placeholder="Votre nom">
+        </div>
+        <div class="form-group">
+            <label>Prénom</label>
+            <input type="text" id="editPrenom" placeholder="Votre prénom">
+        </div>
+        <div class="form-group">
+            <label>Téléphone</label>
+            <input type="tel" id="editTelephone" placeholder="+229 XX XX XX XX">
+        </div>
+        <div class="form-group">
+            <label>Service</label>
+            <input type="text" id="editService" placeholder="Votre service">
+        </div>
         <button class="btn btn-primary" onclick="saveProfile()">💾 Enregistrer</button>
         <button class="btn btn-secondary" onclick="closeEditModal()">Annuler</button>
     </div>
 </div>
 
-<div id="passwordModal" class="modal">
+<!-- Modal changement mot de passe -->
+<div id="passwordModal" class="modal" onclick="if(event.target===this) closePasswordModal()">
     <div class="modal-content">
-        <h3>🔑 Changer mot de passe</h3>
-        <div class="form-group"><label>Mot de passe actuel</label><input type="password" id="currentPassword"></div>
-        <div class="form-group"><label>Nouveau mot de passe</label><input type="password" id="newPassword"></div>
-        <div class="form-group"><label>Confirmer</label><input type="password" id="confirmPassword"></div>
-        <button class="btn btn-primary" onclick="changePassword()">🔑 Changer</button>
+        <h3>🔑 Changer mon mot de passe</h3>
+        <div class="form-group">
+            <label>Mot de passe actuel</label>
+            <input type="password" id="currentPassword" placeholder="Votre mot de passe actuel">
+        </div>
+        <div class="form-group">
+            <label>Nouveau mot de passe</label>
+            <input type="password" id="newPassword" placeholder="Minimum 6 caractères">
+        </div>
+        <div class="form-group">
+            <label>Confirmer le nouveau mot de passe</label>
+            <input type="password" id="confirmPassword" placeholder="Retapez le nouveau mot de passe">
+        </div>
+        <button class="btn btn-primary" onclick="changePassword()">🔑 Changer le mot de passe</button>
         <button class="btn btn-secondary" onclick="closePasswordModal()">Annuler</button>
     </div>
 </div>
@@ -271,88 +401,266 @@
 <script>
     const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
     const userId = localStorage.getItem('userId');
+    const userRole = localStorage.getItem('userRole');
 
     function getToken() { return localStorage.getItem('token'); }
+    
+    // Auth check
     if (!getToken()) window.location.href = '/login.html';
+    
+    if (!userId) {
+        window.location.href = '/login.html';
+    }
 
     function loadSidebar() {
         fetch('/components/sidebar.html')
             .then(response => response.text())
-            .then(data => document.getElementById('sidebar-container').innerHTML = data)
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                const links = document.querySelectorAll('.sidebar-item');
+                links.forEach(link => {
+                    if (link.getAttribute('href') === 'profil.html') {
+                        link.classList.add('active');
+                    }
+                });
+            })
             .catch(error => console.error('Erreur sidebar:', error));
+    }
+
+    function getRoleLabel(role) {
+        if (role === 'TECHNICIEN') return '🔧 Technicien biomédical';
+        if (role === 'SOIGNANT') return '👨‍⚕️ Personnel soignant';
+        return role || '-';
+    }
+
+    function getStatusBadge(statut) {
+        if (statut === 'ACTIF') {
+            return '<span class="badge-active">✅ Actif</span>';
+        } else if (statut === 'EN_ATTENTE') {
+            return '<span class="badge-pending">⏳ En attente de validation</span>';
+        } else {
+            return '<span class="badge-pending">❌ Inactif</span>';
+        }
+    }
+
+    function showMessage(msg, type) {
+        const msgDiv = document.getElementById('message');
+        msgDiv.className = `message message-${type === 'error' ? 'error' : 'success'}`;
+        msgDiv.innerHTML = msg;
+        msgDiv.style.display = 'block';
+        setTimeout(() => {
+            msgDiv.style.display = 'none';
+        }, 5000);
     }
 
     async function loadProfile() {
         try {
-            const res = await fetch(`${API_URL}/users/${userId}`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
+            const res = await fetch(`${API_URL}/users/${userId}`, { 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            if (!res.ok) throw new Error('Erreur chargement');
+            
             const user = await res.json();
-            document.getElementById('userName').innerText = `${user.nom} ${user.prenom || ''}`;
-            document.getElementById('userMatricule').innerText = user.matricule || '-';
-            document.getElementById('userEmail').innerText = user.email;
-            document.getElementById('userPhone').innerText = user.telephone || '-';
-            document.getElementById('userService').innerText = user.service || 'MAINTENANCE';
-            document.getElementById('userSince').innerText = new Date(user.createdAt).toLocaleDateString();
-            document.getElementById('lastLogin').innerText = user.dernierConnexion ? new Date(user.dernierConnexion).toLocaleString() : 'Jamais';
+            
+            document.getElementById('userName').innerHTML = `${escapeHtml(user.nom)} ${escapeHtml(user.prenom || '')}`;
+            document.getElementById('userMatricule').innerHTML = escapeHtml(user.matricule || '-');
+            document.getElementById('userEmail').innerHTML = escapeHtml(user.email);
+            document.getElementById('userPhone').innerHTML = escapeHtml(user.telephone || '-');
+            document.getElementById('userService').innerHTML = escapeHtml(user.service || 'MAINTENANCE');
+            document.getElementById('userRole').innerHTML = getRoleLabel(user.role);
+            document.getElementById('userStatus').innerHTML = getStatusBadge(user.statut);
+            document.getElementById('userSince').innerHTML = formatDate(user.createdAt);
+            document.getElementById('lastLogin').innerHTML = user.dernierConnexion ? formatDateTime(user.dernierConnexion) : 'Jamais';
+            
             await loadStats();
-        } catch (error) { console.error('Erreur:', error); }
+        } catch (error) { 
+            console.error('Erreur chargement profil:', error);
+            showMessage('❌ Erreur lors du chargement du profil', 'error');
+        }
     }
 
     async function loadStats() {
         try {
-            const res = await fetch(`${API_URL}/maintenances/my/stats`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
+            const res = await fetch(`${API_URL}/maintenances/my/stats`, { 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            if (!res.ok) throw new Error('Erreur stats');
+            
             const stats = await res.json();
             document.getElementById('totalInterventions').innerText = stats.total || 0;
             document.getElementById('tauxSucces').innerText = stats.tauxSucces ? `${stats.tauxSucces}%` : '0%';
-            document.getElementById('satisfaction').innerText = stats.satisfactionMoyenne ? `${stats.satisfactionMoyenne}/5` : '-';
-        } catch (error) { console.error('Erreur stats:', error); }
-    }
-
-    function showMessage(msg, type) {
-        const d = document.getElementById('message');
-        d.className = `message message-${type === 'error' ? 'error' : 'success'}`;
-        d.innerHTML = msg;
-        d.style.display = 'block';
-        setTimeout(() => d.style.display = 'none', 5000);
+            document.getElementById('satisfaction').innerText = stats.satisfactionMoyenne ? `${stats.satisfactionMoyenne.toFixed(1)}/5` : '-';
+        } catch (error) { 
+            console.error('Erreur stats:', error);
+        }
     }
 
     function openEditModal() {
-        document.getElementById('editNom').value = document.getElementById('userName').innerText.split(' ')[0] || '';
-        document.getElementById('editPrenom').value = document.getElementById('userName').innerText.split(' ')[1] || '';
+        const nomComplet = document.getElementById('userName').innerText.split(' ');
+        document.getElementById('editNom').value = nomComplet[0] || '';
+        document.getElementById('editPrenom').value = nomComplet.slice(1).join(' ') || '';
         document.getElementById('editTelephone').value = document.getElementById('userPhone').innerText !== '-' ? document.getElementById('userPhone').innerText : '';
         document.getElementById('editService').value = document.getElementById('userService').innerText;
         document.getElementById('editModal').style.display = 'flex';
     }
 
-    function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
+    function closeEditModal() { 
+        document.getElementById('editModal').style.display = 'none'; 
+    }
 
     async function saveProfile() {
         const data = {
-            nom: document.getElementById('editNom').value,
-            prenom: document.getElementById('editPrenom').value,
-            telephone: document.getElementById('editTelephone').value,
-            service: document.getElementById('editService').value
+            nom: document.getElementById('editNom').value.trim(),
+            prenom: document.getElementById('editPrenom').value.trim(),
+            telephone: document.getElementById('editTelephone').value.trim(),
+            service: document.getElementById('editService').value.trim()
         };
-        const res = await fetch(`${API_URL}/users/${userId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` }, body: JSON.stringify(data) });
-        if (res.ok) { showMessage('✅ Profil mis à jour', 'success'); closeEditModal(); loadProfile(); localStorage.setItem('userName', data.nom); }
-        else showMessage('❌ Erreur', 'error');
+        
+        if (!data.nom) {
+            showMessage('⚠️ Le nom est obligatoire', 'error');
+            return;
+        }
+        
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loader"></span> Enregistrement...';
+        btn.disabled = true;
+        
+        try {
+            const res = await fetch(`${API_URL}/users/${userId}`, { 
+                method: 'PUT', 
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${getToken()}` 
+                }, 
+                body: JSON.stringify(data) 
+            });
+            
+            if (res.ok) { 
+                showMessage('✅ Profil mis à jour avec succès', 'success'); 
+                closeEditModal(); 
+                loadProfile(); 
+                localStorage.setItem('userName', data.nom);
+            } else {
+                const error = await res.json();
+                showMessage('❌ Erreur: ' + (error.message || 'Mise à jour impossible'), 'error');
+            }
+        } catch (error) {
+            showMessage('❌ Erreur de connexion', 'error');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
     }
 
-    function openPasswordModal() { document.getElementById('passwordModal').style.display = 'flex'; }
-    function closePasswordModal() { document.getElementById('passwordModal').style.display = 'none'; }
+    function openPasswordModal() { 
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+        document.getElementById('passwordModal').style.display = 'flex'; 
+    }
+    
+    function closePasswordModal() { 
+        document.getElementById('passwordModal').style.display = 'none'; 
+    }
 
     async function changePassword() {
-        const cp = document.getElementById('currentPassword').value;
-        const np = document.getElementById('newPassword').value;
-        const cf = document.getElementById('confirmPassword').value;
-        if (!cp || !np || !cf) { showMessage('Remplissez tous les champs', 'error'); return; }
-        if (np !== cf) { showMessage('Mots de passe différents', 'error'); return; }
-        if (np.length < 6) { showMessage('Minimum 6 caractères', 'error'); return; }
-        const res = await fetch(`${API_URL}/auth/change-password`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` }, body: JSON.stringify({ currentPassword: cp, newPassword: np }) });
-        if (res.ok) { showMessage('✅ Mot de passe modifié', 'success'); closePasswordModal(); }
-        else showMessage('❌ Erreur', 'error');
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            showMessage('⚠️ Veuillez remplir tous les champs', 'error');
+            return;
+        }
+        
+        if (newPassword !== confirmPassword) {
+            showMessage('⚠️ Les nouveaux mots de passe ne correspondent pas', 'error');
+            return;
+        }
+        
+        if (newPassword.length < 6) {
+            showMessage('⚠️ Le nouveau mot de passe doit contenir au moins 6 caractères', 'error');
+            return;
+        }
+        
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loader"></span> Changement...';
+        btn.disabled = true;
+        
+        try {
+            const res = await fetch(`${API_URL}/auth/change-password`, { 
+                method: 'POST', 
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${getToken()}` 
+                }, 
+                body: JSON.stringify({ 
+                    currentPassword: currentPassword, 
+                    newPassword: newPassword 
+                }) 
+            });
+            
+            if (res.ok) { 
+                showMessage('✅ Mot de passe modifié avec succès', 'success'); 
+                closePasswordModal(); 
+            } else {
+                const error = await res.json();
+                showMessage('❌ Erreur: ' + (error.message || 'Mot de passe incorrect'), 'error');
+            }
+        } catch (error) {
+            showMessage('❌ Erreur de connexion', 'error');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
     }
 
-    function logout() { if (confirm('Déconnexion ?')) { localStorage.clear(); window.location.href = '/login.html'; } }
+    function logout() { 
+        if (confirm('🚪 Voulez-vous vraiment vous déconnecter ?')) { 
+            localStorage.clear(); 
+            window.location.href = '/login.html'; 
+        } 
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        try {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return '-';
+            return date.toLocaleDateString('fr-FR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        } catch { return '-'; }
+    }
+
+    function formatDateTime(dateStr) {
+        if (!dateStr) return '-';
+        try {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return '-';
+            return date.toLocaleString('fr-FR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch { return '-'; }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
 
     loadSidebar();
     loadProfile();
