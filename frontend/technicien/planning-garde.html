@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="theme-color" content="#1b5e20">
     <title>Planning de garde - GMAO Sakété</title>
     <style>
         * {
@@ -42,6 +43,11 @@
             font-size: 24px;
         }
 
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
         .btn-add {
             background: #1b5e20;
             color: white;
@@ -58,12 +64,32 @@
             transform: translateY(-2px);
         }
 
+        .btn-refresh {
+            background: #f0fdf4;
+            border: 1px solid #1b5e20;
+            color: #1b5e20;
+            padding: 10px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-refresh:hover {
+            background: #1b5e20;
+            color: white;
+        }
+
         .card {
             background: white;
-            border-radius: 20px;
-            padding: 20px;
+            border-radius: 24px;
+            padding: 24px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: box-shadow 0.2s;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
         }
 
         .calendar-header {
@@ -72,9 +98,9 @@
             background: #1b5e20;
             color: white;
             text-align: center;
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 10px;
+            padding: 14px;
+            border-radius: 14px;
+            margin-bottom: 12px;
             font-weight: bold;
         }
 
@@ -87,20 +113,21 @@
         .calendar-day {
             background: white;
             border: 1px solid #e2e8f0;
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 12px;
-            min-height: 110px;
+            min-height: 120px;
             transition: 0.2s;
         }
 
         .calendar-day:hover {
             background: #f8fafc;
             transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .day-number {
             font-weight: bold;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             color: #1b5e20;
             font-size: 14px;
         }
@@ -115,12 +142,16 @@
 
         .garde-item {
             background: #dbeafe;
-            padding: 4px 8px;
-            border-radius: 8px;
+            padding: 5px 8px;
+            border-radius: 10px;
             font-size: 11px;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
             cursor: pointer;
             transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            justify-content: space-between;
         }
 
         .garde-item:hover {
@@ -148,17 +179,37 @@
             background: #fce7f3;
         }
 
+        .garde-weekend:hover {
+            background: #fbcfe8;
+        }
+
+        .delete-garde {
+            opacity: 0;
+            transition: 0.2s;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            color: #ef4444;
+            padding: 2px 5px;
+            border-radius: 50%;
+        }
+
+        .garde-item:hover .delete-garde {
+            opacity: 1;
+        }
+
         .month-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             flex-wrap: wrap;
             gap: 15px;
         }
 
         .month-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             color: #1b5e20;
         }
@@ -166,22 +217,24 @@
         .nav-btn {
             background: #e2e8f0;
             border: none;
-            padding: 8px 16px;
+            padding: 8px 20px;
             border-radius: 30px;
             cursor: pointer;
             transition: 0.2s;
+            font-weight: 500;
         }
 
         .nav-btn:hover {
             background: #cbd5e1;
+            transform: translateY(-1px);
         }
 
         .legend {
             display: flex;
-            gap: 20px;
+            gap: 25px;
             flex-wrap: wrap;
-            margin-top: 20px;
-            padding-top: 15px;
+            margin-top: 25px;
+            padding-top: 20px;
             border-top: 1px solid #e2e8f0;
         }
 
@@ -193,14 +246,29 @@
         }
 
         .legend-color {
-            width: 16px;
-            height: 16px;
-            border-radius: 4px;
+            width: 18px;
+            height: 18px;
+            border-radius: 6px;
         }
 
         .legend-jour { background: #dbeafe; }
         .legend-nuit { background: #fef3c7; }
         .legend-astreinte { background: #dcfce7; }
+        .legend-weekend { background: #fce7f3; }
+
+        .loader {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         .modal {
             display: none;
@@ -218,9 +286,21 @@
         .modal-content {
             background: white;
             border-radius: 24px;
-            padding: 24px;
-            max-width: 450px;
+            padding: 28px;
+            max-width: 500px;
             width: 90%;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .modal h3 {
@@ -236,8 +316,8 @@
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
+            margin-bottom: 6px;
+            font-weight: 600;
             font-size: 13px;
             color: #334155;
         }
@@ -245,25 +325,39 @@
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #e2e8f0;
+            padding: 10px 14px;
+            border: 2px solid #e2e8f0;
             border-radius: 12px;
             font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1b5e20;
         }
 
         .btn-primary {
             background: #1b5e20;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border-radius: 30px;
             cursor: pointer;
             width: 100%;
-            font-weight: 500;
+            font-weight: 600;
+            transition: 0.2s;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             background: #2e7d32;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
         }
 
         .btn-danger {
@@ -275,14 +369,21 @@
             cursor: pointer;
             width: 100%;
             margin-top: 10px;
+            transition: 0.2s;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
         }
 
         @media (max-width: 768px) {
-            body { margin-left: 0; }
+            body { margin-left: 0; padding: 70px 15px 15px 15px; }
             .calendar-grid { gap: 4px; }
             .calendar-day { padding: 6px; min-height: 80px; }
-            .garde-item { font-size: 9px; padding: 2px 4px; }
+            .garde-item { font-size: 9px; padding: 3px 6px; }
             .day-number { font-size: 11px; }
+            .btn-group { flex-direction: column; width: 100%; }
+            .btn-group button { width: 100%; }
         }
     </style>
 </head>
@@ -293,7 +394,10 @@
 <div class="main-content">
     <div class="header">
         <h1>📅 PLANNING DE GARDE</h1>
-        <button class="btn-add" onclick="openAddModal()">➕ Ajouter une garde</button>
+        <div class="btn-group">
+            <button class="btn-refresh" onclick="refreshAllData()">🔄 Rafraîchir</button>
+            <button class="btn-add" onclick="openAddModal()">➕ Ajouter une garde</button>
+        </div>
     </div>
 
     <div class="card">
@@ -307,20 +411,47 @@
             <div class="legend-item"><div class="legend-color legend-jour"></div><span>Garde de jour</span></div>
             <div class="legend-item"><div class="legend-color legend-nuit"></div><span>Garde de nuit</span></div>
             <div class="legend-item"><div class="legend-color legend-astreinte"></div><span>Astreinte</span></div>
+            <div class="legend-item"><div class="legend-color legend-weekend"></div><span>Weekend</span></div>
         </div>
     </div>
 </div>
 
-<div id="modal" class="modal">
+<!-- Modal Ajout/Modification -->
+<div id="modal" class="modal" onclick="if(event.target===this) closeModal()">
     <div class="modal-content">
-        <h3 id="modalTitle">Ajouter une garde</h3>
-        <div class="form-group"><label>Technicien</label><select id="technicienId"><option value="">Sélectionner un technicien</option></select></div>
-        <div class="form-group"><label>Date</label><input type="date" id="gardeDate"></div>
-        <div class="form-group"><label>Type de garde</label><select id="gardeType"><option value="JOUR">🌞 Jour</option><option value="NUIT">🌙 Nuit</option><option value="ASTREINTE">📞 Astreinte</option><option value="WEEKEND">🏖️ Weekend</option></select></div>
-        <div class="form-group"><label>Heure début</label><input type="time" id="heureDebut"></div>
-        <div class="form-group"><label>Heure fin</label><input type="time" id="heureFin"></div>
-        <div class="form-group"><label>Remarque</label><input type="text" id="observateur"></div>
-        <button class="btn-primary" onclick="saveGarde()">💾 Enregistrer</button>
+        <h3 id="modalTitle">➕ Ajouter une garde</h3>
+        <div class="form-group">
+            <label>Technicien *</label>
+            <select id="technicienId">
+                <option value="">⏳ Chargement...</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Date *</label>
+            <input type="date" id="gardeDate">
+        </div>
+        <div class="form-group">
+            <label>Type de garde *</label>
+            <select id="gardeType">
+                <option value="JOUR">🌞 Jour (8h-18h)</option>
+                <option value="NUIT">🌙 Nuit (18h-8h)</option>
+                <option value="ASTREINTE">📞 Astreinte</option>
+                <option value="WEEKEND">🏖️ Weekend</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Heure début</label>
+            <input type="time" id="heureDebut">
+        </div>
+        <div class="form-group">
+            <label>Heure fin</label>
+            <input type="time" id="heureFin">
+        </div>
+        <div class="form-group">
+            <label>Remarque</label>
+            <input type="text" id="observateur" placeholder="Informations complémentaires...">
+        </div>
+        <button class="btn-primary" id="saveBtn" onclick="saveGarde()">💾 Enregistrer</button>
         <button class="btn-danger" onclick="closeModal()">Annuler</button>
     </div>
 </div>
@@ -332,53 +463,107 @@
     let currentEditId = null;
 
     function getToken() { return localStorage.getItem('token'); }
+    
+    // Auth check
     if (!getToken()) window.location.href = '/login.html';
+    
+    const userRole = localStorage.getItem('userRole');
+    if (userRole !== 'TECHNICIEN') window.location.href = '/soignant/index.html';
 
     function loadSidebar() {
         fetch('/components/sidebar.html')
             .then(response => response.text())
-            .then(data => document.getElementById('sidebar-container').innerHTML = data)
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                const links = document.querySelectorAll('.sidebar-item');
+                links.forEach(link => {
+                    if (link.getAttribute('href') === 'planning-garde.html') {
+                        link.classList.add('active');
+                    }
+                });
+            })
             .catch(error => console.error('Erreur sidebar:', error));
     }
 
     async function loadTechniciens() {
         try {
-            const res = await fetch(`${API_URL}/techniciens?archived=false`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
-            const techniciens = await res.json();
+            const res = await fetch(`${API_URL}/techniciens?archived=false&limit=100`, { 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            if (!res.ok) throw new Error('Erreur');
+            
+            const data = await res.json();
+            let techniciens = Array.isArray(data) ? data : (data.techniciens || []);
+            
             const select = document.getElementById('technicienId');
-            select.innerHTML = '<option value="">Sélectionner un technicien</option>' + techniciens.map(t => `<option value="${t.id}">${t.nom} ${t.prenom || ''} (${t.matricule})</option>`).join('');
-        } catch (error) { console.error('Erreur:', error); }
+            if (techniciens.length === 0) {
+                select.innerHTML = '<option value="">📭 Aucun technicien disponible</option>';
+                return;
+            }
+            
+            select.innerHTML = '<option value="">📋 Sélectionner un technicien</option>' + 
+                techniciens.map(t => `<option value="${t.id}">${escapeHtml(t.nom)} ${escapeHtml(t.prenom || '')} (${escapeHtml(t.matricule || t.id)})</option>`).join('');
+        } catch (error) { 
+            console.error('Erreur chargement techniciens:', error);
+        }
     }
 
     async function loadPlanning() {
         const startDate = new Date(currentYear, currentMonth, 1);
         const endDate = new Date(currentYear, currentMonth + 1, 0);
+        
         try {
-            const res = await fetch(`${API_URL}/planning?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
+            const res = await fetch(`${API_URL}/planning?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`, { 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            if (!res.ok) throw new Error('Erreur');
+            
             const plannings = await res.json();
+            const planningsList = Array.isArray(plannings) ? plannings : (plannings.data || []);
+            
             const firstDay = new Date(currentYear, currentMonth, 1).getDay();
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
             const today = new Date();
             const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
             const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
             document.getElementById('monthTitle').innerText = `${monthNames[currentMonth]} ${currentYear}`;
+            
             let startOffset = firstDay === 0 ? 6 : firstDay - 1;
             let dayCount = 1;
-            let html = `<div class="calendar-header"><div>Lun</div><div>Mar</div><div>Mer</div><div>Jeu</div><div>Ven</div><div>Sam</div><div>Dim</div></div><div class="calendar-grid">`;
+            let html = `<div class="calendar-header">
+                <div>Lun</div><div>Mar</div><div>Mer</div><div>Jeu</div><div>Ven</div><div>Sam</div><div>Dim</div>
+            </div><div class="calendar-grid">`;
+            
             for (let i = 0; i < 42; i++) {
                 if (i < startOffset || dayCount > daysInMonth) {
                     html += `<div class="calendar-day"></div>`;
                 } else {
                     const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(dayCount).padStart(2, '0')}`;
                     const isToday = dateStr === todayStr;
-                    const dayPlannings = plannings.filter(p => new Date(p.date).toDateString() === new Date(dateStr).toDateString());
-                    html += `<div class="calendar-day"><div class="day-number ${isToday ? 'today' : ''}">${dayCount}</div>`;
+                    const dayPlannings = planningsList.filter(p => {
+                        const pDate = new Date(p.date);
+                        return pDate.getFullYear() === currentYear && 
+                               pDate.getMonth() === currentMonth && 
+                               pDate.getDate() === dayCount;
+                    });
+                    
+                    html += `<div class="calendar-day">
+                        <div class="day-number ${isToday ? 'today' : ''}">${dayCount}</div>`;
+                    
                     dayPlannings.forEach(p => {
                         let typeClass = '';
-                        if (p.typeGarde === 'NUIT') typeClass = 'garde-nuit';
-                        else if (p.typeGarde === 'ASTREINTE') typeClass = 'garde-astreinte';
-                        else if (p.typeGarde === 'WEEKEND') typeClass = 'garde-weekend';
-                        html += `<div class="garde-item ${typeClass}" onclick="editGarde(${p.id})">👨‍🔧 ${p.technicien?.nom || 'N/C'} - ${p.typeGarde}</div>`;
+                        let typeIcon = '';
+                        if (p.typeGarde === 'NUIT') { typeClass = 'garde-nuit'; typeIcon = '🌙'; }
+                        else if (p.typeGarde === 'ASTREINTE') { typeClass = 'garde-astreinte'; typeIcon = '📞'; }
+                        else if (p.typeGarde === 'WEEKEND') { typeClass = 'garde-weekend'; typeIcon = '🏖️'; }
+                        else { typeClass = ''; typeIcon = '🌞'; }
+                        
+                        html += `
+                            <div class="garde-item ${typeClass}" onclick="event.stopPropagation();editGarde(${p.id})">
+                                <span>${typeIcon} ${escapeHtml(p.technicien?.nom || 'N/C')}</span>
+                                <button class="delete-garde" onclick="event.stopPropagation();deleteGarde(${p.id})">🗑️</button>
+                            </div>
+                        `;
                     });
                     html += `</div>`;
                     dayCount++;
@@ -386,48 +571,163 @@
             }
             html += `</div>`;
             document.getElementById('calendar').innerHTML = html;
-        } catch (error) { console.error('Erreur:', error); }
+        } catch (error) { 
+            console.error('Erreur chargement planning:', error);
+            document.getElementById('calendar').innerHTML = '<div class="empty-state">❌ Erreur de chargement du planning</div>';
+        }
     }
 
-    function prevMonth() { currentMonth--; if (currentMonth < 0) { currentMonth = 11; currentYear--; } loadPlanning(); }
-    function nextMonth() { currentMonth++; if (currentMonth > 11) { currentMonth = 0; currentYear++; } loadPlanning(); }
-    function openAddModal() { currentEditId = null; document.getElementById('modalTitle').innerText = '➕ Ajouter une garde'; document.getElementById('modal').style.display = 'flex'; }
-    function closeModal() { document.getElementById('modal').style.display = 'none'; }
+    function prevMonth() { 
+        currentMonth--; 
+        if (currentMonth < 0) { 
+            currentMonth = 11; 
+            currentYear--; 
+        } 
+        loadPlanning(); 
+    }
+    
+    function nextMonth() { 
+        currentMonth++; 
+        if (currentMonth > 11) { 
+            currentMonth = 0; 
+            currentYear++; 
+        } 
+        loadPlanning(); 
+    }
+    
+    function openAddModal() { 
+        currentEditId = null; 
+        document.getElementById('modalTitle').innerText = '➕ Ajouter une garde';
+        document.getElementById('technicienId').value = '';
+        document.getElementById('gardeDate').value = '';
+        document.getElementById('gardeType').value = 'JOUR';
+        document.getElementById('heureDebut').value = '';
+        document.getElementById('heureFin').value = '';
+        document.getElementById('observateur').value = '';
+        document.getElementById('modal').style.display = 'flex'; 
+    }
+    
+    function closeModal() { 
+        document.getElementById('modal').style.display = 'none'; 
+    }
 
     async function editGarde(id) {
         try {
-            const res = await fetch(`${API_URL}/planning/${id}`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
+            const res = await fetch(`${API_URL}/planning/${id}`, { 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            if (!res.ok) throw new Error('Erreur');
+            
             const garde = await res.json();
             currentEditId = id;
             document.getElementById('modalTitle').innerText = '✏️ Modifier la garde';
             document.getElementById('technicienId').value = garde.technicienId;
-            document.getElementById('gardeDate').value = garde.date?.split('T')[0];
-            document.getElementById('gardeType').value = garde.typeGarde;
+            document.getElementById('gardeDate').value = garde.date?.split('T')[0] || '';
+            document.getElementById('gardeType').value = garde.typeGarde || 'JOUR';
             document.getElementById('heureDebut').value = garde.heureDebut || '';
             document.getElementById('heureFin').value = garde.heureFin || '';
             document.getElementById('observateur').value = garde.observateur || '';
             document.getElementById('modal').style.display = 'flex';
-        } catch (error) { alert('Erreur'); }
+        } catch (error) { 
+            alert('❌ Erreur lors du chargement de la garde'); 
+        }
+    }
+
+    async function deleteGarde(id) {
+        if (!confirm('⚠️ Supprimer définitivement cette garde ?')) return;
+        
+        try {
+            const res = await fetch(`${API_URL}/planning/${id}`, { 
+                method: 'DELETE', 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            
+            if (res.ok) { 
+                alert('✅ Garde supprimée'); 
+                loadPlanning(); 
+            } else {
+                alert('❌ Erreur lors de la suppression');
+            }
+        } catch (error) {
+            alert('❌ Erreur de connexion');
+        }
     }
 
     async function saveGarde() {
         const technicienId = document.getElementById('technicienId').value;
         const gardeDate = document.getElementById('gardeDate').value;
-        if (!technicienId || !gardeDate) { alert('Veuillez remplir tous les champs'); return; }
+        const gardeType = document.getElementById('gardeType').value;
+        
+        if (!technicienId) {
+            alert('⚠️ Veuillez sélectionner un technicien');
+            document.getElementById('technicienId').focus();
+            return;
+        }
+        
+        if (!gardeDate) {
+            alert('⚠️ Veuillez sélectionner une date');
+            document.getElementById('gardeDate').focus();
+            return;
+        }
+        
         const data = {
             technicienId: parseInt(technicienId),
             date: gardeDate,
-            typeGarde: document.getElementById('gardeType').value,
+            typeGarde: gardeType,
             heureDebut: document.getElementById('heureDebut').value || null,
             heureFin: document.getElementById('heureFin').value || null,
             observateur: document.getElementById('observateur').value || null,
             valide: true
         };
+        
         const url = currentEditId ? `${API_URL}/planning/${currentEditId}` : `${API_URL}/planning`;
         const method = currentEditId ? 'PUT' : 'POST';
-        const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` }, body: JSON.stringify(data) });
-        if (res.ok) { alert(currentEditId ? '✅ Garde modifiée' : '✅ Garde ajoutée'); closeModal(); loadPlanning(); }
-        else alert('❌ Erreur');
+        
+        const btn = document.getElementById('saveBtn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loader"></span> Enregistrement...';
+        btn.disabled = true;
+        
+        try {
+            const res = await fetch(url, { 
+                method, 
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${getToken()}` 
+                }, 
+                body: JSON.stringify(data) 
+            });
+            
+            if (res.ok) { 
+                alert(currentEditId ? '✅ Garde modifiée avec succès' : '✅ Garde ajoutée avec succès'); 
+                closeModal(); 
+                loadPlanning(); 
+            } else {
+                const error = await res.json();
+                alert('❌ Erreur: ' + (error.message || 'Opération impossible'));
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        } catch (error) {
+            alert('❌ Erreur de connexion');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+
+    function refreshAllData() {
+        loadPlanning();
+        loadTechniciens();
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
     }
 
     loadSidebar();
