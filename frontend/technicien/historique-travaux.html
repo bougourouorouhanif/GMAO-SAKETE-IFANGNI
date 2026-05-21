@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="theme-color" content="#1b5e20">
     <title>Historique des travaux - GMAO Sakété</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #e8f5e9;
             margin-left: 280px;
+            transition: margin-left 0.3s ease;
             padding: 20px;
         }
         .main-content { max-width: 1400px; margin: 0 auto; }
+        
         .header {
             background: white;
             padding: 15px 25px;
@@ -21,131 +24,380 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        h1 { color: #1b5e20; }
+        h1 { color: #1b5e20; font-size: 24px; }
+        
+        .btn-group { display: flex; gap: 10px; }
+        .btn-excel {
+            background: #1b5e20;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-excel:hover { background: #2e7d32; transform: translateY(-2px); }
+        
+        .btn-refresh {
+            background: #f0fdf4;
+            border: 1px solid #1b5e20;
+            color: #1b5e20;
+            padding: 10px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-refresh:hover { background: #1b5e20; color: white; }
+        
         .filter-bar {
             background: white;
-            padding: 16px;
+            padding: 16px 20px;
             border-radius: 20px;
             margin-bottom: 20px;
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         .filter-bar input, .filter-bar select {
             padding: 10px 16px;
-            border: 1px solid #ddd;
+            border: 1px solid #e2e8f0;
             border-radius: 40px;
+            font-size: 14px;
+            min-width: 150px;
+        }
+        .filter-bar input:focus, .filter-bar select:focus {
+            outline: none;
+            border-color: #1b5e20;
+        }
+        
+        .stats-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 12px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+        }
+        .stat-number { font-size: 24px; font-weight: bold; color: #1b5e20; }
+        .stat-label { font-size: 12px; color: #64748b; margin-top: 4px; }
+        
+        .table-container {
+            background: white;
+            border-radius: 20px;
+            overflow-x: auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         table {
             width: 100%;
-            background: white;
-            border-radius: 20px;
             border-collapse: collapse;
-            overflow: hidden;
         }
         th, td {
-            padding: 12px 15px;
+            padding: 14px 16px;
             text-align: left;
             border-bottom: 1px solid #e2e8f0;
         }
-        th { background: #f8fafc; }
-        .badge-termine { background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; display: inline-block; }
-        .badge-cours { background: #dbeafe; color: #2563eb; padding: 4px 12px; border-radius: 20px; display: inline-block; }
-        .btn-excel {
-            background: #1b5e20;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 30px;
-            cursor: pointer;
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 13px;
         }
-        @media (max-width: 768px) { body { margin-left: 0; } th, td { font-size: 12px; padding: 8px; } }
+        tr {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        tr:hover {
+            background: #f8fafc;
+        }
+        
+        .badge-termine { background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; display: inline-block; font-size: 12px; }
+        .badge-cours { background: #dbeafe; color: #2563eb; padding: 4px 12px; border-radius: 20px; display: inline-block; font-size: 12px; }
+        .badge-attente { background: #fef3c7; color: #d97706; padding: 4px 12px; border-radius: 20px; display: inline-block; font-size: 12px; }
+        .badge-annule { background: #fee2e2; color: #dc2626; padding: 4px 12px; border-radius: 20px; display: inline-block; font-size: 12px; }
+        
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #94a3b8;
+        }
+        
+        .loader {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        @media (max-width: 768px) {
+            body { margin-left: 0; padding: 70px 15px 15px 15px; }
+            th, td { font-size: 12px; padding: 10px 8px; }
+            .filter-bar input, .filter-bar select { min-width: 100%; }
+            .btn-group { flex-direction: column; width: 100%; }
+            .btn-group button { width: 100%; }
+        }
     </style>
 </head>
 <body>
+
 <div id="sidebar-container"></div>
+
 <div class="main-content">
     <div class="header">
         <h1>📋 HISTORIQUE COMPLET DES TRAVAUX</h1>
-        <button class="btn-excel" onclick="exporterExcel()">📊 Exporter Excel</button>
+        <div class="btn-group">
+            <button class="btn-refresh" onclick="refreshData()">🔄 Rafraîchir</button>
+            <button class="btn-excel" onclick="exporterExcel()">📊 Exporter Excel</button>
+        </div>
+    </div>
+
+    <div class="stats-row" id="statsRow">
+        <div class="stat-card"><div class="stat-number" id="statTotal">-</div><div class="stat-label">Total interventions</div></div>
+        <div class="stat-card"><div class="stat-number" id="statTermine">-</div><div class="stat-label">✅ Terminées</div></div>
+        <div class="stat-card"><div class="stat-number" id="statEnCours">-</div><div class="stat-label">🔧 En cours</div></div>
+        <div class="stat-card"><div class="stat-number" id="statCorrectif">-</div><div class="stat-label">🛠️ Correctives</div></div>
+        <div class="stat-card"><div class="stat-number" id="statPreventif">-</div><div class="stat-label">📅 Préventives</div></div>
     </div>
 
     <div class="filter-bar">
-        <input type="text" id="search" placeholder="🔍 Équipement, technicien..." onkeyup="loadHistorique()">
+        <input type="text" id="searchInput" placeholder="🔍 Équipement, technicien, description..." onkeyup="debouncedSearch()">
         <select id="statutFilter" onchange="loadHistorique()">
-            <option value="">Tous statuts</option>
-            <option value="TERMINE">Terminé</option>
-            <option value="EN_COURS">En cours</option>
-            <option value="ANNULE">Annulé</option>
+            <option value="">📊 Tous statuts</option>
+            <option value="TERMINE">✅ Terminé</option>
+            <option value="EN_COURS">🔧 En cours</option>
+            <option value="EN_ATTENTE">⏳ En attente</option>
+            <option value="ANNULE">❌ Annulé</option>
         </select>
         <select id="typeFilter" onchange="loadHistorique()">
-            <option value="">Tous types</option>
-            <option value="CORRECTIF">Correctif (Panne)</option>
-            <option value="PREVENTIF">Préventif</option>
+            <option value="">📌 Tous types</option>
+            <option value="CORRECTIF">🛠️ Correctif (Panne)</option>
+            <option value="PREVENTIF">📅 Préventif</option>
         </select>
         <input type="date" id="dateDebut" placeholder="Date début" onchange="loadHistorique()">
         <input type="date" id="dateFin" placeholder="Date fin" onchange="loadHistorique()">
     </div>
 
-    <div style="overflow-x: auto;">
+    <div class="table-container">
         <table id="historiqueTable">
             <thead>
-                <tr><th>ID</th><th>Date</th><th>Équipement</th><th>Service</th><th>Type</th><th>Problème/Action</th><th>Technicien</th><th>Durée</th><th>Statut</th></tr>
+                <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Équipement</th>
+                    <th>Service</th>
+                    <th>Type</th>
+                    <th>Problème/Action</th>
+                    <th>Technicien</th>
+                    <th>Durée</th>
+                    <th>Statut</th>
+                </tr>
             </thead>
-            <tbody id="tableBody"><tr><td colspan="9" style="text-align:center">Chargement...</td></tr></tbody>
+            <tbody id="tableBody">
+                <tr><td colspan="9" class="empty-state">⏳ Chargement...</td></tr>
+            </tbody>
         </table>
     </div>
 </div>
 
 <script>
-   const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
+    const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
+    let searchTimeout = null;
+    
     function getToken() { return localStorage.getItem('token'); }
+    
+    // Auth check
+    if (!getToken()) window.location.href = '/login.html';
+    
+    const userRole = localStorage.getItem('userRole');
+    if (userRole !== 'TECHNICIEN') window.location.href = '/soignant/index.html';
+
+    function loadSidebar() {
+        fetch('/components/sidebar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                const links = document.querySelectorAll('.sidebar-item');
+                links.forEach(link => {
+                    if (link.getAttribute('href') === 'historique.html' || 
+                        link.getAttribute('href') === 'codir-rapports.html') {
+                        link.classList.add('active');
+                    }
+                });
+            })
+            .catch(error => console.error('Erreur sidebar:', error));
+    }
+
+    function updateStats(interventions) {
+        if (!interventions || !Array.isArray(interventions)) return;
+        
+        const total = interventions.length;
+        const termine = interventions.filter(i => i.statut === 'TERMINE').length;
+        const enCours = interventions.filter(i => i.statut === 'EN_COURS').length;
+        const correctif = interventions.filter(i => i.type === 'CORRECTIF').length;
+        const preventif = interventions.filter(i => i.type === 'PREVENTIF').length;
+        
+        document.getElementById('statTotal').innerText = total;
+        document.getElementById('statTermine').innerText = termine;
+        document.getElementById('statEnCours').innerText = enCours;
+        document.getElementById('statCorrectif').innerText = correctif;
+        document.getElementById('statPreventif').innerText = preventif;
+    }
 
     async function loadHistorique() {
-        const search = document.getElementById('search').value;
+        const search = document.getElementById('searchInput').value;
         const statut = document.getElementById('statutFilter').value;
         const type = document.getElementById('typeFilter').value;
         const dateDebut = document.getElementById('dateDebut').value;
         const dateFin = document.getElementById('dateFin').value;
 
-        let url = `${API_URL}/maintenances/historique-complet?search=${search}&statut=${statut}&type=${type}`;
-        if (dateDebut) url += `&dateDebut=${dateDebut}`;
-        if (dateFin) url += `&dateFin=${dateFin}`;
+        let url = `${API_URL}/maintenances/historique-complet?`;
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        if (statut) params.append('statut', statut);
+        if (type) params.append('type', type);
+        if (dateDebut) params.append('dateDebut', dateDebut);
+        if (dateFin) params.append('dateFin', dateFin);
+        url += params.toString();
 
-        const res = await fetch(url, { headers: { 'Authorization': `Bearer ${getToken()}` } });
-        const data = await res.json();
-        const interventions = data.interventions || data;
+        try {
+            const res = await fetch(url, { 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            
+            if (!res.ok) throw new Error('Erreur chargement');
+            
+            const data = await res.json();
+            let interventions = [];
+            
+            // Gestion des différents formats de réponse
+            if (Array.isArray(data)) {
+                interventions = data;
+            } else if (data.interventions) {
+                interventions = data.interventions;
+            } else if (data.data) {
+                interventions = data.data;
+            } else {
+                interventions = [];
+            }
 
-        if (interventions.length === 0) {
-            document.getElementById('tableBody').innerHTML = '<tr><td colspan="9" style="text-align:center">📭 Aucun historique</td></tr>';
-            return;
+            updateStats(interventions);
+
+            if (interventions.length === 0) {
+                document.getElementById('tableBody').innerHTML = 
+                    '<tr><td colspan="9" class="empty-state">📭 Aucun historique trouvé</td></tr>';
+                return;
+            }
+
+            document.getElementById('tableBody').innerHTML = interventions.map(i => {
+                const equipement = i.equipement || {};
+                const description = i.signalement?.description || i.diagnostic || i.description || '-';
+                const duree = i.dureeMinutes ? `${i.dureeMinutes} min` : (i.duree ? i.duree : '-');
+                const dateStr = i.dateDebut || i.createdAt || i.date;
+                
+                return `
+                    <tr onclick="voirDetail(${i.id})">
+                        <td>#${i.id}</td>
+                        <td>${formatDate(dateStr)}</td>
+                        <td>
+                            <strong>${escapeHtml(equipement.nom || '-')}</strong>
+                            <br><small style="color:#64748b">${escapeHtml(equipement.codeInventaire || '-')}</small>
+                        </td>
+                        <td>${escapeHtml(equipement.service || i.service || '-')}</td>
+                        <td>${getTypeIcon(i.type)} ${getTypeText(i.type)}</td>
+                        <td style="max-width: 250px;">${escapeHtml(description.substring(0, 60))}${description.length > 60 ? '...' : ''}</td>
+                        <td>${escapeHtml(i.technicien?.nom || i.technicienNom || '-')}</td>
+                        <td>${duree}</td>
+                        <td>${getStatusBadge(i.statut)}</td>
+                    </tr>
+                `;
+            }).join('');
+            
+        } catch (error) {
+            console.error('Erreur:', error);
+            document.getElementById('tableBody').innerHTML = 
+                '<tr><td colspan="9" class="empty-state">❌ Erreur de chargement. Vérifiez votre connexion.</td></tr>';
         }
-
-        document.getElementById('tableBody').innerHTML = interventions.map(i => `
-            <tr onclick="voirDetail(${i.id})" style="cursor:pointer">
-                <td>#${i.id}</td>
-                <td>${new Date(i.dateDebut).toLocaleDateString()}</td>
-                <td><strong>${i.equipement?.nom}</strong><br><small>${i.equipement?.codeInventaire}</small></td>
-                <td>${i.equipement?.service || '-'}</td>
-                <td>${i.type === 'CORRECTIF' ? '🛠️ Panne' : '📅 Préventive'}</td>
-                <td>${(i.signalement?.description || i.diagnostic || '').substring(0, 50)}${(i.signalement?.description?.length > 50 ? '...' : '')}</td>
-                <td>${i.technicien?.nom || '-'}</td>
-                <td>${i.dureeMinutes ? i.dureeMinutes + ' min' : '-'}</td>
-                <td>${i.statut === 'TERMINE' ? '<span class="badge-termine">✅ Terminé</span>' : '<span class="badge-cours">🔧 En cours</span>'}</td>
-            </tr>
-        `).join('');
     }
 
-    function voirDetail(id) { window.location.href = `intervention-form.html?id=${id}`; }
-    function exporterExcel() { window.location.href = `${API_URL}/maintenances/export-excel`; }
-
-    function loadSidebar() {
-        fetch('/components/sidebar.html')
-            .then(r => r.text())
-            .then(d => document.getElementById('sidebar-container').innerHTML = d);
+    function getTypeIcon(type) {
+        if (type === 'CORRECTIF') return '🛠️';
+        if (type === 'PREVENTIF') return '📅';
+        return '📌';
     }
 
+    function getTypeText(type) {
+        if (type === 'CORRECTIF') return 'Correctif';
+        if (type === 'PREVENTIF') return 'Préventif';
+        return type || '-';
+    }
+
+    function getStatusBadge(statut) {
+        const map = {
+            'TERMINE': '<span class="badge-termine">✅ Terminé</span>',
+            'EN_COURS': '<span class="badge-cours">🔧 En cours</span>',
+            'EN_ATTENTE': '<span class="badge-attente">⏳ En attente</span>',
+            'ANNULE': '<span class="badge-annule">❌ Annulé</span>'
+        };
+        return map[statut] || `<span class="badge-attente">${statut || '-'}</span>`;
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        try {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return '-';
+            return date.toLocaleDateString('fr-FR');
+        } catch { return '-'; }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function debouncedSearch() {
+        if (searchTimeout) clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => loadHistorique(), 500);
+    }
+
+    function voirDetail(id) { 
+        window.location.href = `intervention-form.html?id=${id}`; 
+    }
+    
+    function exporterExcel() { 
+        const token = getToken();
+        window.open(`${API_URL}/maintenances/export-excel?token=${encodeURIComponent(token)}`, '_blank');
+    }
+    
+    function refreshData() { 
+        loadHistorique(); 
+    }
+
+    // Initialisation
     loadSidebar();
     loadHistorique();
 </script>
