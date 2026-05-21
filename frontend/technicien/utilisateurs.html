@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="theme-color" content="#1b5e20">
     <title>Gestion utilisateurs - GMAO Sakété</title>
     <style>
         * {
@@ -42,6 +43,21 @@
             font-size: 24px;
         }
 
+        .btn-refresh {
+            background: #f0fdf4;
+            border: 1px solid #1b5e20;
+            color: #1b5e20;
+            padding: 10px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-refresh:hover {
+            background: #1b5e20;
+            color: white;
+        }
+
         .stats-cards {
             display: flex;
             gap: 20px;
@@ -57,6 +73,12 @@
             min-width: 150px;
             text-align: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
         }
 
         .stat-number {
@@ -93,6 +115,12 @@
             min-width: 150px;
         }
 
+        .search-bar input:focus,
+        .search-bar select:focus {
+            outline: none;
+            border-color: #1b5e20;
+        }
+
         .table-container {
             background: white;
             border-radius: 20px;
@@ -115,6 +143,11 @@
             background: #f8fafc;
             font-weight: 600;
             color: #1e293b;
+            font-size: 13px;
+        }
+
+        tr {
+            transition: background 0.2s;
         }
 
         tr:hover {
@@ -128,6 +161,7 @@
             border-radius: 20px;
             display: inline-block;
             font-size: 12px;
+            font-weight: 500;
         }
 
         .status-active {
@@ -137,6 +171,7 @@
             border-radius: 20px;
             display: inline-block;
             font-size: 12px;
+            font-weight: 500;
         }
 
         .status-inactive {
@@ -146,6 +181,13 @@
             border-radius: 20px;
             display: inline-block;
             font-size: 12px;
+            font-weight: 500;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
         }
 
         .btn-validate {
@@ -155,12 +197,13 @@
             padding: 6px 16px;
             border-radius: 20px;
             cursor: pointer;
-            margin-right: 5px;
             font-size: 12px;
+            transition: 0.2s;
         }
 
         .btn-validate:hover {
             background: #16a34a;
+            transform: translateY(-1px);
         }
 
         .btn-reject {
@@ -171,10 +214,12 @@
             border-radius: 20px;
             cursor: pointer;
             font-size: 12px;
+            transition: 0.2s;
         }
 
         .btn-reject:hover {
             background: #dc2626;
+            transform: translateY(-1px);
         }
 
         .btn-toggle {
@@ -185,25 +230,28 @@
             border-radius: 20px;
             cursor: pointer;
             font-size: 12px;
+            transition: 0.2s;
         }
 
         .btn-toggle:hover {
             background: #2563eb;
+            transform: translateY(-1px);
         }
 
         .btn-details {
             background: #e2e8f0;
             color: #475569;
             border: none;
-            padding: 6px 12px;
+            padding: 6px 14px;
             border-radius: 20px;
             cursor: pointer;
-            margin-right: 5px;
             font-size: 12px;
+            transition: 0.2s;
         }
 
         .btn-details:hover {
             background: #cbd5e1;
+            transform: translateY(-1px);
         }
 
         .empty-state {
@@ -211,6 +259,20 @@
             padding: 50px;
             color: #94a3b8;
         }
+
+        .loader {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         .modal {
             display: none;
@@ -228,9 +290,21 @@
         .modal-content {
             background: white;
             border-radius: 24px;
-            padding: 24px;
+            padding: 28px;
             max-width: 500px;
             width: 90%;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .modal h3 {
@@ -251,18 +325,23 @@
             width: 120px;
             color: #64748b;
             font-size: 13px;
+            font-weight: 500;
         }
 
         .info-value {
             flex: 1;
             font-weight: 500;
             font-size: 14px;
+            color: #1e293b;
         }
 
         @media (max-width: 768px) {
-            body { margin-left: 0; }
+            body { margin-left: 0; padding: 70px 15px 15px 15px; }
             th, td { padding: 10px; font-size: 12px; }
             .btn-validate, .btn-reject, .btn-toggle, .btn-details { padding: 4px 10px; font-size: 10px; }
+            .stats-cards { flex-direction: column; }
+            .search-bar { flex-direction: column; }
+            .search-bar input, .search-bar select { width: 100%; }
         }
     </style>
 </head>
@@ -273,133 +352,337 @@
 <div class="main-content">
     <div class="header">
         <h1>👥 GESTION DES UTILISATEURS</h1>
+        <button class="btn-refresh" onclick="refreshAllData()">🔄 Rafraîchir</button>
     </div>
 
     <div class="stats-cards">
-        <div class="stat-card"><div class="stat-number" id="totalUsers">0</div><div class="stat-label">📊 Total</div></div>
-        <div class="stat-card"><div class="stat-number" id="pendingUsers">0</div><div class="stat-label">⏳ En attente</div></div>
-        <div class="stat-card"><div class="stat-number" id="activeUsers">0</div><div class="stat-label">✅ Actifs</div></div>
-        <div class="stat-card"><div class="stat-number" id="techniciensCount">0</div><div class="stat-label">🔧 Techniciens</div></div>
+        <div class="stat-card" onclick="filterByStatut('')">
+            <div class="stat-number" id="totalUsers">0</div>
+            <div class="stat-label">📊 Total</div>
+        </div>
+        <div class="stat-card" onclick="filterByStatut('EN_ATTENTE')">
+            <div class="stat-number" id="pendingUsers">0</div>
+            <div class="stat-label">⏳ En attente</div>
+        </div>
+        <div class="stat-card" onclick="filterByStatut('ACTIF')">
+            <div class="stat-number" id="activeUsers">0</div>
+            <div class="stat-label">✅ Actifs</div>
+        </div>
+        <div class="stat-card" onclick="filterByStatut('INACTIF')">
+            <div class="stat-number" id="inactiveUsers">0</div>
+            <div class="stat-label">❌ Inactifs</div>
+        </div>
+        <div class="stat-card" onclick="filterByRole('TECHNICIEN')">
+            <div class="stat-number" id="techniciensCount">0</div>
+            <div class="stat-label">🔧 Techniciens</div>
+        </div>
     </div>
 
     <div class="search-bar">
-        <input type="text" id="search" placeholder="🔍 Rechercher..." onkeyup="loadUsers()">
-        <select id="roleFilter" onchange="loadUsers()"><option value="">📋 Tous rôles</option><option value="SOIGNANT">👨‍⚕️ Soignant</option><option value="TECHNICIEN">🔧 Technicien</option></select>
-        <select id="statutFilter" onchange="loadUsers()"><option value="">📊 Tous statuts</option><option value="ACTIF">✅ Actif</option><option value="EN_ATTENTE">⏳ En attente</option><option value="INACTIF">❌ Inactif</option></select>
+        <input type="text" id="searchInput" placeholder="🔍 Rechercher par nom, email, matricule..." onkeyup="debouncedSearch()">
+        <select id="roleFilter" onchange="loadUsers()">
+            <option value="">📋 Tous rôles</option>
+            <option value="SOIGNANT">👨‍⚕️ Soignant</option>
+            <option value="TECHNICIEN">🔧 Technicien</option>
+        </select>
+        <select id="statutFilter" onchange="loadUsers()">
+            <option value="">📊 Tous statuts</option>
+            <option value="ACTIF">✅ Actif</option>
+            <option value="EN_ATTENTE">⏳ En attente</option>
+            <option value="INACTIF">❌ Inactif</option>
+        </select>
     </div>
 
     <div class="table-container">
         <table>
-            <thead><tr><th>Nom</th><th>Email</th><th>Service</th><th>Rôle</th><th>Statut</th><th>Inscrit le</th><th>Actions</th></tr></thead>
-            <tbody id="tableBody"><tr><td colspan="7" class="empty-state">Chargement...</td></tr></tbody>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Service</th>
+                    <th>Rôle</th>
+                    <th>Statut</th>
+                    <th>Inscrit le</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr><td colspan="7" class="empty-state">⏳ Chargement...</td</tr>
+            </tbody>
         </table>
     </div>
 </div>
 
-<div id="detailsModal" class="modal">
-    <div class="modal-content"><h3>👤 Détails</h3><div id="detailsContent"></div><button class="btn-toggle" onclick="closeDetailsModal()" style="width:100%;">Fermer</button></div>
+<!-- Modal Détails -->
+<div id="detailsModal" class="modal" onclick="if(event.target===this) closeDetailsModal()">
+    <div class="modal-content">
+        <h3>👤 Détails de l'utilisateur</h3>
+        <div id="detailsContent"></div>
+        <button class="btn-toggle" onclick="closeDetailsModal()" style="width:100%; margin-top:15px;">Fermer</button>
+    </div>
 </div>
 
 <script>
     const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
+    let searchTimeout = null;
 
     function getToken() { return localStorage.getItem('token'); }
+    
+    // Auth check
     if (!getToken()) window.location.href = '/login.html';
+    
+    const userRole = localStorage.getItem('userRole');
+    if (userRole !== 'TECHNICIEN') window.location.href = '/soignant/index.html';
 
     function loadSidebar() {
         fetch('/components/sidebar.html')
             .then(response => response.text())
-            .then(data => document.getElementById('sidebar-container').innerHTML = data)
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                const links = document.querySelectorAll('.sidebar-item');
+                links.forEach(link => {
+                    if (link.getAttribute('href') === 'utilisateurs.html') {
+                        link.classList.add('active');
+                    }
+                });
+            })
             .catch(error => console.error('Erreur sidebar:', error));
     }
 
-    async function loadUsers() {
-        const search = document.getElementById('search').value;
-        const role = document.getElementById('roleFilter').value;
-        const statut = document.getElementById('statutFilter').value;
-        let url = `${API_URL}/users?search=${encodeURIComponent(search)}`;
-        if (role) url += `&role=${role}`;
-        if (statut) url += `&statut=${statut}`;
-        
-        try {
-            const res = await fetch(url, { headers: { 'Authorization': `Bearer ${getToken()}` } });
-            const data = await res.json();
-            const users = data.users || data;
-            if (users.length === 0) {
-                document.getElementById('tableBody').innerHTML = '<tr><td colspan="7" class="empty-state">📭 Aucun utilisateur</td></tr>';
-                document.getElementById('totalUsers').innerText = '0';
-                document.getElementById('pendingUsers').innerText = '0';
-                document.getElementById('activeUsers').innerText = '0';
-                document.getElementById('techniciensCount').innerText = '0';
-                return;
-            }
-            document.getElementById('totalUsers').innerText = users.length;
-            document.getElementById('pendingUsers').innerText = users.filter(u => u.statut === 'EN_ATTENTE').length;
-            document.getElementById('activeUsers').innerText = users.filter(u => u.statut === 'ACTIF').length;
-            document.getElementById('techniciensCount').innerText = users.filter(u => u.role === 'TECHNICIEN').length;
-            document.getElementById('tableBody').innerHTML = users.map(u => `
-                <tr>
-                    <td><strong>${escapeHtml(u.nom)}</strong> ${u.prenom || ''}</td>
-                    <td>${escapeHtml(u.email)}</td>
-                    <td>${escapeHtml(u.service) || '-'}</td>
-                    <td>${u.role === 'TECHNICIEN' ? '🔧 Technicien' : '👨‍⚕️ Soignant'}</td>
-                    <td>${getStatusBadge(u.statut)}</td>
-                    <td>${new Date(u.createdAt).toLocaleDateString()}</td>
-                    <td>
-                        <button class="btn-details" onclick="viewUserDetails(${u.id})">👁️ Détails</button>
-                        ${u.statut === 'EN_ATTENTE' ? `<button class="btn-validate" onclick="validateUser(${u.id})">✅ Valider</button><button class="btn-reject" onclick="rejectUser(${u.id})">❌ Rejeter</button>` : `<button class="btn-toggle" onclick="toggleStatus(${u.id}, ${u.statut !== 'ACTIF'})">${u.statut === 'ACTIF' ? '🔒 Désactiver' : '🔓 Activer'}</button>`}
-                    </td>
-                </tr>
-            `).join('');
-        } catch (error) { console.error('Erreur:', error); }
-    }
-
     function getStatusBadge(statut) {
-        const badges = { 'EN_ATTENTE': '<span class="status-pending">⏳ En attente</span>', 'ACTIF': '<span class="status-active">✅ Actif</span>', 'INACTIF': '<span class="status-inactive">❌ Inactif</span>' };
+        const badges = { 
+            'EN_ATTENTE': '<span class="status-pending">⏳ En attente</span>', 
+            'ACTIF': '<span class="status-active">✅ Actif</span>', 
+            'INACTIF': '<span class="status-inactive">❌ Inactif</span>' 
+        };
         return badges[statut] || statut;
     }
 
     function escapeHtml(str) {
         if (!str) return '';
-        return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        try {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return '-';
+            return date.toLocaleDateString('fr-FR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        } catch { return '-'; }
+    }
+
+    async function loadUsers() {
+        const search = document.getElementById('searchInput').value;
+        const role = document.getElementById('roleFilter').value;
+        const statut = document.getElementById('statutFilter').value;
+        
+        let url = `${API_URL}/users?search=${encodeURIComponent(search)}`;
+        if (role) url += `&role=${role}`;
+        if (statut) url += `&statut=${statut}`;
+        
+        try {
+            const res = await fetch(url, { 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            if (!res.ok) throw new Error('Erreur chargement');
+            
+            const data = await res.json();
+            const users = Array.isArray(data) ? data : (data.users || []);
+            
+            // Mise à jour des stats
+            const total = users.length;
+            const pending = users.filter(u => u.statut === 'EN_ATTENTE').length;
+            const active = users.filter(u => u.statut === 'ACTIF').length;
+            const inactive = users.filter(u => u.statut === 'INACTIF').length;
+            const techniciens = users.filter(u => u.role === 'TECHNICIEN').length;
+            
+            document.getElementById('totalUsers').innerText = total;
+            document.getElementById('pendingUsers').innerText = pending;
+            document.getElementById('activeUsers').innerText = active;
+            document.getElementById('inactiveUsers').innerText = inactive;
+            document.getElementById('techniciensCount').innerText = techniciens;
+            
+            if (users.length === 0) {
+                document.getElementById('tableBody').innerHTML = 
+                    '<tr><td colspan="7" class="empty-state">📭 Aucun utilisateur trouvé</td</tr>';
+                return;
+            }
+            
+            document.getElementById('tableBody').innerHTML = users.map(u => `
+                <tr>
+                    <td><strong>${escapeHtml(u.nom)}</strong> ${escapeHtml(u.prenom || '')}</td>
+                    <td>${escapeHtml(u.email)}</td
+                    <td>${escapeHtml(u.service) || '-'}</td
+                    <td>${u.role === 'TECHNICIEN' ? '🔧 Technicien' : '👨‍⚕️ Soignant'}</td
+                    <td>${getStatusBadge(u.statut)}</td
+                    <td>${formatDate(u.createdAt)}</td
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn-details" onclick="viewUserDetails(${u.id})">👁️ Détails</button>
+                            ${u.statut === 'EN_ATTENTE' ? 
+                                `<button class="btn-validate" onclick="validateUser(${u.id})">✅ Valider</button>
+                                 <button class="btn-reject" onclick="rejectUser(${u.id})">❌ Rejeter</button>` : 
+                                `<button class="btn-toggle" onclick="toggleStatus(${u.id}, ${u.statut !== 'ACTIF'})">${u.statut === 'ACTIF' ? '🔒 Désactiver' : '🔓 Activer'}</button>`
+                            }
+                        </div>
+                     </td
+                </tr>
+            `).join('');
+        } catch (error) { 
+            console.error('Erreur:', error);
+            document.getElementById('tableBody').innerHTML = 
+                '<tr><td colspan="7" class="empty-state">❌ Erreur de chargement</td</tr>';
+        }
     }
 
     async function viewUserDetails(id) {
-        const res = await fetch(`${API_URL}/users/${id}`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
-        const u = await res.json();
-        document.getElementById('detailsContent').innerHTML = `
-            <div class="info-row"><div class="info-label">Matricule</div><div class="info-value">${u.matricule || '-'}</div></div>
-            <div class="info-row"><div class="info-label">Nom</div><div class="info-value">${u.nom} ${u.prenom || ''}</div></div>
-            <div class="info-row"><div class="info-label">Email</div><div class="info-value">${u.email}</div></div>
-            <div class="info-row"><div class="info-label">Téléphone</div><div class="info-value">${u.telephone || '-'}</div></div>
-            <div class="info-row"><div class="info-label">Service</div><div class="info-value">${u.service || '-'}</div></div>
-            <div class="info-row"><div class="info-label">Rôle</div><div class="info-value">${u.role === 'TECHNICIEN' ? '🔧 Technicien' : '👨‍⚕️ Soignant'}</div></div>
-            <div class="info-row"><div class="info-label">Statut</div><div class="info-value">${getStatusBadge(u.statut)}</div></div>
-            <div class="info-row"><div class="info-label">Inscrit le</div><div class="info-value">${new Date(u.createdAt).toLocaleString()}</div></div>
-        `;
-        document.getElementById('detailsModal').style.display = 'flex';
+        try {
+            const res = await fetch(`${API_URL}/users/${id}`, { 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            if (!res.ok) throw new Error('Erreur');
+            
+            const u = await res.json();
+            document.getElementById('detailsContent').innerHTML = `
+                <div class="info-row"><div class="info-label">Matricule</div><div class="info-value">${escapeHtml(u.matricule || '-')}</div></div>
+                <div class="info-row"><div class="info-label">Nom complet</div><div class="info-value">${escapeHtml(u.nom)} ${escapeHtml(u.prenom || '')}</div></div>
+                <div class="info-row"><div class="info-label">Email</div><div class="info-value">${escapeHtml(u.email)}</div></div>
+                <div class="info-row"><div class="info-label">Téléphone</div><div class="info-value">${escapeHtml(u.telephone || '-')}</div></div>
+                <div class="info-row"><div class="info-label">Service</div><div class="info-value">${escapeHtml(u.service || '-')}</div></div>
+                <div class="info-row"><div class="info-label">Rôle</div><div class="info-value">${u.role === 'TECHNICIEN' ? '🔧 Technicien' : '👨‍⚕️ Soignant'}</div></div>
+                <div class="info-row"><div class="info-label">Statut</div><div class="info-value">${getStatusBadge(u.statut)}</div></div>
+                <div class="info-row"><div class="info-label">Inscrit le</div><div class="info-value">${formatDate(u.createdAt)}</div></div>
+                ${u.dateValidation ? `<div class="info-row"><div class="info-label">Validé le</div><div class="info-value">${formatDate(u.dateValidation)}</div></div>` : ''}
+            `;
+            document.getElementById('detailsModal').style.display = 'flex';
+        } catch (error) {
+            alert('Erreur lors du chargement des détails');
+        }
     }
 
-    function closeDetailsModal() { document.getElementById('detailsModal').style.display = 'none'; }
+    function closeDetailsModal() { 
+        document.getElementById('detailsModal').style.display = 'none'; 
+    }
 
     async function validateUser(id) {
-        if (!confirm('Valider ce compte ?')) return;
-        await fetch(`${API_URL}/auth/users/${id}/validate`, { method: 'PUT', headers: { 'Authorization': `Bearer ${getToken()}` } });
-        loadUsers();
+        if (!confirm('✅ Valider ce compte utilisateur ? L\'utilisateur pourra se connecter.')) return;
+        
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loader"></span>';
+        btn.disabled = true;
+        
+        try {
+            const res = await fetch(`${API_URL}/auth/users/${id}/validate`, { 
+                method: 'PUT', 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            
+            if (res.ok) {
+                alert('✅ Utilisateur validé avec succès');
+                loadUsers();
+            } else {
+                alert('❌ Erreur lors de la validation');
+            }
+        } catch (error) {
+            alert('❌ Erreur de connexion');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
     }
 
     async function rejectUser(id) {
-        if (!confirm('Rejeter ?')) return;
-        await fetch(`${API_URL}/auth/users/${id}/reject`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${getToken()}` } });
-        loadUsers();
+        if (!confirm('❌ Rejeter cette inscription ? L\'utilisateur sera supprimé.')) return;
+        
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loader"></span>';
+        btn.disabled = true;
+        
+        try {
+            const res = await fetch(`${API_URL}/auth/users/${id}/reject`, { 
+                method: 'DELETE', 
+                headers: { 'Authorization': `Bearer ${getToken()}` } 
+            });
+            
+            if (res.ok) {
+                alert('❌ Utilisateur rejeté et supprimé');
+                loadUsers();
+            } else {
+                alert('❌ Erreur lors du rejet');
+            }
+        } catch (error) {
+            alert('❌ Erreur de connexion');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
     }
 
     async function toggleStatus(id, activate) {
         const action = activate ? 'activer' : 'désactiver';
-        if (confirm(`${action} ce compte ?`)) {
-            await fetch(`${API_URL}/auth/users/${id}/toggle-status`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` }, body: JSON.stringify({ actif: activate }) });
-            loadUsers();
+        if (!confirm(`${action === 'activer' ? '🔓 Activer' : '🔒 Désactiver'} ce compte ?`)) return;
+        
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loader"></span>';
+        btn.disabled = true;
+        
+        try {
+            const res = await fetch(`${API_URL}/auth/users/${id}/toggle-status`, { 
+                method: 'PUT', 
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${getToken()}` 
+                }, 
+                body: JSON.stringify({ actif: activate }) 
+            });
+            
+            if (res.ok) {
+                alert(`✅ Compte ${action}é avec succès`);
+                loadUsers();
+            } else {
+                alert(`❌ Erreur lors de la ${action}ion`);
+            }
+        } catch (error) {
+            alert('❌ Erreur de connexion');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
         }
+    }
+
+    function filterByStatut(statut) {
+        document.getElementById('statutFilter').value = statut;
+        loadUsers();
+    }
+
+    function filterByRole(role) {
+        document.getElementById('roleFilter').value = role;
+        loadUsers();
+    }
+
+    function debouncedSearch() {
+        if (searchTimeout) clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => loadUsers(), 500);
+    }
+
+    function refreshAllData() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('roleFilter').value = '';
+        document.getElementById('statutFilter').value = '';
+        loadUsers();
     }
 
     loadSidebar();
