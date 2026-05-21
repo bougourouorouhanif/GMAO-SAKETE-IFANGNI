@@ -1,13 +1,21 @@
 import express from 'express';
-import { chatbotMessage, chatbotCreateSignalement } from '../controllers/chatbotController.js';
+import { chatbotDiagnostic, chatbotCreerIntervention } from '../controllers/chatbotDiagnosticController.js';
+import { chatbotSignalement, chatbotCreerSignalement } from '../controllers/chatbotSignalementController.js';
 import { verifyToken } from '../middleware/auth.js';
+import { isTechnicien, isSoignant } from '../middleware/roleCheck.js';
 
 const router = express.Router();
 
-// POST /api/chatbot/message — Accessible à TOUS les rôles connectés (technicien ET soignant)
-router.post('/message', verifyToken, chatbotMessage);
+// ── TECHNICIEN ────────────────────────────────────────────
+// POST /api/chatbot/diagnostic    → chatbot diagnostic expert
+// POST /api/chatbot/intervention  → créer une intervention depuis le diagnostic
+router.post('/diagnostic',    verifyToken, isTechnicien, chatbotDiagnostic);
+router.post('/intervention',  verifyToken, isTechnicien, chatbotCreerIntervention);
 
-// POST /api/chatbot/signaler — Accessible à TOUS les rôles connectés
-router.post('/signaler', verifyToken, chatbotCreateSignalement);
+// ── SOIGNANT ──────────────────────────────────────────────
+// POST /api/chatbot/signalement   → chatbot signalement soignant
+// POST /api/chatbot/signaler      → créer un signalement depuis le chatbot
+router.post('/signalement',   verifyToken, isSoignant, chatbotSignalement);
+router.post('/signaler',      verifyToken, isSoignant, chatbotCreerSignalement);
 
 export default router;
