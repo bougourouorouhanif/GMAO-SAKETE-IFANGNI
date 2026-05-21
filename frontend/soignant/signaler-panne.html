@@ -3,102 +3,651 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Signaler une panne - GMAO Sakété</title>
+    <title>Signaler une Panne - GMAO Sakété</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f1f5f9; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; }
-        .card { background: white; border-radius: 20px; padding: 24px; margin-bottom: 20px; }
-        .title { font-size: 20px; font-weight: bold; margin-bottom: 20px; color: #1a2a4f; }
-        .form-group { margin-bottom: 16px; }
-        label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 5px; color: #334155; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 14px; }
-        .btn-primary { background: #ef4444; color: white; border: none; padding: 14px; border-radius: 40px; font-size: 16px; font-weight: bold; width: 100%; cursor: pointer; }
-        .btn-secondary { background: #e2e8f0; color: #475569; border: none; padding: 12px; border-radius: 40px; width: 100%; cursor: pointer; margin-top: 10px; }
-        .back-link { display: inline-block; margin-bottom: 20px; color: #3b82f6; text-decoration: none; }
-        .success-message { background: #dcfce7; color: #166534; padding: 12px; border-radius: 12px; margin-bottom: 20px; display: none; }
-        .scan-row { display: flex; gap: 10px; align-items: center; }
-        .scan-btn { background: #3b82f6; color: white; border: none; padding: 12px 20px; border-radius: 12px; cursor: pointer; white-space: nowrap; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #e3f2fd;
+            margin-left: 280px;
+            transition: margin-left 0.3s ease;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .main-content { display: flex; flex-direction: column; height: 100vh; }
+
+        /* ── HEADER ── */
+        .header {
+            background: #0d47a1;
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-info { flex: 1; }
+        .header-title { font-size: 18px; font-weight: bold; }
+        .header-subtitle { font-size: 12px; opacity: 0.8; }
+
+        .scan-btn {
+            background: #ffd600;
+            color: #0d47a1;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .scan-btn:hover { background: #ffeb3b; transform: translateY(-2px); }
+
+        /* ── ÉQUIPEMENT SÉLECTIONNÉ ── */
+        .equipment-context {
+            background: white;
+            padding: 12px 16px;
+            margin: 12px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-left: 4px solid #0d47a1;
+        }
+        .equipment-context-icon { font-size: 28px; }
+        .equipment-context-info { flex: 1; }
+        .equipment-context-name { font-weight: bold; font-size: 15px; color: #1e293b; }
+        .equipment-context-service { font-size: 12px; color: #64748b; margin-top: 2px; }
+        .clear-equipment {
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .clear-equipment:hover { background: #fecaca; }
+
+        /* ── RACCOURCIS SOIGNANT ── */
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+            padding: 10px 12px;
+            background: white;
+            overflow-x: auto;
+            margin: 0 12px;
+            border-radius: 16px;
+            scrollbar-width: none;
+        }
+        .quick-actions::-webkit-scrollbar { display: none; }
+        .quick-btn {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .quick-btn:hover { background: #0d47a1; color: white; border-color: #0d47a1; }
+
+        /* ── CHAT ── */
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message {
+            display: flex;
+            max-width: 85%;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .message.user  { align-self: flex-end; justify-content: flex-end; }
+        .message.bot   { align-self: flex-start; }
+
+        .message-content {
+            padding: 12px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .message.user .message-content {
+            background: #0d47a1;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .message.bot .message-content {
+            background: white;
+            color: #1e293b;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+        }
+
+        /* ── FORMULAIRE SIGNALEMENT ── */
+        .signalement-form {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            border-radius: 14px;
+            padding: 14px;
+            margin-top: 10px;
+        }
+        .signalement-form-title {
+            font-weight: bold;
+            font-size: 13px;
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+        .signalement-form textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+            outline: none;
+            line-height: 1.5;
+        }
+        .signalement-form textarea:focus { border-color: #0d47a1; }
+
+        /* Sélecteur de priorité */
+        .priorite-selector {
+            display: flex;
+            gap: 8px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        .priorite-btn {
+            padding: 5px 14px;
+            border-radius: 20px;
+            border: 2px solid transparent;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .priorite-btn.basse   { background: #dcfce7; color: #166534; }
+        .priorite-btn.moyenne { background: #fef9c3; color: #854d0e; }
+        .priorite-btn.haute   { background: #fee2e2; color: #991b1b; }
+        .priorite-btn.selected { border-color: #0d47a1; }
+
+        /* ── BOUTONS ── */
+        .action-buttons { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .btn-primary {
+            background: #0d47a1; color: white; border: none;
+            padding: 9px 18px; border-radius: 25px; cursor: pointer; font-size: 13px; font-weight: bold;
+        }
+        .btn-primary:hover { background: #1565c0; }
+        .btn-secondary {
+            background: #e2e8f0; color: #475569; border: none;
+            padding: 9px 18px; border-radius: 25px; cursor: pointer; font-size: 13px;
+        }
+        .btn-secondary:hover { background: #cbd5e1; }
+
+        /* ── CARTE CONFIRMATION ── */
+        .confirm-card {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 14px;
+            padding: 14px;
+            margin-top: 8px;
+        }
+        .confirm-card-title { font-weight: bold; color: #166534; font-size: 14px; margin-bottom: 6px; }
+        .confirm-card-detail { font-size: 13px; color: #374151; margin: 3px 0; }
+        .confirm-card-num { font-size: 20px; font-weight: bold; color: #0d47a1; margin-top: 6px; }
+
+        /* ── TYPING ── */
+        .typing-dots span {
+            display: inline-block;
+            width: 7px; height: 7px;
+            background: #93c5fd;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: bounce 1.2s infinite;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40%            { transform: translateY(-6px); }
+        }
+
+        /* ── INPUT ── */
+        .input-area {
+            background: white;
+            padding: 12px 16px;
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid #e2e8f0;
+            position: sticky;
+            bottom: 0;
+        }
+        .input-area input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 30px;
+            outline: none;
+            font-size: 14px;
+        }
+        .input-area input:focus { border-color: #0d47a1; }
+        .input-area button {
+            background: #0d47a1; color: white; border: none;
+            width: 46px; height: 46px; border-radius: 50%;
+            cursor: pointer; font-size: 18px; flex-shrink: 0;
+        }
+        .input-area button:hover { background: #1565c0; }
+        .input-area button:disabled { background: #93c5fd; cursor: not-allowed; }
+
+        @media (max-width: 768px) {
+            body { margin-left: 0; }
+            .message { max-width: 95%; }
+            .quick-actions { margin: 0 8px; }
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <a href="index.html" class="back-link">← Retour</a>
-    <div class="card">
-        <div class="title">⚠️ Signaler une panne</div>
-        <div id="successMsg" class="success-message">✅ Panne signalée avec succès ! Un technicien va prendre en charge l'intervention.</div>
-        
-        <div class="form-group">
-            <label>Équipement</label>
-            <div class="scan-row">
-                <select id="equipementId" style="flex:1;">
-                    <option value="">Sélectionner un équipement</option>
-                </select>
-                <button class="scan-btn" onclick="openScanner()">📷 Scanner QR</button>
+
+<div id="sidebar-container"></div>
+
+<div class="main-content">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-info">
+            <div class="header-title">🏥 Signaler une Panne</div>
+            <div class="header-subtitle">Portail soignant — GMAO Sakété</div>
+        </div>
+        <button class="scan-btn" onclick="openScanner()">📷 Scanner QR</button>
+    </div>
+
+    <!-- ÉQUIPEMENT EN CONTEXTE -->
+    <div class="equipment-context" id="equipmentContext" style="display:none;">
+        <div class="equipment-context-icon">🔧</div>
+        <div class="equipment-context-info">
+            <div class="equipment-context-name" id="currentEquipName">-</div>
+            <div class="equipment-context-service" id="currentEquipService">-</div>
+        </div>
+        <button class="clear-equipment" onclick="clearEquipment()">✕ Changer</button>
+    </div>
+
+    <!-- RACCOURCIS SOIGNANT -->
+    <div class="quick-actions">
+        <button class="quick-btn" onclick="quickSend('le respirateur ne fonctionne pas')">🫁 Respirateur</button>
+        <button class="quick-btn" onclick="quickSend('le moniteur est en panne')">🖥️ Moniteur</button>
+        <button class="quick-btn" onclick="quickSend('le défibrillateur ne démarre pas')">⚡ Défibrillateur</button>
+        <button class="quick-btn" onclick="quickSend('la pompe à perfusion fait une alarme')">💉 Pompe perf.</button>
+        <button class="quick-btn" onclick="quickSend('l\'échographe ne démarre pas')">🔊 Échographe</button>
+        <button class="quick-btn" onclick="quickSend('urgence équipement défaillant')">🚨 Urgence</button>
+        <button class="quick-btn" onclick="quickSend('aide')">❓ Aide</button>
+    </div>
+
+    <!-- MESSAGES -->
+    <div class="chat-container" id="chatContainer">
+        <div class="message bot">
+            <div class="message-content">
+                👋 <strong>Bonjour !</strong><br><br>
+                Je suis l'assistant de signalement de pannes.<br><br>
+                📋 Décrivez le problème rencontré ou scannez le QR code de l'équipement défaillant.<br><br>
+                💡 <em>Je transmettrai votre signalement au service maintenance.</em>
             </div>
         </div>
-        
-        <div class="form-group">
-            <label>Priorité</label>
-            <select id="priorite">
-                <option value="CRITIQUE">🚨 Critique - Intervention immédiate</option>
-                <option value="HAUTE">⚠️ Haute - Intervention rapide</option>
-                <option value="MOYENNE" selected>🟡 Moyenne - Dans la journée</option>
-                <option value="BASSE">🔵 Basse - 72h</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label>Description du problème</label>
-            <textarea id="description" rows="4" placeholder="Décrivez précisément le problème..."></textarea>
-        </div>
-        
-        <button class="btn-primary" onclick="signalerPanne()">📢 SIGNALER LA PANNE</button>
-        <button class="btn-secondary" onclick="window.location.href='index.html'">Annuler</button>
     </div>
+
+    <!-- INPUT -->
+    <div class="input-area">
+        <input type="text" id="messageInput"
+               placeholder="Ex : le respirateur fait une alarme..."
+               onkeypress="if(event.key==='Enter') sendMessage()">
+        <button id="sendBtn" onclick="sendMessage()">➤</button>
+    </div>
+
 </div>
 
 <script>
+    // ─── CONFIG ────────────────────────────────────────────
+    const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
+
+    // ─── ÉTAT ──────────────────────────────────────────────
+    let currentEquipment  = null;
+    let conversationId    = null;
+    let pendingEquipmentId = null;
+    let selectedPriorite  = 'MOYENNE';
+
+    // ─── AUTH ──────────────────────────────────────────────
     function getToken() { return localStorage.getItem('token'); }
+    if (!getToken()) window.location.href = '/connexion.html';
 
-    async function loadEquipements() {
-        const res = await fetch('https://gmao-sakete-ifangni-1.onrender.com/api/equipements', { headers: { 'Authorization': `Bearer ${getToken()}` } });
-        const equipements = await res.json();
-        const select = document.getElementById('equipementId');
-        select.innerHTML = '<option value="">Sélectionner un équipement</option>' + 
-            equipements.map(e => `<option value="${e.id}">${e.nom} (${e.codeInventaire}) - ${e.service}</option>`).join('');
-        
-        const urlParams = new URLSearchParams(window.location.search);
-        const equipId = urlParams.get('equipementId');
-        if(equipId) select.value = equipId;
+    // ─── SIDEBAR SOIGNANT ──────────────────────────────────
+    function loadSidebar() {
+        fetch('/composants/sidebar-soignant.html')
+            .then(r => r.text())
+            .then(html => document.getElementById('sidebar-container').innerHTML = html)
+            .catch(() => {});
+    }
+    loadSidebar();
+
+    // ─── ENVOI MESSAGE ─────────────────────────────────────
+    async function sendMessage() {
+        const input = document.getElementById('messageInput');
+        const message = input.value.trim();
+        if (!message) return;
+
+        input.value = '';
+        setSendDisabled(true);
+        addMessage(message, 'user');
+        showTyping();
+
+        try {
+            const response = await fetch(`${API_URL}/chatbot/message`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}`
+                },
+                body: JSON.stringify({
+                    message,
+                    equipmentId: currentEquipment?.id || null,
+                    conversationId
+                })
+            });
+
+            hideTyping();
+
+            if (!response.ok) {
+                addMessage('❌ Erreur serveur. Veuillez réessayer.', 'bot');
+                setSendDisabled(false);
+                return;
+            }
+
+            const data = await response.json();
+            if (data.conversationId) conversationId = data.conversationId;
+
+            // Équipement détecté automatiquement
+            if (data.data?.equipmentId && !currentEquipment) {
+                await loadAndSetEquipment(data.data.equipmentId);
+            }
+
+            switch (data.action) {
+                case 'ask_panne_details':
+                    addMessage(data.reply, 'bot');
+                    if (data.data?.equipmentId) {
+                        showSignalementForm(data.data.equipmentId, data.data.equipmentNom);
+                    }
+                    break;
+
+                case 'urgence_created':
+                    addMessage(data.reply, 'bot');
+                    addMessage('🚨 Le service maintenance a été alerté en priorité.', 'bot');
+                    break;
+
+                case 'open_scanner':
+                    addMessage(data.reply, 'bot');
+                    setTimeout(() => openScanner(), 1000);
+                    break;
+
+                default:
+                    addMessage(data.reply, 'bot');
+                    // Si une panne est détectée sans équipement identifié,
+                    // proposer de sélectionner l'équipement
+                    if (data.action === 'signaler_panne' && !currentEquipment) {
+                        showEquipmentSearch();
+                    }
+            }
+
+        } catch (error) {
+            hideTyping();
+            console.error('Erreur:', error);
+            addMessage('❌ Connexion impossible. Vérifiez votre réseau.', 'bot');
+        }
+
+        setSendDisabled(false);
     }
 
-    async function signalerPanne() {
-        const equipementId = document.getElementById('equipementId').value;
-        const priorite = document.getElementById('priorite').value;
-        const description = document.getElementById('description').value;
-        
-        if(!equipementId) { alert('Veuillez sélectionner un équipement'); return; }
-        if(!description) { alert('Veuillez décrire le problème'); return; }
-        
-        const res = await fetch('https://gmao-sakete-ifangni-1.onrender.com/api/maintenances/signaler', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
-            body: JSON.stringify({ equipementId: parseInt(equipementId), description, priorite })
-        });
-        
-        if(res.ok) {
-            document.getElementById('successMsg').style.display = 'block';
-            document.getElementById('equipementId').value = '';
-            document.getElementById('description').value = '';
-            setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
-        } else { alert('Erreur lors du signalement'); }
+    // ─── FORMULAIRE DE SIGNALEMENT ─────────────────────────
+    function showSignalementForm(equipmentId, equipmentNom) {
+        pendingEquipmentId = equipmentId;
+        selectedPriorite = 'MOYENNE';
+
+        const container = document.getElementById('chatContainer');
+        const div = document.createElement('div');
+        div.className = 'message bot';
+        div.id = 'signalementFormMsg';
+        div.innerHTML = `
+            <div class="message-content">
+                <div class="signalement-form">
+                    <div class="signalement-form-title">
+                        📝 Décrivez le problème sur <strong>${equipmentNom || 'cet équipement'}</strong>
+                    </div>
+                    <textarea id="panneDescription"
+                        placeholder="Décrivez ce que vous observez : alarme, bruit, message d'erreur, comportement anormal...">
+                    </textarea>
+
+                    <div style="font-size:12px; color:#6b7280; margin:8px 0 4px;">Niveau d'urgence :</div>
+                    <div class="priorite-selector">
+                        <button class="priorite-btn basse"   onclick="setPriorite('BASSE',   this)">🟢 Non urgent</button>
+                        <button class="priorite-btn moyenne selected" onclick="setPriorite('MOYENNE', this)">🟡 Modéré</button>
+                        <button class="priorite-btn haute"   onclick="setPriorite('HAUTE',   this)">🔴 Urgent</button>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn-primary" onclick="submitSignalement(${equipmentId})">
+                            📨 Envoyer le signalement
+                        </button>
+                        <button class="btn-secondary" onclick="cancelSignalement()">Annuler</button>
+                    </div>
+                </div>
+            </div>`;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+        setTimeout(() => document.getElementById('panneDescription')?.focus(), 100);
     }
 
-    function openScanner() { window.location.href = 'scanner.html?return=signaler-panne'; }
+    function setPriorite(niveau, btn) {
+        selectedPriorite = niveau;
+        document.querySelectorAll('.priorite-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
 
-    if(!getToken()) window.location.href = '/login.html';
-    loadEquipements();
+    function submitSignalement(equipmentId) {
+        const desc = document.getElementById('panneDescription')?.value?.trim();
+        if (!desc) {
+            document.getElementById('panneDescription').style.borderColor = '#dc2626';
+            document.getElementById('panneDescription').placeholder = '⚠️ Veuillez décrire le problème';
+            return;
+        }
+        document.getElementById('signalementFormMsg')?.remove();
+        pendingEquipmentId = null;
+        createSignalement(equipmentId, desc, selectedPriorite);
+    }
+
+    function cancelSignalement() {
+        document.getElementById('signalementFormMsg')?.remove();
+        pendingEquipmentId = null;
+        addMessage('❎ Signalement annulé.', 'bot');
+    }
+
+    // ─── RECHERCHE ÉQUIPEMENT MANUELLE ─────────────────────
+    function showEquipmentSearch() {
+        const container = document.getElementById('chatContainer');
+        const div = document.createElement('div');
+        div.className = 'message bot';
+        div.id = 'equipSearchMsg';
+        div.innerHTML = `
+            <div class="message-content">
+                🔍 Quel est le nom de l'équipement en panne ?
+                <div style="display:flex; gap:8px; margin-top:10px;">
+                    <input id="equipSearchInput" type="text"
+                        placeholder="Ex: Respirateur Salle 3..."
+                        style="flex:1; padding:8px 12px; border:1px solid #e2e8f0; border-radius:20px; font-size:13px; outline:none;">
+                    <button class="btn-primary" onclick="searchEquipment()" style="padding:8px 14px;">Chercher</button>
+                </div>
+            </div>`;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    async function searchEquipment() {
+        const query = document.getElementById('equipSearchInput')?.value?.trim();
+        if (!query) return;
+        document.getElementById('equipSearchMsg')?.remove();
+        // Envoyer comme message pour que le chatbot identifie l'équipement
+        document.getElementById('messageInput').value = query;
+        sendMessage();
+    }
+
+    // ─── CRÉER LE SIGNALEMENT ──────────────────────────────
+    async function createSignalement(equipmentId, description, priorite = 'MOYENNE') {
+        showTyping();
+        try {
+            const response = await fetch(`${API_URL}/chatbot/signaler`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}`
+                },
+                body: JSON.stringify({ equipmentId, description, conversationId, priorite })
+            });
+
+            hideTyping();
+            const data = await response.json();
+
+            if (data.success) {
+                showConfirmationCard(data);
+            } else {
+                addMessage(data.message || '❌ Erreur lors du signalement.', 'bot');
+            }
+        } catch {
+            hideTyping();
+            addMessage('❌ Erreur réseau. Contactez directement le service maintenance.', 'bot');
+        }
+    }
+
+    // ─── CARTE DE CONFIRMATION ─────────────────────────────
+    function showConfirmationCard(data) {
+        const container = document.getElementById('chatContainer');
+        const div = document.createElement('div');
+        div.className = 'message bot';
+        div.innerHTML = `
+            <div class="message-content">
+                <div class="confirm-card">
+                    <div class="confirm-card-title">✅ Signalement envoyé avec succès !</div>
+                    <div class="confirm-card-detail">📋 N° Signalement : <strong>#${data.signalementId}</strong></div>
+                    <div class="confirm-card-detail">🔧 Intervention créée : <strong>#${data.interventionId}</strong></div>
+                    <div class="confirm-card-detail" style="margin-top:8px; color:#6b7280; font-size:12px;">
+                        Le service de maintenance biomédical a été notifié.<br>
+                        Une intervention sera planifiée dans les meilleurs délais.
+                    </div>
+                </div>
+                <div class="action-buttons" style="margin-top:10px;">
+                    <button class="btn-primary" onclick="window.location.href='historique.html'">
+                        📜 Voir mes signalements
+                    </button>
+                    <button class="btn-secondary" onclick="nouveauSignalement()">
+                        ➕ Nouveau signalement
+                    </button>
+                </div>
+            </div>`;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    // ─── CHARGEMENT ÉQUIPEMENT ─────────────────────────────
+    async function loadAndSetEquipment(id) {
+        try {
+            const res = await fetch(`${API_URL}/equipements/${id}`, {
+                headers: { 'Authorization': `Bearer ${getToken()}` }
+            });
+            if (res.ok) {
+                const eq = await res.json();
+                currentEquipment = eq;
+                updateEquipmentContext(eq);
+            }
+        } catch {}
+    }
+
+    function updateEquipmentContext(eq) {
+        document.getElementById('equipmentContext').style.display = 'flex';
+        document.getElementById('currentEquipName').textContent =
+            `${eq.nom}${eq.marque ? ' (' + eq.marque + ')' : ''}`;
+        document.getElementById('currentEquipService').textContent =
+            `${eq.service || ''}${eq.codeInventaire ? ' • ' + eq.codeInventaire : ''}`;
+    }
+
+    function clearEquipment() {
+        currentEquipment = null;
+        document.getElementById('equipmentContext').style.display = 'none';
+        addMessage('🔄 Équipement désélectionné. Décrivez un nouveau problème.', 'bot');
+    }
+
+    function nouveauSignalement() {
+        currentEquipment = null;
+        conversationId = null;
+        document.getElementById('equipmentContext').style.display = 'none';
+        addMessage('🆕 Nouveau signalement. Décrivez le problème ou scannez un QR code.', 'bot');
+    }
+
+    // ─── UTILITAIRES UI ────────────────────────────────────
+    function addMessage(text, sender) {
+        const container = document.getElementById('chatContainer');
+        const div = document.createElement('div');
+        div.className = `message ${sender}`;
+        const formatted = text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n/g, '<br>');
+        div.innerHTML = `<div class="message-content">${formatted}</div>`;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function showTyping() {
+        if (document.getElementById('typingIndicator')) return;
+        const container = document.getElementById('chatContainer');
+        const div = document.createElement('div');
+        div.id = 'typingIndicator';
+        div.className = 'message bot';
+        div.innerHTML = `<div class="message-content">
+            <div class="typing-dots"><span></span><span></span><span></span></div>
+        </div>`;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function hideTyping() {
+        document.getElementById('typingIndicator')?.remove();
+    }
+
+    function setSendDisabled(disabled) {
+        document.getElementById('sendBtn').disabled = disabled;
+        document.getElementById('messageInput').disabled = disabled;
+    }
+
+    function quickSend(text) {
+        document.getElementById('messageInput').value = text;
+        sendMessage();
+    }
+
+    function openScanner() {
+        window.location.href = 'scanner.html';
+    }
 </script>
 </body>
 </html>
