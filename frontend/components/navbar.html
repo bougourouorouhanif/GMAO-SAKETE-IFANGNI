@@ -7,40 +7,57 @@
                 <span class="logo-text">GMAO <span class="logo-highlight">Sakété</span></span>
             </a>
         </div>
+        
         <div class="nav-menu" id="navMenu">
-            <a href="/technicien/dashboard.html" class="nav-link">📊 Dashboard</a>
-            <a href="/technicien/inventaire.html" class="nav-link">📦 Inventaire</a>
-            <a href="/technicien/maintenances.html" class="nav-link">🔧 Maintenances</a>
-            <a href="/technicien/stock.html" class="nav-link">⚙️ Stock</a>
-            <a href="/technicien/gestion-techniciens.html" class="nav-link">👥 Techniciens</a>
-            <a href="/technicien/codir-rapports.html" class="nav-link">📈 CoDIR</a>
+            <a href="/technicien/dashboard.html" class="nav-link" data-icon="📊">Dashboard</a>
+            <a href="/technicien/inventaire.html" class="nav-link" data-icon="📦">Inventaire</a>
+            <a href="/technicien/maintenances.html" class="nav-link" data-icon="🔧">Maintenances</a>
+            <a href="/technicien/stock.html" class="nav-link" data-icon="⚙️">Stock</a>
+            <a href="/technicien/gestion-techniciens.html" class="nav-link" data-icon="👥">Techniciens</a>
+            <a href="/technicien/codir-rapports.html" class="nav-link" data-icon="📈">CoDIR</a>
+            <a href="/technicien/alertes.html" class="nav-link" data-icon="⚠️">Alertes</a>
+            <a href="/technicien/profil.html" class="nav-link" data-icon="👤">Profil</a>
         </div>
+        
         <div class="nav-user">
-            <span class="user-name" id="navUserName">Chargement...</span>
-            <button class="logout-btn-small" onclick="logout()">🚪</button>
-            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+            <div class="user-info" id="userInfo">
+                <span class="user-avatar" id="userAvatar">👤</span>
+                <span class="user-name" id="navUserName">Chargement...</span>
+                <span class="user-role" id="navUserRole"></span>
+            </div>
+            <button class="logout-btn-small" onclick="handleLogout()" title="Déconnexion">🚪</button>
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Menu">
+                <span class="menu-icon">☰</span>
+            </button>
         </div>
+    </div>
+    
+    <!-- Indicateur de chargement dans la navbar -->
+    <div class="nav-loading-bar" id="navLoadingBar" style="display: none;">
+        <div class="loading-progress"></div>
     </div>
 </nav>
 
 <style>
     .gmao-navbar {
-        background: #1a2a4f;
+        background: linear-gradient(135deg, #1e293b, #0f172a);
         color: white;
         padding: 0 20px;
         position: sticky;
         top: 0;
         z-index: 1000;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
+    
     .nav-container {
         max-width: 1400px;
         margin: 0 auto;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        height: 60px;
+        height: 65px;
     }
+    
     .nav-brand a {
         color: white;
         text-decoration: none;
@@ -49,46 +66,113 @@
         display: flex;
         align-items: center;
         gap: 8px;
+        transition: opacity 0.2s;
     }
-    .logo-highlight { color: #00d4ff; }
+    
+    .nav-brand a:hover {
+        opacity: 0.9;
+    }
+    
+    .logo-icon {
+        font-size: 28px;
+    }
+    
+    .logo-highlight { 
+        color: #0066FF; 
+    }
+    
     .nav-menu {
         display: flex;
         gap: 5px;
         align-items: center;
     }
+    
     .nav-link {
         color: rgba(255,255,255,0.8);
         text-decoration: none;
         padding: 8px 16px;
         border-radius: 30px;
-        transition: 0.3s;
+        transition: all 0.3s;
         font-size: 14px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
     }
-    .nav-link:hover, .nav-link.active {
+    
+    .nav-link::before {
+        content: attr(data-icon);
+    }
+    
+    .nav-link:hover {
         background: rgba(255,255,255,0.1);
         color: white;
+        transform: translateY(-1px);
     }
+    
+    .nav-link.active {
+        background: rgba(0,102,255,0.3);
+        color: white;
+        box-shadow: 0 0 0 1px rgba(0,102,255,0.5);
+    }
+    
     .nav-user {
         display: flex;
         align-items: center;
         gap: 15px;
     }
+    
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255,255,255,0.1);
+        padding: 6px 12px;
+        border-radius: 30px;
+    }
+    
+    .user-avatar {
+        width: 30px;
+        height: 30px;
+        background: #0066FF;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+    }
+    
     .user-name {
         font-size: 13px;
-        background: rgba(255,255,255,0.1);
-        padding: 5px 12px;
-        border-radius: 20px;
+        font-weight: 500;
     }
+    
+    .user-role {
+        font-size: 10px;
+        opacity: 0.7;
+        margin-left: 5px;
+    }
+    
     .logout-btn-small {
         background: #ef4444;
         border: none;
         color: white;
-        width: 35px;
-        height: 35px;
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
         cursor: pointer;
         font-size: 16px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
+    
+    .logout-btn-small:hover {
+        background: #dc2626;
+        transform: scale(1.05);
+    }
+    
     .mobile-menu-toggle {
         display: none;
         background: none;
@@ -96,37 +180,243 @@
         color: white;
         font-size: 24px;
         cursor: pointer;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        transition: background 0.2s;
     }
+    
+    .mobile-menu-toggle:hover {
+        background: rgba(255,255,255,0.1);
+    }
+    
+    /* Barre de chargement */
+    .nav-loading-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: rgba(255,255,255,0.1);
+        overflow: hidden;
+    }
+    
+    .loading-progress {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, #0066FF, #00d4ff);
+        animation: loading 1.5s infinite;
+    }
+    
+    @keyframes loading {
+        0% { width: 0%; }
+        50% { width: 70%; }
+        100% { width: 100%; }
+    }
+    
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .nav-link {
+            padding: 8px 12px;
+            font-size: 13px;
+        }
+        .user-name { display: none; }
+    }
+    
     @media (max-width: 768px) {
         .nav-menu {
             position: fixed;
-            top: 60px;
+            top: 65px;
             left: -100%;
             width: 100%;
-            height: calc(100vh - 60px);
-            background: #1a2a4f;
+            height: calc(100vh - 65px);
+            background: #1e293b;
             flex-direction: column;
             padding: 20px;
-            transition: 0.3s;
+            transition: left 0.3s ease;
             z-index: 999;
+            overflow-y: auto;
         }
-        .nav-menu.open { left: 0; }
-        .nav-link { width: 100%; text-align: center; padding: 12px; }
-        .mobile-menu-toggle { display: block; }
-        .user-name { display: none; }
+        
+        .nav-menu.open { 
+            left: 0; 
+        }
+        
+        .nav-link { 
+            width: 100%; 
+            text-align: center; 
+            padding: 14px;
+            font-size: 16px;
+            justify-content: center;
+        }
+        
+        .mobile-menu-toggle { 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .user-info { 
+            background: none;
+            padding: 0;
+        }
+        
+        .user-avatar { 
+            width: 35px;
+            height: 35px;
+        }
+        
+        .logout-btn-small {
+            margin-left: 5px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .gmao-navbar { padding: 0 12px; }
+        .logo-text { font-size: 16px; }
+        .logo-icon { font-size: 24px; }
+        .user-avatar { width: 32px; height: 32px; font-size: 12px; }
+        .logout-btn-small { width: 32px; height: 32px; font-size: 14px; }
+        .mobile-menu-toggle { width: 36px; height: 36px; }
     }
 </style>
 
 <script>
-    function logout() { localStorage.clear(); window.location.href = '/login.html'; }
-    function toggleMobileMenu() {
-        document.getElementById('navMenu').classList.toggle('open');
-    }
-    document.getElementById('navUserName').innerText = localStorage.getItem('userName') || 'Utilisateur';
-    const currentPath = window.location.pathname;
-    document.querySelectorAll('.nav-link').forEach(link => {
-        if (currentPath.includes(link.getAttribute('href'))) {
-            link.classList.add('active');
+    // Configuration de la navbar
+    const Navbar = {
+        init: function() {
+            this.updateUserInfo();
+            this.setActiveLink();
+            this.initMobileCloseOnClick();
+        },
+        
+        updateUserInfo: function() {
+            const userName = localStorage.getItem('userName') || 'Utilisateur';
+            const userRole = localStorage.getItem('userRole');
+            const userAvatar = this.getUserAvatar(userName);
+            
+            document.getElementById('navUserName').innerText = userName;
+            document.getElementById('userAvatar').innerText = userAvatar;
+            
+            if (userRole) {
+                const roleText = userRole === 'TECHNICIEN' ? 'Technicien' : 'Soignant';
+                const roleSpan = document.getElementById('navUserRole');
+                if (roleSpan) roleSpan.innerText = roleText;
+            }
+        },
+        
+        getUserAvatar: function(name) {
+            if (!name) return '👤';
+            const firstLetter = name.charAt(0).toUpperCase();
+            return firstLetter;
+        },
+        
+        setActiveLink: function() {
+            const currentPath = window.location.pathname;
+            const links = document.querySelectorAll('.nav-link');
+            
+            links.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && currentPath.includes(href) && href !== '/index.html') {
+                    link.classList.add('active');
+                } else if (currentPath === '/' || currentPath === '/index.html') {
+                    if (link.getAttribute('href') === '/index.html') {
+                        link.classList.add('active');
+                    }
+                }
+            });
+        },
+        
+        initMobileCloseOnClick: function() {
+            // Fermer le menu mobile quand on clique sur un lien
+            const links = document.querySelectorAll('.nav-link');
+            links.forEach(link => {
+                link.addEventListener('click', () => {
+                    this.closeMobileMenu();
+                });
+            });
+        },
+        
+        closeMobileMenu: function() {
+            const menu = document.getElementById('navMenu');
+            if (menu.classList.contains('open')) {
+                menu.classList.remove('open');
+            }
+        },
+        
+        showLoading: function() {
+            const bar = document.getElementById('navLoadingBar');
+            if (bar) bar.style.display = 'block';
+        },
+        
+        hideLoading: function() {
+            const bar = document.getElementById('navLoadingBar');
+            if (bar) bar.style.display = 'none';
+        },
+        
+        setUserName: function(name) {
+            localStorage.setItem('userName', name);
+            this.updateUserInfo();
         }
+    };
+    
+    // Fonctions globales
+    function toggleMobileMenu() {
+        const menu = document.getElementById('navMenu');
+        menu.classList.toggle('open');
+    }
+    
+    function handleLogout() {
+        if (confirm('🚪 Voulez-vous vraiment vous déconnecter ?')) {
+            // Afficher le spinner
+            if (Navbar) Navbar.showLoading();
+            
+            localStorage.clear();
+            setTimeout(() => {
+                window.location.href = '/login.html';
+            }, 100);
+        }
+    }
+    
+    // Fonction de compatibilité
+    function logout() {
+        handleLogout();
+    }
+    
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', () => {
+        Navbar.init();
+    });
+    
+    // Exporter pour utilisation globale
+    window.Navbar = Navbar;
+    
+    // Observer les changements de route (pour les SPA)
+    window.addEventListener('popstate', () => {
+        Navbar.setActiveLink();
+        Navbar.closeMobileMenu();
+    });
+</script>
+
+<!-- Exemple d'utilisation dynamique -->
+<script>
+    // Mettre à jour le nom de l'utilisateur après modification du profil
+    function updateNavbarUserName(newName) {
+        if (window.Navbar) {
+            Navbar.setUserName(newName);
+        }
+    }
+    
+    // Afficher le loader lors des chargements de page
+    document.addEventListener('click', (e) => {
+        const link = e.target.closest('.nav-link');
+        if (link && link.getAttribute('href') && !link.getAttribute('href').startsWith('#')) {
+            if (window.Navbar) Navbar.showLoading();
+        }
+    });
+    
+    // Cacher le loader quand la page est chargée
+    window.addEventListener('load', () => {
+        if (window.Navbar) setTimeout(() => Navbar.hideLoading(), 500);
     });
 </script>
