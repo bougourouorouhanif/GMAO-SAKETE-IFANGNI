@@ -2,90 +2,461 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historique - GMAO Sakété</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="theme-color" content="#1b5e20">
+    <title>Historique équipement - GMAO Sakété</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #e8f5e9;
             margin-left: 280px;
+            transition: margin-left 0.3s ease;
             padding: 20px;
         }
-        .main-content { max-width: 1000px; margin: 0 auto; }
-        .card { background: white; border-radius: 20px; padding: 24px; margin-bottom: 20px; }
-        .title { font-size: 20px; font-weight: bold; margin-bottom: 20px; color: #1b5e20; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
-        th { background: #f8fafc; }
-        .back-link { display: inline-block; margin-bottom: 20px; color: #3b82f6; text-decoration: none; }
-        .badge-termine { background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; display: inline-block; }
-        .badge-cours { background: #dbeafe; color: #2563eb; padding: 4px 12px; border-radius: 20px; display: inline-block; }
+        .main-content { max-width: 1200px; margin: 0 auto; }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            color: #1b5e20;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .back-link:hover {
+            color: #2e7d32;
+            transform: translateX(-3px);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #1b5e20;
+            border-left: 4px solid #ffd600;
+            padding-left: 15px;
+        }
+        
+        .equipement-info {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .info-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #64748b;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .stats-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 12px 20px;
+            flex: 1;
+            min-width: 100px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1b5e20;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            border-radius: 16px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 13px;
+        }
+        
+        tr {
+            transition: background 0.2s;
+        }
+        
+        tr:hover {
+            background: #f8fafc;
+        }
+        
+        .badge-termine { 
+            background: #dcfce7; 
+            color: #166534; 
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            display: inline-block; 
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge-cours { 
+            background: #dbeafe; 
+            color: #2563eb; 
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            display: inline-block; 
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge-attente { 
+            background: #fef3c7; 
+            color: #d97706; 
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            display: inline-block; 
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #94a3b8;
+        }
+        
+        .btn-excel {
+            background: #1b5e20;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: 0.2s;
+            margin-bottom: 15px;
+        }
+        
+        .btn-excel:hover {
+            background: #2e7d32;
+            transform: translateY(-2px);
+        }
+        
+        .loader {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        @media (max-width: 768px) {
+            body { margin-left: 0; padding: 70px 15px 15px 15px; }
+            .card { padding: 20px; }
+            th, td { font-size: 12px; padding: 10px 8px; }
+            .equipement-info { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
+
 <div id="sidebar-container"></div>
+
 <div class="main-content">
-    <a href="inventaire.html" class="back-link">← Retour à l'inventaire</a>
+    <a href="inventaire.html" class="back-link">
+        ← Retour à l'inventaire
+    </a>
+    
     <div class="card">
-        <div class="title" id="equipementTitle">Chargement...</div>
-        <div style="overflow-x: auto;">
+        <div class="title" id="equipementTitle">
+            📋 Historique des interventions
+        </div>
+        
+        <div class="equipement-info" id="equipementInfo">
+            <div class="info-item">
+                <span class="info-label">Nom de l'équipement</span>
+                <span class="info-value" id="equipementNom">Chargement...</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Code inventaire</span>
+                <span class="info-value" id="equipementCode">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Service</span>
+                <span class="info-value" id="equipementService">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Statut actuel</span>
+                <span class="info-value" id="equipementStatut">-</span>
+            </div>
+        </div>
+        
+        <div class="stats-row" id="statsRow">
+            <div class="stat-card"><div class="stat-number" id="statTotal">-</div><div class="stat-label">Total interventions</div></div>
+            <div class="stat-card"><div class="stat-number" id="statTermine">-</div><div class="stat-label">✅ Terminées</div></div>
+            <div class="stat-card"><div class="stat-number" id="statCorrectif">-</div><div class="stat-label">🛠️ Correctives</div></div>
+            <div class="stat-card"><div class="stat-number" id="statPreventif">-</div><div class="stat-label">📅 Préventives</div></div>
+        </div>
+        
+        <div style="display: flex; justify-content: flex-end;">
+            <button class="btn-excel" onclick="exporterHistorique()">📊 Exporter l'historique</button>
+        </div>
+        
+        <div class="table-container">
             <table>
                 <thead>
-                    <tr><th>Date</th><th>Type</th><th>Description</th><th>Technicien</th><th>Durée</th><th>Statut</th></tr>
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Technicien</th>
+                        <th>Durée</th>
+                        <th>Statut</th>
+                    </tr>
                 </thead>
-                <tbody id="historiqueBody"></tbody>
+                <tbody id="historiqueBody">
+                    <tr><td colspan="6" class="empty-state">⏳ Chargement...</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
 </div>
 
 <script>
-   const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
-    const id = new URLSearchParams(location.search).get('id');
+    const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
+    const urlParams = new URLSearchParams(location.search);
+    const equipementId = urlParams.get('id');
     
     function getToken() { return localStorage.getItem('token'); }
+    
+    // Auth check
     if (!getToken()) window.location.href = '/login.html';
-
+    
+    if (!equipementId) {
+        window.location.href = 'inventaire.html';
+    }
+    
     function loadSidebar() {
         fetch('/components/sidebar.html')
-            .then(r => r.text())
-            .then(d => document.getElementById('sidebar-container').innerHTML = d);
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                const links = document.querySelectorAll('.sidebar-item');
+                links.forEach(link => {
+                    if (link.getAttribute('href') === 'inventaire.html') {
+                        link.classList.add('active');
+                    }
+                });
+            })
+            .catch(error => console.error('Erreur sidebar:', error));
     }
-
-    async function loadHistorique() {
-        // Charger l'équipement
-        const eqRes = await fetch(`${API_URL}/equipements/${id}`, {
-            headers: { 'Authorization': `Bearer ${getToken()}` }
-        });
-        const equipement = await eqRes.json();
-        document.getElementById('equipementTitle').innerHTML = `📋 Historique - ${equipement.nom} (${equipement.codeInventaire})`;
+    
+    function getStatusBadge(statut) {
+        const map = {
+            'TERMINE': '<span class="badge-termine">✅ Terminé</span>',
+            'EN_COURS': '<span class="badge-cours">🔧 En cours</span>',
+            'EN_ATTENTE': '<span class="badge-attente">⏳ En attente</span>',
+            'REALISE': '<span class="badge-termine">✅ Réalisé</span>',
+            'PREVU': '<span class="badge-attente">📅 Prévu</span>'
+        };
+        return map[statut] || `<span class="badge-attente">${statut || '-'}</span>`;
+    }
+    
+    function getEquipementStatutText(statut) {
+        const map = {
+            'FONCTIONNEL': '✅ Fonctionnel',
+            'EN_PANNE': '❌ En panne',
+            'EN_MAINTENANCE': '🔧 En maintenance',
+            'OPERATIONNEL': '✅ Opérationnel'
+        };
+        return map[statut] || statut || '-';
+    }
+    
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        try {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return '-';
+            return date.toLocaleDateString('fr-FR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        } catch { return '-'; }
+    }
+    
+    function formatDuree(minutes) {
+        if (!minutes) return '-';
+        if (minutes < 60) return `${minutes} min`;
+        const heures = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        if (mins === 0) return `${heures} h`;
+        return `${heures} h ${mins} min`;
+    }
+    
+    function updateStats(interventions) {
+        if (!interventions || !Array.isArray(interventions)) return;
         
-        // Charger l'historique des interventions
-        const histRes = await fetch(`${API_URL}/maintenances/historique/${id}`, {
-            headers: { 'Authorization': `Bearer ${getToken()}` }
-        });
-        const interventions = await histRes.json();
+        const total = interventions.length;
+        const termine = interventions.filter(i => i.statut === 'TERMINE' || i.statut === 'REALISE').length;
+        const correctif = interventions.filter(i => i.type === 'CORRECTIF').length;
+        const preventif = interventions.filter(i => i.type === 'PREVENTIF').length;
         
-        if (interventions.length === 0) {
-            document.getElementById('historiqueBody').innerHTML = '<tr><td colspan="6" style="text-align:center">Aucune intervention</td></tr>';
-            return;
+        document.getElementById('statTotal').innerText = total;
+        document.getElementById('statTermine').innerText = termine;
+        document.getElementById('statCorrectif').innerText = correctif;
+        document.getElementById('statPreventif').innerText = preventif;
+    }
+    
+    async function loadEquipement() {
+        try {
+            const res = await fetch(`${API_URL}/equipements/${equipementId}`, {
+                headers: { 'Authorization': `Bearer ${getToken()}` }
+            });
+            
+            if (!res.ok) throw new Error('Équipement non trouvé');
+            
+            const equipement = await res.json();
+            
+            document.getElementById('equipementTitle').innerHTML = `📋 Historique - ${escapeHtml(equipement.nom)}`;
+            document.getElementById('equipementNom').innerHTML = escapeHtml(equipement.nom);
+            document.getElementById('equipementCode').innerHTML = escapeHtml(equipement.codeInventaire || '-');
+            document.getElementById('equipementService').innerHTML = escapeHtml(equipement.service || '-');
+            document.getElementById('equipementStatut').innerHTML = getEquipementStatutText(equipement.statut);
+            
+            return equipement;
+        } catch (error) {
+            console.error('Erreur chargement équipement:', error);
+            document.getElementById('equipementNom').innerHTML = 'Équipement non trouvé';
+            return null;
         }
-        
-        document.getElementById('historiqueBody').innerHTML = interventions.map(i => `
-            <tr>
-                <td>${new Date(i.dateDebut).toLocaleDateString()}</td
-                <td>${i.type === 'CORRECTIF' ? '🛠️ Panne' : '📅 Préventive'}</td
-                <td>${i.diagnostic || '-'}</td
-                <td>${i.technicien?.nom || '-'}</td
-                <td>${i.dureeMinutes ? i.dureeMinutes + ' min' : '-'}</td
-                <td>${i.statut === 'TERMINE' ? '<span class="badge-termine">✅ Terminé</span>' : '<span class="badge-cours">🔧 En cours</span>'}</td
-            </tr>
-        `).join('');
     }
-
+    
+    async function loadHistorique() {
+        try {
+            const res = await fetch(`${API_URL}/maintenances/historique/${equipementId}`, {
+                headers: { 'Authorization': `Bearer ${getToken()}` }
+            });
+            
+            if (!res.ok) throw new Error('Erreur chargement historique');
+            
+            const data = await res.json();
+            let interventions = [];
+            
+            // Gestion des différents formats de réponse
+            if (Array.isArray(data)) {
+                interventions = data;
+            } else if (data.interventions) {
+                interventions = data.interventions;
+            } else if (data.data) {
+                interventions = data.data;
+            } else {
+                interventions = [];
+            }
+            
+            updateStats(interventions);
+            
+            if (interventions.length === 0) {
+                document.getElementById('historiqueBody').innerHTML = 
+                    '<tr><td colspan="6" class="empty-state">📭 Aucune intervention pour cet équipement</td></tr>';
+                return;
+            }
+            
+            document.getElementById('historiqueBody').innerHTML = interventions.map(i => {
+                const description = i.signalement?.description || i.diagnostic || i.description || '-';
+                const technicien = i.technicien?.nom || i.technicienNom || '-';
+                const duree = i.dureeMinutes ? formatDuree(i.dureeMinutes) : (i.duree || '-');
+                const dateStr = i.dateDebut || i.createdAt || i.date;
+                
+                return `
+                    <tr>
+                        <td>${formatDate(dateStr)}</td>
+                        <td>${i.type === 'CORRECTIF' ? '🛠️ Corrective' : (i.type === 'PREVENTIF' ? '📅 Préventive' : i.type || '-')}</td>
+                        <td style="max-width: 300px;">${escapeHtml(description.substring(0, 80))}${description.length > 80 ? '...' : ''}</td>
+                        <td>${escapeHtml(technicien)}</td>
+                        <td>${duree}</td>
+                        <td>${getStatusBadge(i.statut)}</td>
+                    </tr>
+                `;
+            }).join('');
+            
+        } catch (error) {
+            console.error('Erreur:', error);
+            document.getElementById('historiqueBody').innerHTML = 
+                '<tr><td colspan="6" class="empty-state">❌ Erreur de chargement de l\'historique</td></tr>';
+        }
+    }
+    
+    function exporterHistorique() {
+        const token = getToken();
+        window.open(`${API_URL}/maintenances/export-excel/equipement/${equipementId}?token=${encodeURIComponent(token)}`, '_blank');
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    // Initialisation
     loadSidebar();
-    loadHistorique();
+    loadEquipement().then(() => loadHistorique());
 </script>
 </body>
 </html>
