@@ -1,5 +1,4 @@
-// config/prisma.js - Configuration Prisma pour GMAO Sakété
-
+// backend/config/database.js
 import { PrismaClient } from '@prisma/client';
 
 // ============================================
@@ -29,8 +28,8 @@ const prisma = new PrismaClient({
 });
 
 // ============================================
-# GESTION DES CONNEXIONS
-============================================
+// GESTION DES CONNEXIONS
+// ============================================
 
 // Variable pour suivre l'état de la connexion
 let isConnected = false;
@@ -101,8 +100,8 @@ export const testConnection = async () => {
 };
 
 // ============================================
-# MIDDLEWARE POUR EXPRESS
-============================================
+// MIDDLEWARE POUR EXPRESS
+// ============================================
 
 /**
  * Middleware pour s'assurer que la base de données est connectée
@@ -124,8 +123,8 @@ export const ensureDatabaseConnection = async (req, res, next) => {
 };
 
 // ============================================
-# TRANSACTIONS
-============================================
+// TRANSACTIONS
+// ============================================
 
 /**
  * Exécuter une transaction
@@ -144,8 +143,8 @@ export const runTransaction = async (callback) => {
 };
 
 // ============================================
-# HEALTH CHECK
-============================================
+// HEALTH CHECK
+// ============================================
 
 /**
  * Obtenir les métriques de santé de la base de données
@@ -174,8 +173,8 @@ export const getDatabaseHealth = async () => {
 };
 
 // ============================================
-# HELPERS DE REQUÊTES
-============================================
+// HELPERS DE REQUÊTES
+// ============================================
 
 /**
  * Helper pour les requêtes paginées
@@ -255,33 +254,9 @@ export const upsertRecord = async (model, where, createData, updateData) => {
     });
 };
 
-/**
- * Helper pour les soft delete (si le modèle a un champ deletedAt)
- * @param {Object} model - Modèle Prisma
- * @param {number} id - ID de l'enregistrement
- * @returns {Promise<Object>} Résultat du soft delete
- */
-export const softDelete = async (model, id) => {
-    // Vérifier si le modèle a un champ deletedAt
-    const hasDeletedAt = await model.findFirst({
-        where: { id },
-        select: { deletedAt: true }
-    }).catch(() => false);
-
-    if (hasDeletedAt !== false) {
-        return model.update({
-            where: { id },
-            data: { deletedAt: new Date() }
-        });
-    }
-    
-    // Si pas de deletedAt, faire un delete normal
-    return model.delete({ where: { id } });
-};
-
 // ============================================
-# INITIALISATION
-============================================
+// INITIALISATION
+// ============================================
 
 // Connecter automatiquement au démarrage (non bloquant)
 if (process.env.NODE_ENV !== 'test') {
@@ -304,7 +279,7 @@ process.on('SIGTERM', async () => {
 });
 
 // ============================================
-# EXPORTATION
-============================================
+// EXPORTATION
+// ============================================
 
 export default prisma;
