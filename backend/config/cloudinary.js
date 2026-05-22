@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // ============================================
-// VALIDATION DES VARIABLES D'ENVIRONNEMENT
+// VALIDATION DES VARIABES D'ENVIRONNEMENT
 // ============================================
 
 const requiredEnvVars = [
@@ -25,8 +25,8 @@ if (missingEnvVars.length > 0) {
 }
 
 // ============================================
-# CONFIGURATION CLOUDINARY
-============================================
+// CONFIGURATION CLOUDINARY
+// ============================================
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -37,8 +37,8 @@ cloudinary.config({
 });
 
 // ============================================
-# FONCTIONS UTILITAIRES
-============================================
+// FONCTIONS UTILITAIRES
+// ============================================
 
 /**
  * Vérifier si Cloudinary est correctement configuré
@@ -289,8 +289,8 @@ export const generateUploadSignature = (options = {}) => {
 };
 
 // ============================================
-# MIDDLEWARE POUR EXPRESS
-============================================
+// MIDDLEWARE POUR EXPRESS
+// ============================================
 
 /**
  * Middleware pour vérifier la configuration Cloudinary
@@ -306,8 +306,8 @@ export const checkCloudinaryConfig = (req, res, next) => {
 };
 
 // ============================================
-# EXPORTATION PAR DÉFAUT
-============================================
+// EXPORTATION PAR DÉFAUT
+// ============================================
 
 // Log de statut au démarrage (non bloquant)
 if (isCloudinaryConfigured()) {
