@@ -1,8 +1,8 @@
 // utils/matricule.js - Génération de matricules uniques pour GMAO Sakété
 
 // ============================================
-# CONFIGURATION
-============================================
+// CONFIGURATION
+// ============================================
 
 const MATRICULE_CONFIG = {
     PREFIX: 'HZSI', // Hôpital Zone Sakété-Ifangni
@@ -15,8 +15,8 @@ const MATRICULE_CONFIG = {
 };
 
 // ============================================
-# FONCTIONS UTILITAIRES
-============================================
+// FONCTIONS UTILITAIRES
+// ============================================
 
 /**
  * Nettoyer une chaîne (enlever accents, caractères spéciaux)
@@ -78,8 +78,8 @@ const generateSequentialNumber = (count, length = 4) => {
 };
 
 // ============================================
-# GÉNÉRATEURS DE MATRICULE
-============================================
+// GÉNÉRATEURS DE MATRICULE
+// ============================================
 
 /**
  * Générer un matricule unique (version standard)
@@ -268,8 +268,8 @@ export async function generateUniqueMatricule(nom, prenom, checkExists) {
 }
 
 // ============================================
-# EXPORTATION
-============================================
+// EXPORTATION
+// ============================================
 
 export default {
     generateMatricule,
