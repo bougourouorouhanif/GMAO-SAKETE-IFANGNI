@@ -2,72 +2,322 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#0066FF">
     <title>Diagnostic Expert - GMAO Sakété</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: #e8f5e9; margin-left: 280px; padding: 20px; }
-        .chat-container { background: white; border-radius: 20px; padding: 20px; height: 70vh; display: flex; flex-direction: column; }
-        .messages { flex: 1; overflow-y: auto; margin-bottom: 20px; }
-        .message { margin-bottom: 12px; display: flex; }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #e8f5e9; 
+            margin-left: 280px; 
+            padding: 20px; 
+            transition: margin-left 0.3s ease;
+            min-height: 100vh;
+        }
+        
+        .main-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #0066FF;
+            margin-bottom: 20px;
+            font-size: 24px;
+            border-left: 4px solid #ffd600;
+            padding-left: 15px;
+        }
+        
+        .chat-container { 
+            background: white; 
+            border-radius: 24px; 
+            padding: 20px; 
+            height: 70vh; 
+            display: flex; 
+            flex-direction: column;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .messages { 
+            flex: 1; 
+            overflow-y: auto; 
+            margin-bottom: 20px;
+            padding-right: 5px;
+        }
+        
+        .messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .messages::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 3px;
+        }
+        
+        .messages::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 3px;
+        }
+        
+        .message { 
+            margin-bottom: 12px; 
+            display: flex; 
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
         .message.user { justify-content: flex-end; }
         .message.bot { justify-content: flex-start; }
-        .message-content { padding: 10px 15px; border-radius: 18px; max-width: 70%; }
-        .user .message-content { background: #0066FF; color: white; }
-        .bot .message-content { background: #e2e8f0; color: #1e293b; }
-        .input-area { display: flex; gap: 10px; }
-        .input-area input { flex: 1; padding: 12px; border: 1px solid #e2e8f0; border-radius: 30px; }
-        .input-area button { background: #1b5e20; color: white; border: none; padding: 12px 24px; border-radius: 30px; cursor: pointer; }
-        @media (max-width: 768px) { body { margin-left: 0; } }
+        
+        .message-content { 
+            padding: 10px 16px; 
+            border-radius: 18px; 
+            max-width: 75%;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .user .message-content { 
+            background: #0066FF; 
+            color: white; 
+            border-bottom-right-radius: 4px;
+        }
+        
+        .bot .message-content { 
+            background: #e2e8f0; 
+            color: #1e293b; 
+            border-bottom-left-radius: 4px;
+        }
+        
+        .input-area { 
+            display: flex; 
+            gap: 10px; 
+        }
+        
+        .input-area input { 
+            flex: 1; 
+            padding: 12px 16px; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 30px; 
+            outline: none;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        
+        .input-area input:focus { 
+            border-color: #0066FF; 
+            box-shadow: 0 0 0 3px rgba(0,102,255,0.1);
+        }
+        
+        .input-area button { 
+            background: #0066FF; 
+            color: white; 
+            border: none; 
+            padding: 12px 28px; 
+            border-radius: 30px; 
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        
+        .input-area button:hover { 
+            background: #0052CC; 
+            transform: translateY(-1px);
+        }
+        
+        .input-area button:active {
+            transform: translateY(0);
+        }
+        
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 10px 16px;
+            background: #e2e8f0;
+            border-radius: 18px;
+            width: fit-content;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #94a3b8;
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-6px); }
+        }
+        
+        @media (max-width: 768px) { 
+            body { 
+                margin-left: 0; 
+                padding: 15px;
+            }
+            .message-content { 
+                max-width: 85%;
+            }
+            h1 {
+                font-size: 20px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div id="sidebar-container"></div>
-    <div class="main-content">
-        <h1>🤖 Diagnostic Expert</h1>
-        <div class="chat-container">
-            <div class="messages" id="messages">
-                <div class="message bot"><div class="message-content">👋 Bonjour ! Décrivez le problème technique...</div></div>
-            </div>
-            <div class="input-area">
-                <input type="text" id="messageInput" placeholder="Ex: Le respirateur ne s'allume pas...">
-                <button onclick="sendMessage()">Envoyer</button>
+
+<div id="sidebar-container"></div>
+
+<div class="main-content">
+    <h1>🤖 Diagnostic Expert</h1>
+    
+    <div class="chat-container">
+        <div class="messages" id="messages">
+            <div class="message bot">
+                <div class="message-content">
+                    👋 <strong>Bonjour Technicien !</strong><br><br>
+                    Je suis votre assistant de diagnostic biomédical.<br><br>
+                    🔍 Décrivez le symptôme observé ou scannez le QR code de l'équipement.<br><br>
+                    💡 <em>Je vous guiderai vers les causes probables et la procédure d'intervention.</em>
+                </div>
             </div>
         </div>
+        
+        <div class="input-area">
+            <input type="text" id="messageInput" 
+                   placeholder="Ex: Le respirateur ne s'allume pas..." 
+                   onkeypress="if(event.key==='Enter') sendMessage()">
+            <button id="sendBtn" onclick="sendMessage()">Envoyer</button>
+        </div>
     </div>
-    <script>
-        const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
-        
-        function getToken() { return localStorage.getItem('token'); }
-        
-        async function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const message = input.value.trim();
-            if (!message) return;
-            addMessage(message, 'user');
-            input.value = '';
-            try {
-                const res = await fetch(`${API_URL}/chatbot/diagnostic`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
-                    body: JSON.stringify({ message })
+</div>
+
+<script>
+    const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
+    let conversationId = null;
+    let isWaiting = false;
+    
+    function getToken() { return localStorage.getItem('token'); }
+    
+    // Auth check
+    if (!getToken()) window.location.href = '/login.html';
+    
+    const userRole = localStorage.getItem('userRole');
+    if (userRole !== 'TECHNICIEN') window.location.href = '/soignant/index.html';
+    
+    // Sidebar
+    function loadSidebar() {
+        fetch('/components/sidebar.html')
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById('sidebar-container').innerHTML = html;
+                const links = document.querySelectorAll('.sidebar-item');
+                links.forEach(link => {
+                    if (link.getAttribute('href') === 'chatbot.html') {
+                        link.classList.add('active');
+                    }
                 });
-                const data = await res.json();
-                addMessage(data.reply || 'Réponse du chatbot', 'bot');
-            } catch (error) {
-                addMessage('❌ Erreur de connexion', 'bot');
+            })
+            .catch(() => console.error('Erreur chargement sidebar'));
+    }
+    loadSidebar();
+    
+    function addMessage(text, sender) {
+        const container = document.getElementById('messages');
+        const div = document.createElement('div');
+        div.className = `message ${sender}`;
+        const formatted = text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n/g, '<br>');
+        div.innerHTML = `<div class="message-content">${formatted}</div>`;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+    
+    function showTyping() {
+        if (document.getElementById('typingIndicator')) return;
+        const container = document.getElementById('messages');
+        const div = document.createElement('div');
+        div.id = 'typingIndicator';
+        div.className = 'message bot';
+        div.innerHTML = `
+            <div class="typing-indicator">
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+            </div>
+        `;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+    
+    function hideTyping() {
+        const indicator = document.getElementById('typingIndicator');
+        if (indicator) indicator.remove();
+    }
+    
+    async function sendMessage() {
+        if (isWaiting) return;
+        
+        const input = document.getElementById('messageInput');
+        const message = input.value.trim();
+        if (!message) return;
+        
+        addMessage(message, 'user');
+        input.value = '';
+        
+        isWaiting = true;
+        const sendBtn = document.getElementById('sendBtn');
+        sendBtn.disabled = true;
+        showTyping();
+        
+        try {
+            const res = await fetch(`${API_URL}/chatbot/diagnostic`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${getToken()}`
+                },
+                body: JSON.stringify({ 
+                    message, 
+                    conversationId 
+                })
+            });
+            
+            hideTyping();
+            
+            if (!res.ok) {
+                const error = await res.json().catch(() => ({}));
+                addMessage(error.reply || '❌ Erreur serveur. Réessayez.', 'bot');
+                isWaiting = false;
+                sendBtn.disabled = false;
+                return;
             }
+            
+            const data = await res.json();
+            if (data.conversationId) conversationId = data.conversationId;
+            addMessage(data.reply, 'bot');
+            
+        } catch (error) {
+            hideTyping();
+            console.error('Erreur:', error);
+            addMessage('❌ Connexion impossible. Vérifiez votre connexion internet.', 'bot');
+        } finally {
+            isWaiting = false;
+            sendBtn.disabled = false;
         }
-        function addMessage(text, sender) {
-            const container = document.getElementById('messages');
-            const div = document.createElement('div');
-            div.className = `message ${sender}`;
-            div.innerHTML = `<div class="message-content">${text}</div>`;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-        }
-        fetch('/components/sidebar.html').then(r=>r.text()).then(html=>document.getElementById('sidebar-container').innerHTML=html);
-        if(!getToken()) window.location.href='/login.html';
-    </script>
+    }
+</script>
 </body>
 </html>
