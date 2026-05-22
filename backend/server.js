@@ -85,7 +85,7 @@ import equipmentRoutes from './routes/equipements.js';
 import maintenanceRoutes from './routes/maintenances.js';
 import preventiveRoutes from './routes/preventive.js';
 import stockRoutes from './routes/stocks.js';
-import chatbotRoutes from './routes/chatbot.js';
+import chatbotRoutes from './routes/chatbotRoutes.js';
 import diagnosticRoutes from './routes/diagnostic.js';
 import codirRoutes from './routes/codir.js';
 import planningRoutes from './routes/planning.js';
