@@ -1,4 +1,4 @@
-// config/sms.js - Configuration SMS avec Twilio pour GMAO Sakété
+// backend/config/sms.js - Configuration SMS avec Twilio pour GMAO Sakété
 
 import twilio from 'twilio';
 import dotenv from 'dotenv';
@@ -25,8 +25,8 @@ if (!isTwilioConfigured() && process.env.NODE_ENV === 'production') {
 }
 
 // ============================================
-# INITIALISATION DU CLIENT TWILIO
-============================================
+// INITIALISATION DU CLIENT TWILIO
+// ============================================
 
 let twilioClient = null;
 
@@ -41,8 +41,8 @@ const getTwilioClient = () => {
 };
 
 // ============================================
-# FONCTIONS UTILITAIRES
-============================================
+// FONCTIONS UTILITAIRES
+// ============================================
 
 /**
  * Nettoyer un numéro de téléphone (format international)
@@ -95,8 +95,8 @@ const truncateMessage = (message, maxLength = 160) => {
 };
 
 // ============================================
-# ENVOI DE SMS
-============================================
+// ENVOI DE SMS
+// ============================================
 
 /**
  * Envoyer un SMS via Twilio
@@ -190,8 +190,8 @@ export async function testTwilioConnection() {
 }
 
 // ============================================
-# TEMPLATES DE SMS
-============================================
+// TEMPLATES DE SMS
+// ============================================
 
 /**
  * SMS de validation de compte
@@ -264,91 +264,9 @@ export async function sendInterventionTermineeSMS(soignant, equipement) {
     return sendSMS(soignant.telephone, message);
 }
 
-/**
- * SMS pour alerte stock faible
- * @param {Object} responsable - Responsable stock
- * @param {Object} piece - Pièce détachée
- * @returns {Promise<boolean>}
- */
-export async function sendStockAlerteSMS(responsable, piece) {
-    if (!responsable.telephone) {
-        console.log(`⚠️ Aucun téléphone pour le responsable ${responsable.nom}`);
-        return false;
-    }
-    
-    const message = `⚠️ GMAO Stock: La pièce ${piece.designation} n'a plus que ${piece.quantiteStock} unités (seuil: ${piece.seuilAlerte}). Réapprovisionnement nécessaire.`;
-    
-    return sendSMS(responsable.telephone, message);
-}
-
-/**
- * SMS pour alerte critique équipement
- * @param {Object} technicien - Technicien
- * @param {Object} equipement - Équipement
- * @returns {Promise<boolean>}
- */
-export async function sendCriticalAlertSMS(technicien, equipement) {
-    if (!technicien.telephone) {
-        console.log(`⚠️ Aucun téléphone pour le technicien ${technicien.nom}`);
-        return false;
-    }
-    
-    const message = `🚨 URGENT GMAO: Équipement critique ${equipement.nom} (${equipement.service}) en panne. Intervention immédiate requise!`;
-    
-    return sendSMS(technicien.telephone, message);
-}
-
-/**
- * SMS pour rappel de maintenance préventive
- * @param {Object} technicien - Technicien
- * @param {Object} maintenance - Maintenance préventive
- * @returns {Promise<boolean>}
- */
-export async function sendPreventiveReminderSMS(technicien, maintenance) {
-    if (!technicien.telephone) {
-        console.log(`⚠️ Aucun téléphone pour le technicien ${technicien.nom}`);
-        return false;
-    }
-    
-    const equipement = maintenance.equipement || {};
-    const date = new Date(maintenance.prochaineRealisation).toLocaleDateString('fr-FR');
-    
-    const message = `📅 GMAO: Maintenance préventive à réaliser sur ${equipement.nom} le ${date}.`;
-    
-    return sendSMS(technicien.telephone, message);
-}
-
 // ============================================
-# VERIFICATION DU SOLDE
-============================================
-
-/**
- * Vérifier le solde du compte Twilio
- * @returns {Promise<Object>} Informations de solde
- */
-export async function getTwilioBalance() {
-    if (!isTwilioConfigured()) {
-        return { success: false, error: 'Twilio non configuré' };
-    }
-    
-    try {
-        const client = getTwilioClient();
-        const balance = await client.balance.fetch();
-        return {
-            success: true,
-            balance: balance.balance,
-            currency: balance.currency,
-            formatted: `${balance.balance} ${balance.currency}`
-        };
-    } catch (error) {
-        console.error('Erreur récupération solde:', error.message);
-        return { success: false, error: error.message };
-    }
-}
-
+// EXPORTATION
 // ============================================
-# EXPORTATION
-============================================
 
 export default {
     sendSMS,
@@ -357,11 +275,7 @@ export default {
     sendInterventionSMS,
     sendSignalementSMS,
     sendInterventionTermineeSMS,
-    sendStockAlerteSMS,
-    sendCriticalAlertSMS,
-    sendPreventiveReminderSMS,
     testTwilioConnection,
-    getTwilioBalance,
     isTwilioConfigured,
     formatPhoneNumber,
     isValidPhoneNumber
