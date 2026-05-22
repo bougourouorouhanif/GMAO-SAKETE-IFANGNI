@@ -1,4 +1,4 @@
-// config/socket.js - Configuration Socket.IO pour GMAO Sakété
+// backend/config/socket.js - Configuration Socket.IO pour GMAO Sakété
 
 import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
@@ -7,8 +7,8 @@ let io = null;
 let connectedClients = new Map(); // Map pour stocker les clients connectés
 
 // ============================================
-# AUTHENTIFICATION PAR TOKEN
-============================================
+// AUTHENTIFICATION PAR TOKEN
+// ============================================
 
 /**
  * Vérifier le token JWT pour l'authentification Socket.IO
@@ -26,8 +26,8 @@ const authenticateSocket = (token) => {
 };
 
 // ============================================
-# INITIALISATION DU SERVER SOCKET
-============================================
+// INITIALISATION DU SERVEUR SOCKET
+// ============================================
 
 /**
  * Initialiser le serveur Socket.IO
@@ -92,8 +92,8 @@ export const initSocket = (server, options = {}) => {
         }
 
         // ============================================
-        # ÉCOUTEURS D'ÉVÉNEMENTS
-        ============================================
+        // ÉCOUTEURS D'ÉVÉNEMENTS
+        // ============================================
 
         // Rejoindre une room spécifique
         socket.on('join-room', (roomName) => {
@@ -115,7 +115,6 @@ export const initSocket = (server, options = {}) => {
         // Événement pour les interventions
         socket.on('intervention:start', (data) => {
             console.log(`🔧 Intervention commencée par ${userId}:`, data);
-            // Notifier les autres techniciens
             socket.to('role_TECHNICIEN').emit('intervention:updated', {
                 ...data,
                 action: 'started',
@@ -125,11 +124,9 @@ export const initSocket = (server, options = {}) => {
 
         socket.on('intervention:complete', (data) => {
             console.log(`✅ Intervention terminée par ${userId}:`, data);
-            // Notifier le soignant qui a signalé
             if (data.soignantId) {
                 io.to(`user_${data.soignantId}`).emit('intervention:completed', data);
             }
-            // Notifier tous les techniciens
             io.to('role_TECHNICIEN').emit('intervention:updated', {
                 ...data,
                 action: 'completed'
@@ -139,7 +136,6 @@ export const initSocket = (server, options = {}) => {
         // Événement pour les signalements
         socket.on('signalement:new', (data) => {
             console.log(`🚨 Nouveau signalement de ${userId}:`, data);
-            // Notifier tous les techniciens
             io.to('role_TECHNICIEN').emit('signalement:received', data);
         });
 
@@ -148,7 +144,6 @@ export const initSocket = (server, options = {}) => {
             console.log(`⚠️ Nouvelle alerte:`, data);
             
             if (data.criticite === 'CRITIQUE') {
-                // Notifier tous les techniciens en urgence
                 io.to('role_TECHNICIEN').emit('alert:critical', data);
             } else {
                 io.to('role_TECHNICIEN').emit('alert:new', data);
@@ -222,8 +217,8 @@ export const initSocket = (server, options = {}) => {
 };
 
 // ============================================
-# FONCTIONS D'ENVOI DE NOTIFICATIONS
-============================================
+// FONCTIONS D'ENVOI DE NOTIFICATIONS
+// ============================================
 
 /**
  * Envoyer une notification à un utilisateur spécifique
@@ -297,8 +292,8 @@ export const sendBroadcast = (data) => {
 };
 
 // ============================================
-# NOTIFICATIONS SPÉCIFIQUES
-============================================
+// NOTIFICATIONS SPÉCIFIQUES
+// ============================================
 
 /**
  * Notification de nouvelle intervention
@@ -315,7 +310,6 @@ export const notifyNewIntervention = (intervention, techniciens) => {
         actionId: intervention.id
     };
 
-    // Envoyer à tous les techniciens
     sendNotificationToRole('TECHNICIEN', notificationData);
 };
 
@@ -370,8 +364,8 @@ export const notifyLowStock = (piece) => {
 };
 
 // ============================================
-# UTILITAIRES
-============================================
+// UTILITAIRES
+// ============================================
 
 /**
  * Obtenir le nombre de clients connectés
@@ -428,8 +422,8 @@ export const closeSocket = async () => {
 };
 
 // ============================================
-# EXPORTATION
-============================================
+// EXPORTATION
+// ============================================
 
 export default {
     initSocket,
