@@ -1,0 +1,19 @@
+📡 Routes diagnostic enregistrées:
+   POST   /api/diagnostic/message
+   GET    /api/diagnostic/history
+   GET    /api/diagnostic/:id
+   DELETE /api/diagnostic/history/:conversationId
+🚀 Serveur démarré sur http://0.0.0.0:10000
+📱 Mode: development
+🗄️ Base de données: PostgreSQL
+
+📡 Routes disponibles:
+   POST   /api/auth/login
+   POST   /api/auth/register
+   GET    /api/equipements
+   GET    /api/maintenances
+   POST   /api/chatbot/diagnostic
+   GET    /api/statistiques/kpis
+   GET    /api/statistiques/tendance-disponibilite
+   GET    /api/health
+prisma:info Starting a postgresql pool with 9 connections.

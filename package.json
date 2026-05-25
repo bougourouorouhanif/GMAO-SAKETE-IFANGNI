@@ -3,12 +3,12 @@
   "type": "module",
   "version": "1.0.0",
   "description": "Système de Gestion de Maintenance Assistée par Ordinateur pour l'Hôpital de Zone",
-  "main": "server.js",
+  "main": "backend/server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
-    "seed": "node prisma/seed.js",
-    "migrate": "npx prisma migrate dev --name init_gmao"
+    "start": "npm --prefix backend start",
+    "dev": "npm --prefix backend run dev",
+    "seed": "npm --prefix backend run prisma:seed",
+    "migrate": "npm --prefix backend run prisma:migrate"
   },
   "keywords": [
     "biomedical",

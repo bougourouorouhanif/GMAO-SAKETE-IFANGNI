@@ -3,6 +3,7 @@ services:
     name: gmao-backend
     runtime: node
     plan: free
+    rootDir: backend
     buildCommand: npm install && npx prisma generate
     startCommand: npx prisma migrate deploy && npm start
     envVars:
