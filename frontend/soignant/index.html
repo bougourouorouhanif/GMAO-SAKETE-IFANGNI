@@ -7,6 +7,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>GMAO Soignant - Hôpital Sakété</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="/assets/css/design-system.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -385,6 +389,60 @@
             .menu-grid { gap: 12px; padding: 16px; }
             .menu-icon { font-size: 32px; }
             .menu-title { font-size: 13px; }
+        }
+
+        /* ============================================
+           DESIGN SYSTEM v2 — Theme override (soignant)
+        ============================================ */
+        body {
+            font-family: var(--font-sans);
+            background: linear-gradient(180deg, #eef5ff 0%, #f3f6fb 60%);
+            color: var(--on-surface);
+        }
+        .header {
+            background: linear-gradient(135deg, var(--brand-500) 0%, var(--brand-700) 50%, var(--accent-500) 130%);
+            border-radius: 0 0 var(--r-2xl) var(--r-2xl);
+            box-shadow: 0 12px 30px rgba(0,102,255,0.18);
+            padding: var(--sp-8) var(--sp-5) var(--sp-6);
+        }
+        .welcome { font-size: var(--fs-xs); opacity: 0.85; text-transform: uppercase; letter-spacing: 1px; }
+        .user-name { font-size: var(--fs-xl); font-weight: var(--fw-bold); letter-spacing: -0.01em; }
+        .user-service { font-size: var(--fs-sm); opacity: 0.85; }
+        .logout-btn {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            border-radius: var(--r-full);
+            padding: var(--sp-2) var(--sp-4);
+            font-weight: var(--fw-semibold);
+            font-size: var(--fs-sm);
+            transition: background var(--dur-base), transform var(--dur-fast);
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.28); transform: translateY(-1px); }
+        .logout-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+        /* Card / menu items — neutral classes if used */
+        .menu-card, .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            box-shadow: var(--el-1);
+            transition: transform var(--dur-base), box-shadow var(--dur-base);
+        }
+        .menu-card:hover, .card:hover { transform: translateY(-2px); box-shadow: var(--el-3); }
+
+        .menu-title { font-weight: var(--fw-semibold); color: var(--on-surface); }
+
+        /* Bottom nav */
+        .nav-item { transition: color var(--dur-base); }
+        .nav-item.active { color: var(--brand-600); }
+        .nav-item:focus-visible { outline: 2px solid var(--brand-500); outline-offset: 2px; border-radius: var(--r-sm); }
+
+        /* Focus rings global */
+        button:focus-visible, a:focus-visible {
+            outline: 2px solid var(--brand-500);
+            outline-offset: 2px;
         }
     </style>
 </head>

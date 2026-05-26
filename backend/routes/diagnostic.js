@@ -93,8 +93,8 @@ const handleValidationErrors = (req, res, next) => {
 };
 
 // ============================================
-# ROUTES
-============================================
+// ROUTES
+// ============================================
 
 /**
  * @route   POST /api/diagnostic/message

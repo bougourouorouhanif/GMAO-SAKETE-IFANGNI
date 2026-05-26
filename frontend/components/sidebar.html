@@ -1,177 +1,212 @@
-<!-- frontend/components/sidebar.html - Sidebar technicien -->
-<div class="sidebar" id="sidebar">
+<!-- frontend/components/sidebar.html — Sidebar technicien (design system v2) -->
+<aside class="sidebar" id="sidebar" aria-label="Navigation principale">
+    <button class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true" tabindex="-1"></button>
+
     <div class="sidebar-header">
-        <div class="sidebar-logo">🏥 <span>GMAO</span> Sakété</div>
-        <div class="sidebar-subtitle">Hôpital de Zone Sakété-Ifangni</div>
+        <div class="sidebar-brand">
+            <span class="sidebar-logo-mark" aria-hidden="true">🏥</span>
+            <div>
+                <div class="sidebar-logo">GMAO <span>Sakété</span></div>
+                <div class="sidebar-subtitle">Hôpital de Zone Sakété-Ifangni</div>
+            </div>
+        </div>
     </div>
 
-    <div class="sidebar-menu">
+    <nav class="sidebar-menu" aria-label="Menu">
         <div class="sidebar-section">Principal</div>
-        <a href="dashboard.html"           class="sidebar-item"><span class="sidebar-icon">📊</span><span class="sidebar-text">Accueil</span></a>
-        <a href="inventaire.html"          class="sidebar-item"><span class="sidebar-icon">📦</span><span class="sidebar-text">Inventaire</span></a>
-        <a href="maintenances.html"        class="sidebar-item"><span class="sidebar-icon">🔧</span><span class="sidebar-text">Maintenance</span></a>
-        <a href="historique-travaux.html"  class="sidebar-item sidebar-sub"><span class="sidebar-icon">📋</span><span class="sidebar-text">Historique travaux</span></a>
-        <a href="stock.html"               class="sidebar-item"><span class="sidebar-icon">⚙️</span><span class="sidebar-text">Pièces</span></a>
+        <a href="dashboard.html"           class="sidebar-item"><span class="sidebar-icon" aria-hidden="true">📊</span><span class="sidebar-text">Accueil</span></a>
+        <a href="inventaire.html"          class="sidebar-item"><span class="sidebar-icon" aria-hidden="true">📦</span><span class="sidebar-text">Inventaire</span></a>
+        <a href="maintenances.html"        class="sidebar-item"><span class="sidebar-icon" aria-hidden="true">🔧</span><span class="sidebar-text">Maintenance</span></a>
+        <a href="historique-travaux.html"  class="sidebar-item sidebar-sub"><span class="sidebar-icon" aria-hidden="true">📋</span><span class="sidebar-text">Historique travaux</span></a>
+        <a href="stock.html"               class="sidebar-item"><span class="sidebar-icon" aria-hidden="true">⚙️</span><span class="sidebar-text">Pièces</span></a>
 
         <div class="sidebar-section">Équipe</div>
-        <a href="gestion-techniciens.html" class="sidebar-item"><span class="sidebar-icon">👥</span><span class="sidebar-text">Techniciens</span></a>
-        <a href="planning-garde.html"      class="sidebar-item"><span class="sidebar-icon">📅</span><span class="sidebar-text">Planning garde</span></a>
+        <a href="gestion-techniciens.html" class="sidebar-item"><span class="sidebar-icon" aria-hidden="true">👥</span><span class="sidebar-text">Techniciens</span></a>
+        <a href="planning-garde.html"      class="sidebar-item"><span class="sidebar-icon" aria-hidden="true">📅</span><span class="sidebar-text">Planning garde</span></a>
 
         <div class="sidebar-section">Rapports</div>
-        <a href="codir-rapports.html"      class="sidebar-item"><span class="sidebar-icon">📈</span><span class="sidebar-text">Rapports CoDIR</span></a>
-        <a href="fournisseurs.html"        class="sidebar-item"><span class="sidebar-icon">🏭</span><span class="sidebar-text">Fournisseurs</span></a>
+        <a href="codir-rapports.html"      class="sidebar-item"><span class="sidebar-icon" aria-hidden="true">📈</span><span class="sidebar-text">Rapports CoDIR</span></a>
+        <a href="fournisseurs.html"        class="sidebar-item"><span class="sidebar-icon" aria-hidden="true">🏭</span><span class="sidebar-text">Fournisseurs</span></a>
 
         <div class="sidebar-section">Système</div>
-        <a href="utilisateurs.html"        class="sidebar-item"><span class="sidebar-icon">👤</span><span class="sidebar-text">Utilisateurs</span></a>
-        <a href="alertes.html"             class="sidebar-item"><span class="sidebar-icon">⚠️</span><span class="sidebar-text">Alertes</span></a>
-        <a href="documents.html"           class="sidebar-item"><span class="sidebar-icon">📚</span><span class="sidebar-text">Documents</span></a>
-        <a href="parametres.html"          class="sidebar-item"><span class="sidebar-icon">⚙️</span><span class="sidebar-text">Paramètres</span></a>
-        <a href="profil.html"              class="sidebar-item"><span class="sidebar-icon">👤</span><span class="sidebar-text">Mon profil</span></a>
+        <a href="utilisateurs.html"        class="sidebar-item"><span class="sidebar-icon" aria-hidden="true">👤</span><span class="sidebar-text">Utilisateurs</span></a>
+        <a href="alertes.html"             class="sidebar-item"><span class="sidebar-icon" aria-hidden="true">⚠️</span><span class="sidebar-text">Alertes</span></a>
+        <a href="documents.html"           class="sidebar-item"><span class="sidebar-icon" aria-hidden="true">📚</span><span class="sidebar-text">Documents</span></a>
+        <a href="parametres.html"          class="sidebar-item"><span class="sidebar-icon" aria-hidden="true">⚙️</span><span class="sidebar-text">Paramètres</span></a>
+        <a href="profil.html"              class="sidebar-item"><span class="sidebar-icon" aria-hidden="true">👤</span><span class="sidebar-text">Mon profil</span></a>
 
         <div class="sidebar-section">Outils</div>
-        <a href="chatbot.html"             class="sidebar-item"><span class="sidebar-icon">🤖</span><span class="sidebar-text">Diagnostic expert</span></a>
-    </div>
+        <a href="chatbot.html"             class="sidebar-item"><span class="sidebar-icon" aria-hidden="true">🤖</span><span class="sidebar-text">Diagnostic expert</span></a>
+    </nav>
 
-    <!-- ✅ Bouton de déconnexion ajouté -->
     <div class="sidebar-footer">
-        <button class="sidebar-logout-btn" onclick="window.logout()">
-            🚪 Déconnexion
+        <button class="sidebar-logout-btn" onclick="window.logout()" type="button">
+            <span aria-hidden="true">🚪</span> Déconnexion
         </button>
     </div>
-</div>
+</aside>
 
 <style>
     .sidebar {
         position: fixed;
         top: 0; left: 0;
         width: 280px;
-        height: 100vh;
-        background: #1b5e20;
-        color: white;
+        height: 100dvh;
+        background: linear-gradient(180deg, #0a2540 0%, #051a35 100%);
+        color: #e2e8f0;
         display: flex;
         flex-direction: column;
         z-index: 1000;
-        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(255,255,255,0.2) transparent;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.18);
+        overflow: hidden;
+        border-right: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .sidebar-backdrop {
+        display: none;
+        position: fixed; inset: 0;
+        background: rgba(15,23,42,0.55);
+        backdrop-filter: blur(4px);
+        border: none;
+        z-index: -1;
     }
 
     .sidebar-header {
-        padding: 22px 20px;
-        border-bottom: 1px solid rgba(255,255,255,0.15);
-        background: #2e7d32;
+        padding: 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        flex-shrink: 0;
+        background: linear-gradient(180deg, rgba(0,102,255,0.18), transparent);
+    }
+    .sidebar-brand { display: flex; align-items: center; gap: 12px; }
+    .sidebar-logo-mark {
+        width: 40px; height: 40px;
+        background: linear-gradient(135deg, #0066FF, #003f99);
+        border-radius: 12px;
+        display: grid; place-items: center;
+        font-size: 22px;
+        box-shadow: 0 4px 12px rgba(0,102,255,0.4);
         flex-shrink: 0;
     }
-    .sidebar-logo { font-size: 20px; font-weight: bold; }
-    .sidebar-logo span { color: #ffd600; }
-    .sidebar-subtitle { font-size: 11px; opacity: 0.6; margin-top: 4px; }
+    .sidebar-logo { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: -0.01em; }
+    .sidebar-logo span { background: linear-gradient(135deg, #5594ff, #ffd600); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .sidebar-subtitle { font-size: 11px; opacity: 0.55; margin-top: 2px; }
 
-    .sidebar-menu { 
-        flex: 1; 
-        padding: 8px 0 20px;
+    .sidebar-menu {
+        flex: 1;
+        padding: 8px 12px 16px;
         overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255,255,255,0.15) transparent;
     }
+    .sidebar-menu::-webkit-scrollbar { width: 6px; }
+    .sidebar-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 999px; }
 
     .sidebar-section {
         font-size: 10px;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        color: rgba(255,255,255,0.35);
-        padding: 14px 20px 4px;
+        letter-spacing: 1.4px;
+        color: rgba(255,255,255,0.4);
+        padding: 16px 12px 6px;
+        font-weight: 700;
     }
 
     .sidebar-item {
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 11px 20px;
-        color: rgba(255,255,255,0.85);
+        padding: 10px 12px;
+        margin: 2px 0;
+        color: rgba(255,255,255,0.78);
         text-decoration: none;
-        transition: all 0.2s;
-        border-left: 3px solid transparent;
+        border-radius: 10px;
+        transition: background 180ms ease, color 180ms ease, transform 120ms ease;
         font-size: 14px;
+        position: relative;
     }
     .sidebar-item:hover {
-        background: rgba(255,255,255,0.1);
-        color: white;
-        border-left-color: #ffd600;
+        background: rgba(255,255,255,0.07);
+        color: #fff;
+        transform: translateX(2px);
+        text-decoration: none;
     }
     .sidebar-item.active {
-        background: rgba(255,255,255,0.15);
-        color: white;
-        border-left-color: #ffd600;
+        background: linear-gradient(90deg, rgba(0,102,255,0.25), rgba(0,102,255,0.05));
+        color: #fff;
         font-weight: 600;
     }
+    .sidebar-item.active::before {
+        content: '';
+        position: absolute; left: -12px; top: 25%;
+        width: 3px; height: 50%;
+        background: linear-gradient(180deg, #ffd600, #ff8a00);
+        border-radius: 0 3px 3px 0;
+    }
 
-    /* Sous-élément légèrement indenté */
     .sidebar-item.sidebar-sub {
-        padding-left: 36px;
+        padding-left: 32px;
         font-size: 13px;
-        opacity: 0.85;
-    }
-    .sidebar-item.sidebar-sub::before {
-        content: '└';
-        color: rgba(255,255,255,0.3);
-        font-size: 12px;
-        margin-right: -4px;
+        opacity: 0.78;
     }
 
-    .sidebar-icon { width: 22px; text-align: center; font-size: 17px; flex-shrink: 0; }
+    .sidebar-icon { width: 22px; text-align: center; font-size: 16px; flex-shrink: 0; }
     .sidebar-text { font-size: 14px; font-weight: 500; }
 
-    /* ✅ Footer avec bouton de déconnexion */
     .sidebar-footer {
-        padding: 16px 20px;
-        border-top: 1px solid rgba(255,255,255,0.15);
-        margin-top: auto;
+        padding: 12px 16px 16px;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        flex-shrink: 0;
+        background: linear-gradient(0deg, rgba(0,0,0,0.25), transparent);
     }
-
     .sidebar-logout-btn {
         width: 100%;
-        background: #ef4444;
-        color: white;
-        border: none;
+        background: rgba(239,68,68,0.12);
+        color: #fca5a5;
+        border: 1px solid rgba(239,68,68,0.3);
         padding: 10px;
-        border-radius: 30px;
+        border-radius: 999px;
         cursor: pointer;
         font-size: 14px;
         font-weight: 600;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
+        transition: background 180ms, color 180ms, transform 120ms;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
     }
-
     .sidebar-logout-btn:hover {
         background: #dc2626;
+        color: #fff;
         transform: translateY(-1px);
+    }
+    .sidebar-logout-btn:focus-visible {
+        outline: 2px solid #fca5a5; outline-offset: 2px;
     }
 
     @media (max-width: 768px) {
         .sidebar {
             transform: translateX(-100%);
-            width: 260px;
-            transition: transform 0.3s ease;
+            width: 280px;
+            transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
         }
         .sidebar.open { transform: translateX(0); }
+        .sidebar.open .sidebar-backdrop {
+            display: block;
+            position: fixed; inset: 0 0 0 280px;
+            z-index: -1;
+        }
     }
 </style>
 
 <script>
-    // ── Marquer l'onglet actif ─────────────────────────────
+    // Active route highlight
     (function() {
         const page = window.location.pathname.split('/').pop() || 'dashboard.html';
         document.querySelectorAll('.sidebar-item').forEach(item => {
             const href = item.getAttribute('href') || '';
             if (href === page || (page === '' && href === 'dashboard.html')) {
                 item.classList.add('active');
+                item.setAttribute('aria-current', 'page');
             }
         });
     })();
 
-    // ── Déconnexion globale ───────────────────────────────
     window.logout = function() {
         if (confirm('🚪 Voulez-vous vraiment vous déconnecter ?')) {
             localStorage.clear();
@@ -179,11 +214,16 @@
         }
     };
 
-    // ── Menu mobile (toggle) ──────────────────────────────
     window.toggleMobileMenu = function() {
         const sidebar = document.getElementById('sidebar');
-        if (sidebar) {
-            sidebar.classList.toggle('open');
-        }
+        if (sidebar) sidebar.classList.toggle('open');
     };
+
+    // Close mobile sidebar on backdrop click / Escape
+    document.getElementById('sidebarBackdrop')?.addEventListener('click', () => {
+        document.getElementById('sidebar')?.classList.remove('open');
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') document.getElementById('sidebar')?.classList.remove('open');
+    });
 </script>
