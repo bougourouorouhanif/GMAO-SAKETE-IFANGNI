@@ -257,6 +257,37 @@ export const testEmailConnection = async () => {
 };
 
 // ============================================
+// NOTIFICATIONS INTERVENTIONS (templates)
+// ============================================
+
+export const sendInterventionEmail = async (technicien, intervention) => {
+    if (!isEmailConfigured() || !technicien?.email) return { success: false, skipped: true };
+    const subject = `🔧 Nouvelle intervention #${intervention?.id || ''}`;
+    const html = `<h2>Bonjour ${technicien.prenom || ''} ${technicien.nom || ''}</h2>
+        <p>Une nouvelle intervention vous est assignée.</p>
+        <p><strong>Équipement :</strong> ${intervention?.equipement?.nom || '-'}</p>
+        <p><strong>Priorité :</strong> ${intervention?.priorite || 'MOYENNE'}</p>`;
+    return sendEmail(technicien.email, subject, html);
+};
+
+export const sendSignalementConfirmationEmail = async (soignant, equipement) => {
+    if (!isEmailConfigured() || !soignant?.email) return { success: false, skipped: true };
+    const subject = `✅ Signalement enregistré — ${equipement?.nom || ''}`;
+    const html = `<h2>Bonjour ${soignant.prenom || ''}</h2>
+        <p>Votre signalement pour <strong>${equipement?.nom || 'cet équipement'}</strong> a été enregistré.</p>
+        <p>Un technicien interviendra dès que possible.</p>`;
+    return sendEmail(soignant.email, subject, html);
+};
+
+export const sendInterventionTermineeEmail = async (soignant, equipement) => {
+    if (!isEmailConfigured() || !soignant?.email) return { success: false, skipped: true };
+    const subject = `✅ Panne résolue — ${equipement?.nom || ''}`;
+    const html = `<h2>Bonjour ${soignant.prenom || ''}</h2>
+        <p>L'équipement <strong>${equipement?.nom || ''}</strong> est à nouveau fonctionnel.</p>`;
+    return sendEmail(soignant.email, subject, html);
+};
+
+// ============================================
 // EXPORTATION
 // ============================================
 

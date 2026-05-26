@@ -117,7 +117,7 @@ import maintenanceRoutes from './routes/maintenances.js';
 import preventiveRoutes from './routes/preventive.js';
 import stockRoutes from './routes/stocks.js';
 import chatbotRoutes from './routes/chatbotRoutes.js';
-import diagnosticRoutes from './routes/diagnostic.js';
+// import diagnosticRoutes from './routes/diagnostic.js'; // TODO: controller manquant
 import codirRoutes from './routes/codir.js';
 import planningRoutes from './routes/planning.js';
 import dashboardRoutes from './routes/dashboard.js';
@@ -125,9 +125,9 @@ import mobileRoutes from './routes/mobile.js';
 import alerteRoutes from './routes/alertes.js';
 import fournisseurRoutes from './routes/fournisseurs.js';
 import technicienRoutes from './routes/techniciens.js';
-import statistiquesRoutes from './routes/statistiques.js';
-import documentRoutes from './routes/documents.js';
-import signalementRoutes from './routes/signalements.js';
+import statistiquesRoutes from './routes/statistiquesRoutes.js';
+// import documentRoutes from './routes/documents.js'; // TODO: fichier manquant
+// import signalementRoutes from './routes/signalements.js'; // TODO: fichier manquant
 import logsRoutes from './routes/logs.js';
 import exportsRoutes from './routes/exports.js';
 
@@ -139,7 +139,7 @@ app.use('/api/maintenances', maintenanceRoutes);
 app.use('/api/preventif', preventiveRoutes);
 app.use('/api/stock', stockRoutes);
 app.use('/api/chatbot', chatbotRoutes);
-app.use('/api/diagnostic', diagnosticRoutes);
+// app.use('/api/diagnostic', diagnosticRoutes); // TODO: controller manquant
 app.use('/api/codir', codirRoutes);
 app.use('/api/planning', planningRoutes);
 app.use('/api/dashboard', dashboardRoutes);
@@ -148,8 +148,8 @@ app.use('/api/alertes', alerteRoutes);
 app.use('/api/fournisseurs', fournisseurRoutes);
 app.use('/api/techniciens', technicienRoutes);
 app.use('/api/statistiques', statistiquesRoutes);
-app.use('/api/documents', documentRoutes);
-app.use('/api/signalements', signalementRoutes);
+// app.use('/api/documents', documentRoutes); // TODO: fichier manquant
+// app.use('/api/signalements', signalementRoutes); // TODO: fichier manquant
 app.use('/api/logs', logsRoutes);
 app.use('/api/exports', exportsRoutes);
 
@@ -162,7 +162,7 @@ v1Routes.use('/maintenances', maintenanceRoutes);
 v1Routes.use('/preventif', preventiveRoutes);
 v1Routes.use('/stock', stockRoutes);
 v1Routes.use('/chatbot', chatbotRoutes);
-v1Routes.use('/diagnostic', diagnosticRoutes);
+// v1Routes.use('/diagnostic', diagnosticRoutes); // TODO: controller manquant
 v1Routes.use('/codir', codirRoutes);
 v1Routes.use('/planning', planningRoutes);
 v1Routes.use('/dashboard', dashboardRoutes);
@@ -171,8 +171,8 @@ v1Routes.use('/alertes', alerteRoutes);
 v1Routes.use('/fournisseurs', fournisseurRoutes);
 v1Routes.use('/techniciens', technicienRoutes);
 v1Routes.use('/statistiques', statistiquesRoutes);
-v1Routes.use('/documents', documentRoutes);
-v1Routes.use('/signalements', signalementRoutes);
+// v1Routes.use('/documents', documentRoutes); // TODO: fichier manquant
+// v1Routes.use('/signalements', signalementRoutes); // TODO: fichier manquant
 v1Routes.use('/logs', logsRoutes);
 v1Routes.use('/exports', exportsRoutes);
 app.use('/api/v1', v1Routes);

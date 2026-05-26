@@ -160,8 +160,8 @@ router.delete(
 );
 
 // ============================================
-# LOGS DE DÉVELOPPEMENT
-============================================
+// LOGS DE DÉVELOPPEMENT
+// ============================================
 
 if (process.env.NODE_ENV === 'development') {
     console.log('📡 Routes diagnostic enregistrées:');
@@ -172,7 +172,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // ============================================
-# EXPORTATION
-============================================
+// EXPORTATION
+// ============================================
 
 export default router;
