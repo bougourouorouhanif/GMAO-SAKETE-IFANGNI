@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --check backend/server.js)",
+      "Bash(node --check backend/config/socket.js)",
+      "Bash(node --check backend/middleware/rateLimit.js)",
+      "Bash(node --check backend/routes/auth.js)",
+      "Bash(node --check backend/middleware/audit.js)",
+      "Bash(node --check backend/routes/logs.js)",
+      "Bash(node --check backend/config/logger.js)",
+      "Bash(node --check backend/routes/exports.js)",
+      "Bash(node --check backend/utils/export.js)",
+      "Bash(node --check backend/utils/paginate.js)"
+    ]
+  }
+}

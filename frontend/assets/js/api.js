@@ -1,6 +1,20 @@
 // API Service pour GMAO Sakété - Version 2.1.0
 
-const API_URL = 'https://gmao-sakete-ifangni-1.onrender.com/api';
+// Détection environnement
+function detectApiUrl() {
+    // Override manuel via localStorage (debug)
+    const override = (typeof localStorage !== 'undefined') && localStorage.getItem('API_URL');
+    if (override) return override.replace(/\/$/, '') + '/api';
+
+    const host = (typeof window !== 'undefined') ? window.location.hostname : '';
+    if (host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168.')) {
+        return `http://${host}:10000/api`;
+    }
+    // Prod par défaut
+    return 'https://gmao-sakete-ifangni-1.onrender.com/api';
+}
+
+const API_URL = detectApiUrl();
 
 // Configuration
 const CONFIG = {

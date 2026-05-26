@@ -14,6 +14,16 @@ import prisma from './config/database.js';
 
 dotenv.config();
 
+// Fail-fast: secrets requis en prod
+if (!process.env.JWT_SECRET) {
+  console.error('❌ JWT_SECRET manquant — refus de démarrer');
+  process.exit(1);
+}
+if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+  console.error('❌ DATABASE_URL manquant en production');
+  process.exit(1);
+}
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -22,13 +32,14 @@ const execPromise = util.promisify(exec);
 // Exécute les migrations PostgreSQL au démarrage (sur Render)
 async function runMigrations() {
   if (process.env.NODE_ENV === 'production' || process.env.RUN_MIGRATIONS === 'true') {
-    console.log('📦 Synchronisation du schéma avec la base de données...');
+    console.log('📦 Application des migrations Prisma...');
     try {
-      const { stdout, stderr } = await execPromise('npx prisma db push --accept-data-loss');
+      const { stdout, stderr } = await execPromise('npx prisma migrate deploy');
       console.log('✅ Résultat:', stdout);
       if (stderr) console.warn('⚠️', stderr);
     } catch (error) {
-      console.error('❌ Échec de la synchronisation:', error.message);
+      console.error('❌ Échec des migrations:', error.message);
+      throw error;
     }
   }
 }
@@ -39,18 +50,32 @@ await runMigrations();
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// Configuration CORS
+// Render/Netlify proxy — requis pour rate-limit + IP réelle
+app.set('trust proxy', 1);
+
+// Configuration CORS — origines explicites + regex pour previews
+const staticOrigins = [
+    'https://gmao-sakete.netlify.app',
+    'https://gmao-sakete.vercel.app',
+    'https://gmao-sakete-ifangni.vercel.app',
+    'http://localhost:3000',
+    'http://localhost:5000',
+    'http://localhost:5173'
+];
+if (process.env.FRONTEND_URL) staticOrigins.push(process.env.FRONTEND_URL);
+
+const originRegex = [
+    /^https:\/\/.*\.netlify\.app$/,
+    /^https:\/\/.*\.vercel\.app$/
+];
+
 const corsOptions = {
-    origin: [
-        'https://gmao-sakete.netlify.app', 
-        'https://*.netlify.app', 
-        'https://gmao-sakete.vercel.app', 
-        'https://gmao-sakete-ifangni.vercel.app',
-        'https://gmao-sakete-ifangni-hlmd03cpo.vercel.app',
-        'https://*.vercel.app',
-        'http://localhost:3000',
-        'http://localhost:5000'
-    ],
+    origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        if (staticOrigins.includes(origin)) return callback(null, true);
+        if (originRegex.some(rx => rx.test(origin))) return callback(null, true);
+        return callback(new Error(`Origin ${origin} non autorisée`));
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     credentials: true,
@@ -64,6 +89,12 @@ app.use(compression());
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Rate-limit global API (auth a son propre limiter plus strict)
+import { apiLimiter } from './middleware/rateLimit.js';
+import { auditMiddleware } from './middleware/audit.js';
+app.use('/api/', apiLimiter);
+app.use('/api/', auditMiddleware);
 
 // Dossiers statiques
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -97,6 +128,8 @@ import technicienRoutes from './routes/techniciens.js';
 import statistiquesRoutes from './routes/statistiques.js';
 import documentRoutes from './routes/documents.js';
 import signalementRoutes from './routes/signalements.js';
+import logsRoutes from './routes/logs.js';
+import exportsRoutes from './routes/exports.js';
 
 // ============ ROUTES API ============
 app.use('/api/auth', authRoutes);
@@ -117,44 +150,90 @@ app.use('/api/techniciens', technicienRoutes);
 app.use('/api/statistiques', statistiquesRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/signalements', signalementRoutes);
+app.use('/api/logs', logsRoutes);
+app.use('/api/exports', exportsRoutes);
+
+// ============ ALIAS /api/v1/* (versionnage) ============
+const v1Routes = express.Router();
+v1Routes.use('/auth', authRoutes);
+v1Routes.use('/users', userRoutes);
+v1Routes.use('/equipements', equipmentRoutes);
+v1Routes.use('/maintenances', maintenanceRoutes);
+v1Routes.use('/preventif', preventiveRoutes);
+v1Routes.use('/stock', stockRoutes);
+v1Routes.use('/chatbot', chatbotRoutes);
+v1Routes.use('/diagnostic', diagnosticRoutes);
+v1Routes.use('/codir', codirRoutes);
+v1Routes.use('/planning', planningRoutes);
+v1Routes.use('/dashboard', dashboardRoutes);
+v1Routes.use('/mobile', mobileRoutes);
+v1Routes.use('/alertes', alerteRoutes);
+v1Routes.use('/fournisseurs', fournisseurRoutes);
+v1Routes.use('/techniciens', technicienRoutes);
+v1Routes.use('/statistiques', statistiquesRoutes);
+v1Routes.use('/documents', documentRoutes);
+v1Routes.use('/signalements', signalementRoutes);
+v1Routes.use('/logs', logsRoutes);
+v1Routes.use('/exports', exportsRoutes);
+app.use('/api/v1', v1Routes);
 
 // ============ ROUTE DE SANTÉ ============
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    timestamp: new Date(), 
+app.get('/api/health', async (req, res) => {
+  const mem = process.memoryUsage();
+  let dbStatus = 'unknown';
+  let dbLatencyMs = null;
+  try {
+    const t0 = Date.now();
+    await prisma.$queryRaw`SELECT 1`;
+    dbLatencyMs = Date.now() - t0;
+    dbStatus = 'OK';
+  } catch (err) {
+    dbStatus = `ERROR: ${err.message}`;
+  }
+  res.status(dbStatus === 'OK' ? 200 : 503).json({
+    status: dbStatus === 'OK' ? 'OK' : 'DEGRADED',
+    timestamp: new Date(),
     uptime: process.uptime(),
-    cors: 'enabled',
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    version: process.env.APP_VERSION || '2.1.0',
+    db: { status: dbStatus, latencyMs: dbLatencyMs },
+    memory: {
+      rssMb: +(mem.rss / 1024 / 1024).toFixed(1),
+      heapUsedMb: +(mem.heapUsed / 1024 / 1024).toFixed(1)
+    }
   });
 });
 
-// ============ ROUTES TEMPORAIRES DE DEBUG ============
-app.post('/api/debug/activate/:email', async (req, res) => {
-  const { email } = req.params;
-  try {
-    const user = await prisma.user.update({
-      where: { email },
-      data: { statut: 'ACTIF' }
-    });
-    res.json({ message: 'Compte activé', user: { email: user.email, statut: user.statut } });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// ============ DEBUG ENDPOINTS — DEV ONLY ============
+if (process.env.NODE_ENV !== 'production' && process.env.ENABLE_DEBUG_ROUTES === 'true') {
+  console.warn('⚠️  Debug endpoints activés (dev uniquement)');
 
-app.put('/api/debug/set-technician/:email', async (req, res) => {
-  const { email } = req.params;
-  try {
-    const user = await prisma.user.update({
-      where: { email },
-      data: { role: 'TECHNICIEN', statut: 'ACTIF' }
-    });
-    res.json({ success: true, user: { email: user.email, role: user.role, statut: user.statut } });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+  app.post('/api/debug/activate/:email', async (req, res) => {
+    const { email } = req.params;
+    try {
+      const user = await prisma.user.update({
+        where: { email },
+        data: { statut: 'ACTIF' }
+      });
+      res.json({ message: 'Compte activé', user: { email: user.email, statut: user.statut } });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.put('/api/debug/set-technician/:email', async (req, res) => {
+    const { email } = req.params;
+    try {
+      const user = await prisma.user.update({
+        where: { email },
+        data: { role: 'TECHNICIEN', statut: 'ACTIF' }
+      });
+      res.json({ success: true, user: { email: user.email, role: user.role, statut: user.statut } });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+}
 
 // ============ PAGE D'ACCUEIL API ============
 app.get('/', (req, res) => {

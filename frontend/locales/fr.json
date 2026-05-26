@@ -1,0 +1,61 @@
+{
+  "app": {
+    "name": "GMAO Sakété-Ifangni",
+    "version": "2.1.0"
+  },
+  "auth": {
+    "login": "Connexion",
+    "register": "Inscription",
+    "logout": "Déconnexion",
+    "email": "Email",
+    "password": "Mot de passe",
+    "matricule": "Matricule",
+    "forgotPassword": "Mot de passe oublié ?",
+    "rateLimited": "Trop de tentatives. Réessayez dans 15 minutes."
+  },
+  "equipement": {
+    "title": "Équipements",
+    "create": "Nouvel équipement",
+    "code": "Code inventaire",
+    "name": "Nom",
+    "status": {
+      "FONCTIONNEL": "Fonctionnel",
+      "EN_PANNE": "En panne",
+      "EN_MAINTENANCE": "En maintenance",
+      "REFORME": "Réformé"
+    }
+  },
+  "signalement": {
+    "title": "Signalements",
+    "create": "Signaler une panne",
+    "priority": {
+      "BASSE": "Basse",
+      "MOYENNE": "Moyenne",
+      "HAUTE": "Haute",
+      "CRITIQUE": "Critique"
+    }
+  },
+  "intervention": {
+    "title": "Interventions",
+    "start": "Démarrer",
+    "complete": "Cloturer",
+    "diagnostic": "Diagnostic",
+    "actions": "Actions réalisées"
+  },
+  "stock": {
+    "title": "Stock pièces",
+    "lowStock": "Stock faible",
+    "quantity": "Quantité"
+  },
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "search": "Rechercher",
+    "loading": "Chargement…",
+    "noData": "Aucune donnée",
+    "error": "Une erreur est survenue",
+    "success": "Opération réussie"
+  }
+}

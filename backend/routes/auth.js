@@ -3,12 +3,13 @@ import { register, login, validateUser, rejectUser, toggleUserStatus, refreshTok
 import { verifyToken } from '../middleware/auth.js';
 import { isTechnicien } from '../middleware/roleCheck.js';
 import { registerValidation, loginValidation, validate } from '../middleware/validation.js';
+import { authLimiter, registerLimiter } from '../middleware/rateLimit.js';
 
 const router = express.Router();
 
 // Routes publiques
-router.post('/register', registerValidation, validate, register);
-router.post('/login', loginValidation, validate, login);
+router.post('/register', registerLimiter, registerValidation, validate, register);
+router.post('/login', authLimiter, loginValidation, validate, login);
 router.post('/refresh', verifyToken, refreshToken);
 
 // Routes protégées (technicien uniquement)

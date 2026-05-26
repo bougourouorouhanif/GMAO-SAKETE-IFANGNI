@@ -16,8 +16,12 @@ let connectedClients = new Map(); // Map pour stocker les clients connectés
  * @returns {Object|null} Utilisateur décodé ou null
  */
 const authenticateSocket = (token) => {
+    if (!process.env.JWT_SECRET) {
+        console.error('❌ JWT_SECRET non défini — auth socket refusée');
+        return null;
+    }
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'gmao-secret-key');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         return decoded;
     } catch (error) {
         console.error('❌ Erreur authentification socket:', error.message);
@@ -36,9 +40,25 @@ const authenticateSocket = (token) => {
  * @returns {Object} Instance Socket.IO
  */
 export const initSocket = (server, options = {}) => {
+    const allowedOrigins = [
+        process.env.FRONTEND_URL,
+        'https://gmao-sakete.netlify.app',
+        'https://gmao-sakete.vercel.app',
+        'https://gmao-sakete-ifangni.vercel.app',
+        'http://localhost:3000',
+        'http://localhost:5000',
+        'http://localhost:5173'
+    ].filter(Boolean);
+    const originRx = [/^https:\/\/.*\.netlify\.app$/, /^https:\/\/.*\.vercel\.app$/];
+
     const defaultOptions = {
         cors: {
-            origin: process.env.FRONTEND_URL || '*',
+            origin: (origin, cb) => {
+                if (!origin) return cb(null, true);
+                if (allowedOrigins.includes(origin)) return cb(null, true);
+                if (originRx.some(rx => rx.test(origin))) return cb(null, true);
+                return cb(new Error('Origin non autorisée'));
+            },
             methods: ['GET', 'POST'],
             credentials: true
         },

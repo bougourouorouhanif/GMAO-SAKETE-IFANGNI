@@ -43,6 +43,9 @@ model User {
   departs            TechnicienDepart[]
   validePar          User?                   @relation("UserValidation", fields: [valideParId], references: [id])
   validations        User[]                  @relation("UserValidation")
+
+  @@index([role])
+  @@index([statut])
 }
 
 model Equipement {
@@ -105,6 +108,11 @@ model Equipement {
   maintenancesPreventives MaintenancePreventive[]
   historiquePieces        PieceUtilisee[]
   signalements            Signalement[]
+
+  @@index([statut])
+  @@index([service])
+  @@index([criticite])
+  @@index([fournisseurId])
 }
 
 model Signalement {
@@ -122,6 +130,11 @@ model Signalement {
   conversation    Conversation? @relation(fields: [conversationId], references: [id])
   signalePar      User          @relation(fields: [signaleParId], references: [id])
   equipement      Equipement    @relation(fields: [equipementId], references: [id])
+
+  @@index([equipementId])
+  @@index([signaleParId])
+  @@index([traite, dateSignalement])
+  @@index([priorite])
 }
 
 model Intervention {
@@ -151,6 +164,10 @@ model Intervention {
   technicien           User            @relation(fields: [technicienId], references: [id])
   equipement           Equipement      @relation(fields: [equipementId], references: [id])
   piecesUtiliseesPiece PieceUtilisee[]
+
+  @@index([equipementId])
+  @@index([technicienId])
+  @@index([statut, dateDebut])
 }
 
 model MaintenancePreventive {
@@ -193,6 +210,9 @@ model Piece {
   mouvements            MouvementStock[]
   fournisseur           Fournisseur?     @relation(fields: [fournisseurId], references: [id])
   utilisations          PieceUtilisee[]
+
+  @@index([categorie])
+  @@index([fournisseurId])
 }
 
 model PieceUtilisee {
@@ -221,6 +241,9 @@ model MouvementStock {
   utilisateurId  Int
   utilisateur    User     @relation(fields: [utilisateurId], references: [id])
   piece          Piece    @relation(fields: [pieceId], references: [id])
+
+  @@index([pieceId, date])
+  @@index([type])
 }
 
 model Fournisseur {
@@ -283,6 +306,10 @@ model Alerte {
   resolue        Boolean     @default(false)
   resoluePar     User?       @relation(fields: [resolueParId], references: [id])
   equipement     Equipement? @relation(fields: [equipementId], references: [id])
+
+  @@index([resolue, dateCreation])
+  @@index([niveau])
+  @@index([equipementId])
 }
 
 model Conversation {
@@ -352,6 +379,10 @@ model Log {
   userAgent     String?
   dateAction    DateTime @default(now())
   utilisateur   User     @relation(fields: [utilisateurId], references: [id])
+
+  @@index([utilisateurId, dateAction])
+  @@index([entite, entiteId])
+  @@index([dateAction])
 }
 
 model StatistiqueJournaliere {
