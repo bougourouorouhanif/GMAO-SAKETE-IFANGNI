@@ -100,6 +100,10 @@ app.use('/api/', auditMiddleware);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/qrcodes', express.static(path.join(__dirname, 'uploads/qrcodes')));
 
+// Frontend statique (sert /, /login.html, /assets/*, etc.)
+const frontendPath = path.join(__dirname, '..', 'frontend');
+app.use(express.static(frontendPath, { extensions: ['html'] }));
+
 // Créer les dossiers uploads
 const uploadDirs = ['uploads', 'uploads/photos', 'uploads/documents', 'uploads/qrcodes', 'uploads/rapports'];
 uploadDirs.forEach(dir => {
