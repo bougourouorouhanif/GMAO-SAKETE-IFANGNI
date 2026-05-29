@@ -151,16 +151,45 @@ export const mouvementStock = async (req, res) => {
       }
     });
 
-    // Vérifier le seuil d'alerte
+    // Vérifier le seuil d'alerte → alerte DB + notifications
     if (nouvelleQuantite <= piece.seuilAlerte && type === 'SORTIR') {
-      await prisma.alerte.create({
+      const niveau = nouvelleQuantite === 0 ? 'CRITIQUE' : 'ATTENTION';
+      const alerte = await prisma.alerte.create({
         data: {
           type: 'STOCK_FAIBLE',
-          niveau: 'ATTENTION',
+          niveau,
           message: `Stock faible pour ${piece.designation}: ${nouvelleQuantite} unité(s) restante(s)`,
           pieceId: piece.id,
         }
       });
+
+      // Notification socket temps réel aux techniciens
+      try {
+        const { notifyLowStock, notifyNewAlert } = await import('../config/socket.js');
+        notifyLowStock({ ...updatedPiece, alerteId: alerte.id });
+        notifyNewAlert(alerte);
+      } catch (e) {
+        console.warn('Notif socket stock échouée:', e.message);
+      }
+
+      // Email + SMS techniciens (best-effort, async)
+      try {
+        const techniciens = await prisma.user.findMany({
+          where: { role: { in: ['TECHNICIEN', 'ADMIN'] }, statut: 'ACTIF' },
+          select: { id: true, email: true, telephone: true, prenom: true, nom: true }
+        });
+        const { sendEmail } = await import('../config/email.js');
+        const { sendSMS } = await import('../config/sms.js');
+        const subject = `⚠️ Stock faible — ${piece.designation}`;
+        const html = `<p>La pièce <strong>${piece.designation}</strong> (code ${piece.code}) ne compte plus que <strong>${nouvelleQuantite}</strong> unité(s).</p>`;
+        const smsBody = `GMAO: stock faible ${piece.designation} = ${nouvelleQuantite} restant`;
+        for (const t of techniciens) {
+          if (t.email) sendEmail(t.email, subject, html).catch(() => {});
+          if (t.telephone && niveau === 'CRITIQUE') sendSMS(t.telephone, smsBody).catch(() => {});
+        }
+      } catch (e) {
+        console.warn('Notif email/SMS stock échouée:', e.message);
+      }
     }
 
     res.json({ message: 'Mouvement enregistré', piece: updatedPiece, mouvement });

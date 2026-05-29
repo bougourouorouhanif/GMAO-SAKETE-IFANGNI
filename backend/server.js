@@ -134,6 +134,9 @@ import statistiquesRoutes from './routes/statistiquesRoutes.js';
 // import signalementRoutes from './routes/signalements.js'; // TODO: fichier manquant
 import logsRoutes from './routes/logs.js';
 import exportsRoutes from './routes/exports.js';
+import { startPreventiveScheduler, checkPreventiveDeadlines } from './jobs/preventiveScheduler.js';
+import { verifyToken } from './middleware/auth.js';
+import { isAdmin } from './middleware/roleCheck.js';
 
 // ============ ROUTES API ============
 app.use('/api/auth', authRoutes);
@@ -156,6 +159,16 @@ app.use('/api/statistiques', statistiquesRoutes);
 // app.use('/api/signalements', signalementRoutes); // TODO: fichier manquant
 app.use('/api/logs', logsRoutes);
 app.use('/api/exports', exportsRoutes);
+
+// Trigger manuel scheduler préventif (ADMIN)
+app.post('/api/jobs/preventive-check', verifyToken, isAdmin, async (req, res) => {
+  try {
+    const result = await checkPreventiveDeadlines();
+    res.json({ message: 'Scheduler exécuté', ...result });
+  } catch (err) {
+    res.status(500).json({ message: 'Erreur scheduler', error: err.message });
+  }
+});
 
 // ============ ALIAS /api/v1/* (versionnage) ============
 const v1Routes = express.Router();
@@ -279,6 +292,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Serveur démarré sur http://0.0.0.0:${PORT}`);
   console.log(`📱 Mode: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🗄️ Base de données: PostgreSQL`);
+  startPreventiveScheduler();
   console.log(`\n📡 Routes disponibles:`);
   console.log(`   POST   /api/auth/login`);
   console.log(`   POST   /api/auth/register`);
